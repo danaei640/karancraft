@@ -4,7 +4,9 @@
   "type": "registry:ui",
   "title": "Chart",
   "description": "Luma chart component built with Base UI.",
-  "dependencies": [],
+  "dependencies": [
+    "recharts"
+  ],
   "registryDependencies": [],
   "files": [
     {

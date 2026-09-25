@@ -5,13 +5,14 @@
   "title": "Checkbox",
   "description": "A control that allows the user to toggle between checked and not checked.",
   "dependencies": [
-    "@base-ui/react"
+    "@base-ui/react",
+    "lucide-react"
   ],
   "registryDependencies": [],
   "files": [
     {
       "path": "ui/checkbox.tsx",
-      "content": "\"use client\"\n\nimport { Checkbox as CheckboxPrimitive } from \"@base-ui/react/checkbox\"\nimport { cn } from \"cn\"\n\nimport { IconPlaceholder } from \"@/app/(create)/components/icon-placeholder\"\n\nfunction Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {\n  return (\n    <CheckboxPrimitive.Root\n      data-slot=\"checkbox\"\n      className={cn(\n        \"cn-checkbox peer relative shrink-0 outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50\",\n        className\n      )}\n      {...props}\n    >\n      <CheckboxPrimitive.Indicator\n        data-slot=\"checkbox-indicator\"\n        className=\"cn-checkbox-indicator grid place-content-center text-current transition-none\"\n      >\n        <IconPlaceholder\n          lucide=\"CheckIcon\"\n          tabler=\"IconCheck\"\n          hugeicons=\"Tick02Icon\"\n          phosphor=\"CheckIcon\"\n          remixicon=\"RiCheckLine\"\n        />\n      </CheckboxPrimitive.Indicator>\n    </CheckboxPrimitive.Root>\n  )\n}\n\nexport { Checkbox }\n",
+      "content": "\"use client\"\n\nimport { Checkbox as CheckboxPrimitive } from \"@base-ui/react/checkbox\"\nimport { cn } from \"cn\"\n\nimport { Check } from \"lucide-react\"\n\nfunction Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {\n  return (\n    <CheckboxPrimitive.Root\n      data-slot=\"checkbox\"\n      className={cn(\n        \"cn-checkbox peer relative shrink-0 outline-none after:absolute after:-inset-x-3 after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50\",\n        className\n      )}\n      {...props}\n    >\n      <CheckboxPrimitive.Indicator\n        data-slot=\"checkbox-indicator\"\n        className=\"cn-checkbox-indicator grid place-content-center text-current transition-none\"\n      >\n        <Check\n        />\n      </CheckboxPrimitive.Indicator>\n    </CheckboxPrimitive.Root>\n  )\n}\n\nexport { Checkbox }\n",
       "type": "registry:ui",
       "target": "components/ui/checkbox.tsx"
     }

@@ -1,0 +1,40 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Overview/Introduction" />
+
+# Karan UI Component Registry
+
+Welcome to **Karan UI**, an enterprise-grade UI component system and Shadcn-compatible registry.
+
+### Modern Architecture Highlights
+
+- **Base UI Primitive Foundation**: Built on `@base-ui/react` for next-generation accessibility, composability, and clean DOM architecture.
+- **Tailwind CSS v4 & OKLCH**: Modern `@theme` tokens, dynamic contrast handling, and pill geometry (`rounded-4xl`).
+- **Next.js 16 & React 19**: Zero legacy dependencies, fully tested with modern bundlers and server components.
+- **54+ High-Fidelity Components**: Complete library of accessible primitives.
+
+### Installation via Shadcn CLI
+
+You can install any component directly into any project using the Shadcn CLI pointing to this registry:
+
+```bash
+npx shadcn@latest add https://karan-ui.dev/r/button.json
+```
+
+Or configure your `components.json`:
+
+```json
+{
+  "registries": {
+    "karan-ui": "https://karan-ui.dev/r"
+  }
+}
+```
+
+Then install by name:
+
+```bash
+npx shadcn@latest add @karan-ui/button
+```
+
+Explore the interactive component stories in the sidebar!

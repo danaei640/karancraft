@@ -21,12 +21,12 @@ export const registryItemFileSchema = z.object({
 })
 
 export const registryItemTailwindSchema = z.object({
-  config: z.record(z.any()).optional(),
+  config: z.record(z.string(), z.any()).optional(),
 })
 
 export const registryItemCssVarsSchema = z.object({
-  light: z.record(z.string()).optional(),
-  dark: z.record(z.string()).optional(),
+  light: z.record(z.string(), z.string()).optional(),
+  dark: z.record(z.string(), z.string()).optional(),
 })
 
 export const registryItemSchema = z.object({
@@ -39,7 +39,7 @@ export const registryItemSchema = z.object({
   files: z.array(registryItemFileSchema).optional(),
   tailwind: registryItemTailwindSchema.optional(),
   cssVars: registryItemCssVarsSchema.optional(),
-  meta: z.record(z.any()).optional(),
+  meta: z.record(z.string(), z.any()).optional(),
   docs: z.string().optional(),
   categories: z.array(z.string()).optional(),
   title: z.string().optional(),

@@ -8,7 +8,6 @@ const ROOT = path.resolve(__dirname, "..")
 const REGISTRY_PATH = path.join(ROOT, "src", "registry")
 const OUTPUT_PATH = path.join(ROOT, "public", "r")
 
-// Known component titles & descriptions
 const COMPONENT_METADATA = {
   button: { title: "Button", description: "Displays a button or a component that looks like a button." },
   badge: { title: "Badge", description: "Displays a badge or a component that looks like a badge." },
@@ -49,22 +48,65 @@ const COMPONENT_METADATA = {
   resizable: { title: "Resizable", description: "Accessible resizable panel groups and layouts with keyboard support." },
   "scroll-area": { title: "Scroll Area", description: "Augments native scroll functionality for custom, cross-browser styling." },
   sidebar: { title: "Sidebar", description: "A composable, themeable and customizable sidebar component." },
-  sonner: { title: "Sonner", description: "An opinionated toast component for React." },
+  toast: { title: "Toast", description: "A succinct message that is displayed temporarily." },
+  "theme-provider": { title: "Theme Provider", description: "A comprehensive theme and component provider wrapping @wrksz/themes, toast, tooltip, typeset measurements, and color theme." },
   toggle: { title: "Toggle", description: "A two-state button that can be either on or off." },
   "toggle-group": { title: "Toggle Group", description: "A set of two-state buttons that can be toggled on or off." },
+}
+
+function transformContentForRegistry(content) {
+  let transformed = content
+
+  // 1. Rewrite internal registry paths to consumer project paths
+  transformed = transformed.replace(/@\/registry\/bases\/base\/ui\//g, "@/components/ui/")
+
+  // 2. Transform IconPlaceholder to standard lucide-react icons
+  const iconMatches = [...transformed.matchAll(/<IconPlaceholder[\s\S]*?lucide="([^"]+)"[\s\S]*?\/>/g)]
+  const collectedIcons = new Set()
+
+  for (const match of iconMatches) {
+    const fullTag = match[0]
+    const rawIcon = match[1]
+    const lucideName = rawIcon.replace(/Icon$/, "")
+    collectedIcons.add(lucideName)
+
+    // Remove icon attributes and convert to Lucide component
+    let cleanTag = fullTag
+      .replace(/<IconPlaceholder/, `<${lucideName}`)
+      .replace(/\s*lucide="[^"]*"/g, "")
+      .replace(/\s*tabler="[^"]*"/g, "")
+      .replace(/\s*hugeicons="[^"]*"/g, "")
+      .replace(/\s*phosphor="[^"]*"/g, "")
+      .replace(/\s*remixicon="[^"]*"/g, "")
+
+    transformed = transformed.replace(fullTag, cleanTag)
+  }
+
+  // Replace IconPlaceholder import with Lucide import
+  if (collectedIcons.size > 0) {
+    const iconImportList = Array.from(collectedIcons).sort().join(", ")
+    transformed = transformed.replace(
+      /import\s+{\s*IconPlaceholder\s*}\s+from\s+["']@\/app\/\(create\)\/components\/icon-placeholder["']/,
+      `import { ${iconImportList} } from "lucide-react"`
+    )
+  }
+
+  return transformed
 }
 
 async function extractDependencies(content) {
   const deps = new Set()
   const regDeps = new Set()
 
-  const importRegex = /import\s+.*?\s+from\s+["'](.*?)["']/g
+  const importRegex = /import(?:[\s\S]*?)from\s+["'](.*?)["']/g
   let match
   while ((match = importRegex.exec(content)) !== null) {
     const pkg = match[1]
     if (pkg.startsWith("@base-ui/react")) {
       deps.add("@base-ui/react")
-    } else if (pkg.startsWith("lucide-react")) {
+    } else if (pkg.startsWith("@wrksz/themes")) {
+      deps.add("@wrksz/themes")
+    } else if (pkg.startsWith("lucide-react") || pkg.includes("icon-placeholder")) {
       deps.add("lucide-react")
     } else if (pkg.startsWith("class-variance-authority")) {
       deps.add("class-variance-authority")
@@ -74,17 +116,19 @@ async function extractDependencies(content) {
       deps.add("tailwind-merge")
     } else if (pkg.startsWith("embla-carousel-react")) {
       deps.add("embla-carousel-react")
-    } else if (pkg.startsWith("sonner")) {
-      deps.add("sonner")
     } else if (pkg.startsWith("cmdk")) {
       deps.add("cmdk")
     } else if (pkg.startsWith("input-otp")) {
       deps.add("input-otp")
     } else if (pkg.startsWith("react-day-picker")) {
       deps.add("react-day-picker")
-    } else if (pkg.startsWith("@/components/ui/")) {
-      const regName = pkg.replace("@/components/ui/", "")
-      regDeps.add(regName)
+    } else if (pkg.startsWith("recharts")) {
+      deps.add("recharts")
+    } else if (pkg.startsWith("react-resizable-panels")) {
+      deps.add("react-resizable-panels")
+    } else if (pkg.startsWith("@/components/ui/") || pkg.startsWith("@/registry/bases/base/ui/")) {
+      const regName = pkg.split("/").pop()?.replace(/\.(tsx|ts)$/, "")
+      if (regName) regDeps.add(regName)
     }
   }
 
@@ -196,9 +240,10 @@ async function main() {
 
     const name = file.replace(/\.(tsx|ts)$/, "")
     const filePath = path.join(uiDir, file)
-    const content = await fs.readFile(filePath, "utf-8")
+    const rawContent = await fs.readFile(filePath, "utf-8")
+    const content = transformContentForRegistry(rawContent)
 
-    const { dependencies, registryDependencies } = await extractDependencies(content)
+    const { dependencies, registryDependencies } = await extractDependencies(rawContent)
     const meta = COMPONENT_METADATA[name] || {
       title: name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, " "),
       description: `Luma ${name} component built with Base UI.`,
