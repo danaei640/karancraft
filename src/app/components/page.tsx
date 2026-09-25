@@ -39,7 +39,7 @@ export default function ComponentsIndexPage() {
               Karan UI Component System
             </h1>
             <p className="text-sm text-muted-foreground">
-              Explore, test, and interact with all 54 Base UI primitives with modern styling and tokens.
+              Explore, test, and interact with all {totalComponents} components and primitives with modern styling and tokens.
               Features full prop controls, portable story execution, and automated assertion tests.
             </p>
           </div>
@@ -62,7 +62,7 @@ export default function ComponentsIndexPage() {
           <Search className="size-4 absolute left-3.5 top-[calc(50%+4px)] -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Search across all 54 components..."
+            placeholder={`Search across all ${totalComponents} components...`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full text-xs pl-10 pr-4 py-2.5 rounded-full bg-background border border-border/60 shadow-xs focus:border-ring focus:ring-2 focus:ring-ring/20 outline-none transition-all"

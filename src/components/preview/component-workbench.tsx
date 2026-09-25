@@ -488,7 +488,246 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
           </div>
         )}
 
-        {/* 2. Portable Stories & Variants Tab */}
+        {/* 2. Usage Guide & Documentation Tab */}
+        {activeTab === 'guide' && (
+          <div className="max-w-4xl space-y-8">
+            {/* 1. Header Overview Banner */}
+            <div className="rounded-3xl border border-border/50 bg-gradient-to-br from-primary/5 via-muted/20 to-background p-6 space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                      {metadata.baseUiPrimitive}
+                    </span>
+                    <span className="text-xs text-muted-foreground">•</span>
+                    <span className="text-xs font-mono text-muted-foreground">{metadata.category}</span>
+                  </div>
+                  <h2 className="text-xl font-bold font-heading">{metadata.name} Integration Guide</h2>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={metadata.registryUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/50 text-xs font-mono transition-colors"
+                  >
+                    <ExternalLink className="size-3.5" />
+                    <span>View JSON</span>
+                  </a>
+                </div>
+              </div>
+
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {metadata.usageGuide?.summary || metadata.description}
+              </p>
+
+              {/* Quick CLI command */}
+              <div className="flex items-center gap-2 p-3 rounded-2xl bg-muted/40 border border-border/40 font-mono text-xs">
+                <Terminal className="size-4 text-primary shrink-0" />
+                <span className="truncate select-all text-foreground">{metadata.installCmd}</span>
+                <button
+                  onClick={copyCommand}
+                  className="ml-auto p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                  title="Copy CLI command"
+                >
+                  {copiedCmd ? <Check className="size-4 text-emerald-500" /> : <Copy className="size-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Root Layout Setup (if present) */}
+            {metadata.usageGuide?.rootLayoutSetup && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                      1
+                    </div>
+                    <h3 className="text-base font-bold font-heading">Application Root Setup</h3>
+                  </div>
+                  <span className="text-xs font-mono text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-md border border-border/40">
+                    {metadata.usageGuide.rootLayoutSetup.filename}
+                  </span>
+                </div>
+
+                {metadata.usageGuide.rootLayoutSetup.explanation && (
+                  <p className="text-xs text-muted-foreground">
+                    {metadata.usageGuide.rootLayoutSetup.explanation}
+                  </p>
+                )}
+
+                <div className="relative rounded-2xl border border-border/50 bg-muted/20 overflow-hidden">
+                  <div className="p-3 border-b border-border/30 bg-muted/40 flex items-center justify-between text-xs font-mono text-muted-foreground">
+                    <span>{metadata.usageGuide.rootLayoutSetup.filename}</span>
+                    <button
+                      onClick={() => handleCopySnippet('setup', metadata.usageGuide!.rootLayoutSetup!.code)}
+                      className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                    >
+                      {copiedSnippetId === 'setup' ? (
+                        <>
+                          <Check className="size-3 text-emerald-500" />
+                          <span className="text-emerald-500 font-sans">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-3" />
+                          <span className="font-sans">Copy</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <pre className="p-4 text-xs font-mono overflow-x-auto text-foreground">
+                    <code>{metadata.usageGuide.rootLayoutSetup.code}</code>
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {/* 3. Features & Code Examples */}
+            {metadata.usageGuide?.features && metadata.usageGuide.features.length > 0 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <div className="size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                    2
+                  </div>
+                  <h3 className="text-base font-bold font-heading">Features & Implementation Recipes</h3>
+                </div>
+
+                <div className="space-y-6">
+                  {metadata.usageGuide.features.map((feature, idx) => (
+                    <div
+                      key={feature.title}
+                      className="rounded-2xl border border-border/50 bg-card p-5 space-y-4 shadow-xs"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h4 className="text-sm font-bold font-heading text-foreground">
+                          {idx + 1}. {feature.title}
+                        </h4>
+                        {feature.badge && (
+                          <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border/40">
+                            {feature.badge}
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {feature.description}
+                      </p>
+
+                      {feature.code && (
+                        <div className="relative rounded-xl border border-border/40 bg-muted/20 overflow-hidden">
+                          <div className="p-2.5 px-3 border-b border-border/30 bg-muted/40 flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                            <span>Example Code</span>
+                            <button
+                              onClick={() => handleCopySnippet(`feat-${idx}`, feature.code!)}
+                              className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+                            >
+                              {copiedSnippetId === `feat-${idx}` ? (
+                                <>
+                                  <Check className="size-3 text-emerald-500" />
+                                  <span className="text-emerald-500 font-sans">Copied</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="size-3" />
+                                  <span className="font-sans">Copy</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          <pre className="p-3.5 text-xs font-mono overflow-x-auto text-foreground">
+                            <code>{feature.code}</code>
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 4. API & Hooks Reference */}
+            {metadata.usageGuide?.apiReference && metadata.usageGuide.apiReference.length > 0 && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                    3
+                  </div>
+                  <h3 className="text-base font-bold font-heading">API & Exported Utilities</h3>
+                </div>
+
+                <div className="rounded-2xl border border-border/50 overflow-hidden shadow-xs">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-muted/40 border-b border-border/40 font-semibold text-muted-foreground">
+                      <tr>
+                        <th className="p-3 pl-4">Export / Symbol</th>
+                        <th className="p-3">Type Signature</th>
+                        <th className="p-3 pr-4">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/30">
+                      {metadata.usageGuide.apiReference.map((api) => (
+                        <tr key={api.name} className="hover:bg-muted/20">
+                          <td className="p-3 pl-4 font-mono font-medium text-foreground">
+                            {api.name}
+                          </td>
+                          <td className="p-3 font-mono text-[11px] text-muted-foreground">
+                            {api.type}
+                          </td>
+                          <td className="p-3 pr-4 text-muted-foreground">
+                            {api.description}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* 5. Production Tips & Hydration Safety */}
+            {metadata.usageGuide?.tips && metadata.usageGuide.tips.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Best Practices & Gotchas
+                </h4>
+                <div className="space-y-2">
+                  {metadata.usageGuide.tips.map((tip, i) => (
+                    <div
+                      key={i}
+                      className="flex items-start gap-2.5 p-3.5 rounded-xl border border-border/40 bg-muted/15 text-xs text-muted-foreground"
+                    >
+                      <Sparkles className="size-4 text-primary shrink-0 mt-0.5" />
+                      <span>{tip}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Generic fallback if no metadata.usageGuide is defined */}
+            {!metadata.usageGuide && (
+              <div className="rounded-2xl border border-border/40 bg-card p-6 space-y-4">
+                <h3 className="text-base font-bold">Standard Import & Usage</h3>
+                <p className="text-xs text-muted-foreground">
+                  Install the component into your project via the Shadcn CLI:
+                </p>
+                <pre className="p-3 rounded-xl bg-muted/40 font-mono text-xs text-foreground">
+                  <code>{metadata.installCmd}</code>
+                </pre>
+                <p className="text-xs text-muted-foreground">
+                  Import and use in your application:
+                </p>
+                <pre className="p-3 rounded-xl bg-muted/40 font-mono text-xs text-foreground">
+                  <code>{`import { ${metadata.name} } from "@/components/ui/${metadata.id}";\n\nexport function Example() {\n  return <${metadata.name} />;\n}`}</code>
+                </pre>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 3. Portable Stories & Variants Tab */}
         {activeTab === 'stories' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">

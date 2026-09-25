@@ -26,6 +26,7 @@ export function ComponentSidebar() {
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
 
   const categorized = getComponentsByCategory();
+  const totalComponents = Object.keys(COMPONENTS_METADATA).length;
   const activeSlug = pathname?.split('/').pop() || 'button';
 
   const toggleCategory = (cat: string) => {
@@ -84,7 +85,7 @@ export function ComponentSidebar() {
           <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Search 54 components..."
+            placeholder={`Search ${totalComponents} components...`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full text-xs pl-8 pr-3 py-1.5 rounded-full bg-muted/40 border border-border/40 focus:border-ring/50 focus:bg-background outline-none transition-all placeholder:text-muted-foreground/60"
@@ -106,7 +107,7 @@ export function ComponentSidebar() {
             <Layers className="size-3.5 text-muted-foreground" />
             <span>All Components Overview</span>
             <span className="ml-auto text-[10px] px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground font-mono">
-              54
+              {totalComponents}
             </span>
           </Link>
         </div>
