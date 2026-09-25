@@ -9,9 +9,36 @@ Welcome to **Karan UI**, an enterprise-grade UI component system and Shadcn-comp
 ### Modern Architecture Highlights
 
 - **Base UI Primitive Foundation**: Built on `@base-ui/react` for next-generation accessibility, composability, and clean DOM architecture.
+- **Unified ThemeProvider**: Powered by `@wrksz/themes` for zero-flash custom theme arrays, native Base UI Toast & Tooltip providers, and Shadcn Typeset vertical rhythm.
 - **Tailwind CSS v4 & OKLCH**: Modern `@theme` tokens, dynamic contrast handling, and pill geometry (`rounded-4xl`).
 - **Next.js 16 & React 19**: Zero legacy dependencies, fully tested with modern bundlers and server components.
-- **54+ High-Fidelity Components**: Complete library of accessible primitives.
+- **55+ High-Fidelity Components**: Complete library of accessible primitives and utilities.
+
+### Application Root Setup
+
+Install the unified ThemeProvider to equip your application with themes, toasts, tooltips, and typography rhythm:
+
+```bash
+npx shadcn@latest add @karan-ui/theme-provider
+```
+
+Wrap your root layout (`src/app/layout.tsx`):
+
+```tsx
+import { ThemeProvider } from "@/components/theme-provider";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem typeset="docs">
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
 
 ### Installation via Shadcn CLI
 
@@ -37,4 +64,4 @@ Then install by name:
 npx shadcn@latest add @karan-ui/button
 ```
 
-Explore the interactive component stories in the sidebar!
+Explore the interactive component stories and docs in the sidebar!
