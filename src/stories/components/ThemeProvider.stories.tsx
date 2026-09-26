@@ -6,6 +6,7 @@ import {
   useTypeset,
   useColorTheme,
   useComponentTheme,
+  useThemeGeometry,
   Typeset,
   toast,
 } from "@/components/theme-provider"
@@ -27,12 +28,13 @@ export default meta
 type Story = StoryObj<typeof ThemeProvider>
 
 /**
- * Inner component to demonstrate theme switching, toast, tooltip, and typeset controls
+ * Inner component to demonstrate theme switching, toast, tooltip, typeset, and geometry controls
  */
 function ThemeControlsDemo() {
   const { theme, resolvedTheme, setTheme, themes } = useTheme()
   const { measurements, preset, setPreset, setMeasurements } = useTypeset()
   const { colorTheme, setColorTheme } = useColorTheme()
+  const { whitespace, setWhitespace, radius, setRadius, resetGeometry } = useThemeGeometry()
 
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-8">
@@ -181,6 +183,128 @@ function ThemeControlsDemo() {
             Current Active Color Theme: <strong className="ml-1 text-neutral-text">{colorTheme}</strong>
           </CardFooter>
         </Card>
+
+        {/* 4. Geometry & Density Multipliers (Whitespace & Radius) */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base">4. Geometry & Density Multipliers (Whitespace & Radius)</CardTitle>
+                <CardDescription>
+                  Realtime global scaling multipliers for element sizing/spacing and border radius
+                </CardDescription>
+              </div>
+              <Button size="sm" variant="ghost" onClick={() => resetGeometry()}>
+                Reset 1.0x
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Whitespace / Density Slider */}
+              <div className="space-y-3 p-4 rounded-xl bg-neutral-surface-alt border">
+                <div className="flex items-center justify-between text-sm">
+                  <div>
+                    <span className="font-semibold block">White-Space & Sizing Multiplier</span>
+                    <span className="text-xs text-neutral-text-muted">Scales padding, margin, gap & dimensions (no text)</span>
+                  </div>
+                  <Badge variant="secondary" className="font-mono text-xs">
+                    {whitespace.toFixed(2)}x
+                  </Badge>
+                </div>
+                <input
+                  type="range"
+                  min="0.6"
+                  max="1.6"
+                  step="0.05"
+                  value={whitespace}
+                  onChange={(e) => setWhitespace(Number(e.target.value))}
+                  className="w-full accent-primary-fill cursor-pointer"
+                />
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {[
+                    { label: "Compact", val: 0.8 },
+                    { label: "Default", val: 1.0 },
+                    { label: "Relaxed", val: 1.25 },
+                    { label: "Airy", val: 1.5 },
+                  ].map((preset) => (
+                    <Button
+                      key={preset.label}
+                      size="sm"
+                      variant={Math.abs(whitespace - preset.val) < 0.04 ? "default" : "outline"}
+                      onClick={() => setWhitespace(preset.val)}
+                      className="text-xs"
+                    >
+                      {preset.label} ({preset.val}x)
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Radius Multiplier Slider */}
+              <div className="space-y-3 p-4 rounded-xl bg-neutral-surface-alt border">
+                <div className="flex items-center justify-between text-sm">
+                  <div>
+                    <span className="font-semibold block">Border Radius Multiplier</span>
+                    <span className="text-xs text-neutral-text-muted">Scales rounded-* values proportionally (excl. none/full)</span>
+                  </div>
+                  <Badge variant="secondary" className="font-mono text-xs">
+                    {radius.toFixed(1)}x
+                  </Badge>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="2.5"
+                  step="0.1"
+                  value={radius}
+                  onChange={(e) => setRadius(Number(e.target.value))}
+                  className="w-full accent-primary-fill cursor-pointer"
+                />
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {[
+                    { label: "Sharp", val: 0 },
+                    { label: "Subtle", val: 0.5 },
+                    { label: "Default", val: 1.0 },
+                    { label: "Curved", val: 1.5 },
+                    { label: "Ultra", val: 2.0 },
+                  ].map((preset) => (
+                    <Button
+                      key={preset.label}
+                      size="sm"
+                      variant={Math.abs(radius - preset.val) < 0.06 ? "default" : "outline"}
+                      onClick={() => setRadius(preset.val)}
+                      className="text-xs"
+                    >
+                      {preset.label} ({preset.val}x)
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Live Component Reactivity Sample */}
+            <div className="p-6 rounded-2xl border bg-primary-surface text-primary-text space-y-4">
+              <div className="flex items-center justify-between text-sm font-semibold">
+                <span>Interactive Elements Reacting Live</span>
+                <span className="text-xs text-primary-text-secondary">
+                  Whitespace: {whitespace.toFixed(2)}x | Radius: {radius.toFixed(1)}x
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button size="sm" className="rounded-md">rounded-md Button</Button>
+                <Button size="sm" variant="outline" className="rounded-lg">rounded-lg Button</Button>
+                <Button size="sm" variant="secondary" className="rounded-xl">rounded-xl Button</Button>
+                <Button size="sm" variant="destructive" className="rounded-full">rounded-full Button</Button>
+                <Badge variant="default" className="rounded-sm">rounded-sm Badge</Badge>
+                <Badge variant="outline" className="rounded-full">Pill Badge</Badge>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="text-xs text-neutral-text-muted">
+            All components automatically respect geometry multipliers without manual styling overrides.
+          </CardFooter>
+        </Card>
       </div>
     </div>
   )
@@ -195,7 +319,6 @@ export const Default: Story = {
     defaultTheme: "system",
     enableSystem: true,
     typeset: "default",
-    colorTheme: "zinc",
   },
   render: (args: any) => (
     <ThemeProvider {...args}>
@@ -213,7 +336,6 @@ export const CustomThemes: Story = {
       themes={["dark-modern", "light-vintage", "dark-neon", "light-minimal"]}
       defaultTheme="dark-modern"
       typeset="docs"
-      colorTheme="zinc"
     >
       <ThemeControlsDemo />
     </ThemeProvider>
@@ -238,3 +360,18 @@ export const ReadingTypeset: Story = {
     </ThemeProvider>
   ),
 }
+
+/**
+ * Custom Geometry Multipliers (e.g. Relaxed Whitespace + Curved Radius)
+ */
+export const CustomGeometry: Story = {
+  render: () => (
+    <ThemeProvider
+      whitespace={1.25}
+      radius={1.6}
+    >
+      <ThemeControlsDemo />
+    </ThemeProvider>
+  ),
+}
+

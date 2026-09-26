@@ -3,7 +3,7 @@
   "name": "combobox",
   "type": "registry:ui",
   "title": "Combobox",
-  "description": "Luma combobox component built with Base UI.",
+  "description": "karan-ui combobox component built with Base UI.",
   "dependencies": [
     "@base-ui/react",
     "lucide-react"

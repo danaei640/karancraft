@@ -3,7 +3,7 @@
   "name": "field",
   "type": "registry:ui",
   "title": "Field",
-  "description": "Luma field component built with Base UI.",
+  "description": "karan-ui field component built with Base UI.",
   "dependencies": [
     "class-variance-authority"
   ],

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { SiteHeader } from '@/components/site-header';
 import { useColorTheme } from '@/registry/bases/base/ui/theme-provider';
 import { useTheme } from '@wrksz/themes/client';
 import {
@@ -69,7 +70,7 @@ const TOKENS_META: TokenMeta[] = [
 
 export default function ColorsPage() {
   const { palette, paletteInput, resolvedHues } = useColorTheme();
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [selectedSet, setSelectedSet] = React.useState<ColorSetName>('primary');
   const [copiedCode, setCopiedCode] = React.useState(false);
 
@@ -99,64 +100,35 @@ export default function ColorsPage() {
 
   return (
     <div className="min-h-screen bg-neutral-surface text-neutral-text flex flex-col">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-interactive/40 bg-neutral-surface/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="flex items-center gap-2 font-bold font-heading text-lg tracking-tight hover:opacity-80 transition-opacity"
-            >
-              <div className="size-8 rounded-full bg-neutral-text text-neutral-surface flex items-center justify-center font-bold text-xs">
-                K
-              </div>
-              <span>karan-ui</span>
-            </Link>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-primary-surface text-primary-text font-mono font-medium border border-primary-interactive">
-              OKLCH Color Engine
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/components"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-neutral-text-muted hover:text-neutral-text hover:bg-neutral-interactive transition-colors"
-            >
-              <Layers className="size-3.5" />
-              <span>Components</span>
-            </Link>
-            <button
-              onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="size-8 rounded-full flex items-center justify-center text-neutral-text-muted hover:text-neutral-text hover:bg-neutral-interactive transition-colors"
-              title="Toggle Light/Dark"
-            >
-              {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-            </button>
-            <button
-              onClick={copySnippet}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-primary-fill text-primary-on-fill hover:bg-primary-fill-hover shadow-xs transition-colors"
-            >
-              {copiedCode ? <Check className="size-3.5" /> : <Code2 className="size-3.5" />}
-              <span>Copy Props</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Global Site Navigation */}
+      <SiteHeader />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-10 border-b border-neutral-interactive/30 bg-neutral-surface-alt/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-neutral-interactive text-neutral-text border border-neutral-interactive">
-              <Sparkles className="size-3.5 text-primary-fill" />
-              <span>6 Functional Sets × 13 Tokens × 2 Modes = 156 CSS Tokens</span>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="max-w-3xl space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-neutral-interactive text-neutral-text border border-neutral-interactive">
+                <Sparkles className="size-3.5 text-primary-fill" />
+                <span>6 Functional Sets × 13 Tokens × 2 Modes = 156 CSS Tokens</span>
+              </div>
+              <h1 className="text-3xl sm:text-5xl font-extrabold font-heading tracking-tight text-neutral-text">
+                OKLCH Mathematical Color System
+              </h1>
+              <p className="text-base sm:text-lg text-neutral-text-muted leading-relaxed">
+                Fully integrated across every component. Never any legacy CSS variables. Standardized on OKLCH for perceptual uniformity, automatic hue conflict resolution, and guaranteed WCAG AAA contrast ratios.
+              </p>
             </div>
-            <h1 className="text-3xl sm:text-5xl font-extrabold font-heading tracking-tight text-neutral-text">
-              OKLCH Mathematical Color System
-            </h1>
-            <p className="text-base sm:text-lg text-neutral-text-muted leading-relaxed">
-              Fully integrated across every component. Never any legacy CSS variables. Standardized on OKLCH for perceptual uniformity, automatic hue conflict resolution, and guaranteed WCAG AAA contrast ratios.
-            </p>
+            <div className="shrink-0 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={copySnippet}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold bg-primary-fill text-primary-on-fill hover:bg-primary-fill-hover shadow-xs transition-colors cursor-pointer"
+              >
+                {copiedCode ? <Check className="size-3.5" /> : <Code2 className="size-3.5" />}
+                <span>Copy ThemeProvider Props</span>
+              </button>
+            </div>
           </div>
 
           {/* Realtime Live Engine Status Strip */}

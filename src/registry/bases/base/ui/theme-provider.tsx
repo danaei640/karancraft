@@ -261,6 +261,18 @@ export interface ColorThemeContextValue {
   setPaletteInput: (input: PaletteInput) => void
   /** Current palette input values */
   paletteInput: PaletteInput | null
+
+  // ── Geometry & Density Multipliers ──
+  /** Spacing and sizing multiplier (default 1). Scales paddings, margins, gaps, element dimensions */
+  whitespace: number
+  /** Update whitespace multiplier (0.4 to 2.5) */
+  setWhitespace: (val: number) => void
+  /** Border radius multiplier (default 1). Scales rounded-* corners except none and full */
+  radius: number
+  /** Update radius multiplier (0 to 3.0) */
+  setRadius: (val: number) => void
+  /** Reset geometry multipliers to 1.0 */
+  resetGeometry: () => void
 }
 
 const ColorThemeContext = React.createContext<ColorThemeContextValue | null>(null)
@@ -272,6 +284,17 @@ export function useColorTheme(): ColorThemeContextValue {
   }
   return context
 }
+
+/**
+ * Hook to access and customize theme geometry multipliers:
+ * - `whitespace`: spacing/density multiplier (paddings, margins, gaps, component sizes)
+ * - `radius`: corner curvature multiplier (scales rounded-* variants proportionally)
+ */
+export function useThemeGeometry() {
+  const { whitespace, setWhitespace, radius, setRadius, resetGeometry } = useColorTheme()
+  return { whitespace, setWhitespace, radius, setRadius, resetGeometry }
+}
+
 
 // ============================================================================
 // ThemeProvider Component & Props
@@ -421,19 +444,23 @@ export interface ThemeProviderProps<Themes extends string = string> {
   defaultColorTheme?: string
 
   /**
-   * Direct accent color in OKLCH for dynamic palette generation.
-   * e.g. `{ l: 0.55, c: 0.24, h: 264 }`
+   * 1. Primary brand accent color in OKLCH ({ l: lightness, c: chroma, h: hue }).
+   * e.g. `{ l: 0.88, c: 0.20, h: 96 }` for vivid Canary Yellow, or `{ l: 0.55, c: 0.24, h: 264 }` for Iris Violet.
+   * Drives the entire 6×13×2 mathematical color token system.
    */
   accentColor?: OklchColor
 
   /**
-   * Direct tint percentage (0–100) defining how much primary accent impacts neutral surfaces & text.
+   * 2. Neutral Surface Tint Factor (0–100%).
+   * - 0% = pure achromatic grayscale (zero saturation in neutral surfaces & text).
+   * - 100% = rich, deeply tinted slate/graphite surfaces and borders infused with the accent color.
    * @default 20
    */
   tint?: number
 
   /**
-   * Direct chroma percentage (0–100) defining how saturated and sharp the palette is.
+   * 3. Global Palette Vibrancy Scale (0–100%).
+   * Scales color saturation across all 6 functional color sets (Primary, Neutral, Info, Success, Warning, Danger).
    * @default 80
    */
   chroma?: number
@@ -442,6 +469,36 @@ export interface ThemeProviderProps<Themes extends string = string> {
    * Complete PaletteInput configuration.
    */
   palette?: PaletteInput
+
+  /**
+   * Spacing and sizing multiplier (white-space / density factor).
+   * Proportionally scales all component padding, margin, gap, and dimension sizings
+   * without affecting typography or font sizes.
+   * - 0.8 = Compact / High-density
+   * - 1.0 = Default Standard Balanced
+   * - 1.2 = Relaxed / Spacious
+   * - 1.5 = Extra Roomy
+   * @default 1
+   */
+  whitespace?: number
+
+  /**
+   * Alias for `whitespace` (camelCase variant).
+   */
+  whiteSpace?: number
+
+  /**
+   * Border radius multiplier.
+   * Proportionally scales all component rounded-* corner curvatures (from rounded-xs to rounded-4xl)
+   * except none (0px) and full (pill/circle/infinite radius).
+   * - 0 = Sharp Square / Brutalist
+   * - 0.5 = Subtle / Crisp
+   * - 1.0 = Default Signature Smooth Curves
+   * - 1.5 = Bubbly / Ultra-Soft Curves
+   * - 2.0 = Maximum Curvature
+   * @default 1
+   */
+  radius?: number
 
   /**
    * Callback fired when color theme changes.
@@ -458,6 +515,7 @@ export interface ThemeProviderProps<Themes extends string = string> {
  * 3. Base UI `TooltipProvider` for global tooltip timing and positioning.
  * 4. Shadcn Typeset Measurements (`--typeset-size`, `--typeset-leading`, `--typeset-flow`, etc.).
  * 5. Extensible Color Theme foundation.
+ * 6. Dynamic Whitespace (density) & Corner Radius multipliers.
  */
 export function ThemeProvider<Themes extends string = string>({
   children,
@@ -488,6 +546,9 @@ export function ThemeProvider<Themes extends string = string>({
   tint: tintProp,
   chroma: chromaProp,
   palette: paletteProp,
+  whitespace: whitespaceProp,
+  whiteSpace: whiteSpaceProp,
+  radius: radiusProp,
 }: ThemeProviderProps<Themes>) {
   // 1. Resolve defaultTheme intelligently if not explicitly set
   const resolvedDefaultTheme = React.useMemo(() => {
@@ -624,42 +685,98 @@ export function ThemeProvider<Themes extends string = string>({
 
   const colorThemeConfig = typeof colorThemeProp === "object" ? colorThemeProp : undefined
 
+function safeParseAccentColor(input: any): OklchColor | undefined {
+  if (!input) return undefined
+  if (
+    typeof input === "object" &&
+    typeof input.l === "number" &&
+    !isNaN(input.l) &&
+    typeof input.h === "number" &&
+    !isNaN(input.h)
+  ) {
+    return {
+      l: input.l,
+      c: typeof input.c === "number" && !isNaN(input.c) ? input.c : 0.2,
+      h: input.h,
+    }
+  }
+  if (typeof input === "string") {
+    try {
+      const jsonStr = input.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+      const parsed = JSON.parse(jsonStr)
+      if (
+        typeof parsed.l === "number" &&
+        !isNaN(parsed.l) &&
+        typeof parsed.h === "number" &&
+        !isNaN(parsed.h)
+      ) {
+        return {
+          l: parsed.l,
+          c: typeof parsed.c === "number" && !isNaN(parsed.c) ? parsed.c : 0.2,
+          h: parsed.h,
+        }
+      }
+    } catch {}
+  }
+  return undefined
+}
+
   // 3b. OKLCH Palette Generation
   const paletteConfig = colorThemeConfig?.palette
 
+  // Check if nested inside another ThemeProvider
+  const parentColorTheme = React.useContext(ColorThemeContext)
+  const isNested = parentColorTheme !== null
+
+  const resolvedAccent = React.useMemo(() => {
+    return safeParseAccentColor(accentColorProp) ??
+      safeParseAccentColor(paletteProp?.accentColor) ??
+      safeParseAccentColor(paletteConfig?.accentColor) ??
+      { l: 0.55, c: 0.24, h: 264 }
+  }, [accentColorProp, paletteProp, paletteConfig])
+
   const DEFAULT_PALETTE_INPUT: PaletteInput = React.useMemo(() => ({
-    accentColor: accentColorProp ?? paletteProp?.accentColor ?? paletteConfig?.accentColor ?? { l: 0.55, c: 0.24, h: 264 },
-    tint: tintProp ?? paletteProp?.tint ?? paletteConfig?.tint ?? 20,
-    chroma: chromaProp ?? paletteProp?.chroma ?? paletteConfig?.chroma ?? 80,
-  }), [accentColorProp, paletteProp, paletteConfig, tintProp, chromaProp])
+    accentColor: resolvedAccent,
+    tint: typeof tintProp === "number" && !isNaN(tintProp) ? tintProp : paletteProp?.tint ?? paletteConfig?.tint ?? 20,
+    chroma: typeof chromaProp === "number" && !isNaN(chromaProp) ? chromaProp : paletteProp?.chroma ?? paletteConfig?.chroma ?? 80,
+  }), [resolvedAccent, tintProp, chromaProp, paletteProp, paletteConfig])
 
   const [paletteInputState, setPaletteInputState] = React.useState<PaletteInput>(DEFAULT_PALETTE_INPUT)
 
-  // Sync palette from props or localStorage
+  // Sync palette from props or localStorage (only root provider reads/writes localStorage)
   React.useEffect(() => {
+    if (isNested) {
+      setPaletteInputState(DEFAULT_PALETTE_INPUT)
+      return
+    }
+
     if (accentColorProp || paletteProp || paletteConfig) {
-      setPaletteInputState({
-        accentColor: accentColorProp ?? paletteProp?.accentColor ?? paletteConfig?.accentColor ?? DEFAULT_PALETTE_INPUT.accentColor,
-        tint: tintProp ?? paletteProp?.tint ?? paletteConfig?.tint ?? DEFAULT_PALETTE_INPUT.tint,
-        chroma: chromaProp ?? paletteProp?.chroma ?? paletteConfig?.chroma ?? DEFAULT_PALETTE_INPUT.chroma,
-      })
+      setPaletteInputState(DEFAULT_PALETTE_INPUT)
     } else {
       try {
         const saved = localStorage.getItem("karan-palette-custom")
         if (saved) {
           const parsed = JSON.parse(saved)
-          if (parsed?.accentColor?.l !== undefined && parsed?.accentColor?.h !== undefined) {
+          if (
+            parsed?.accentColor?.l !== undefined &&
+            !isNaN(parsed.accentColor.l) &&
+            parsed?.accentColor?.h !== undefined &&
+            !isNaN(parsed.accentColor.h)
+          ) {
             setPaletteInputState(parsed)
+          } else {
+            localStorage.removeItem("karan-palette-custom")
           }
         }
-      } catch {}
+      } catch {
+        localStorage.removeItem("karan-palette-custom")
+      }
     }
   }, [
+    isNested,
     accentColorProp,
     paletteProp,
     paletteConfig,
-    tintProp,
-    chromaProp,
     DEFAULT_PALETTE_INPUT,
   ])
 
@@ -684,12 +801,14 @@ export function ThemeProvider<Themes extends string = string>({
   const updatePaletteInput = React.useCallback((updater: (prev: PaletteInput) => PaletteInput) => {
     setPaletteInputState((prev) => {
       const next = updater(prev)
-      try {
-        localStorage.setItem("karan-palette-custom", JSON.stringify(next))
-      } catch {}
+      if (!isNested) {
+        try {
+          localStorage.setItem("karan-palette-custom", JSON.stringify(next))
+        } catch {}
+      }
       return next
     })
-  }, [])
+  }, [isNested])
 
   const setAccentColor = React.useCallback((color: OklchColor) => {
     updatePaletteInput((prev) => ({ ...prev, accentColor: color }))
@@ -705,17 +824,134 @@ export function ThemeProvider<Themes extends string = string>({
 
   const setPaletteInput = React.useCallback((input: PaletteInput) => {
     setPaletteInputState(input)
-    try {
-      localStorage.setItem("karan-palette-custom", JSON.stringify(input))
-    } catch {}
-  }, [])
+    if (!isNested) {
+      try {
+        localStorage.setItem("karan-palette-custom", JSON.stringify(input))
+      } catch {}
+    }
+  }, [isNested])
 
   const resetPalette = React.useCallback(() => {
-    try {
-      localStorage.removeItem("karan-palette-custom")
-    } catch {}
+    if (!isNested) {
+      try {
+        localStorage.removeItem("karan-palette-custom")
+      } catch {}
+    }
     setPaletteInputState(DEFAULT_PALETTE_INPUT)
-  }, [DEFAULT_PALETTE_INPUT])
+  }, [isNested, DEFAULT_PALETTE_INPUT])
+
+  // ── Geometry Multipliers State (whitespace & radius) ──
+  const explicitWhitespace = whitespaceProp ?? whiteSpaceProp
+  const hasExplicitWhitespace =
+    typeof explicitWhitespace === "number" && !isNaN(explicitWhitespace) && explicitWhitespace >= 0
+
+  const initialWhitespace = React.useMemo(() => {
+    if (hasExplicitWhitespace) return explicitWhitespace!
+    if (isNested && parentColorTheme) return parentColorTheme.whitespace
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("karan-theme-whitespace")
+        if (saved) {
+          const num = parseFloat(saved)
+          if (!isNaN(num) && num > 0) return num
+        }
+      } catch {}
+    }
+    return 1
+  }, [hasExplicitWhitespace, explicitWhitespace, isNested, parentColorTheme])
+
+  const [currentWhitespace, setCurrentWhitespace] = React.useState<number>(initialWhitespace)
+
+  const hasExplicitRadius = typeof radiusProp === "number" && !isNaN(radiusProp) && radiusProp >= 0
+
+  const initialRadius = React.useMemo(() => {
+    if (hasExplicitRadius) return radiusProp!
+    if (isNested && parentColorTheme) return parentColorTheme.radius
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("karan-theme-radius")
+        if (saved) {
+          const num = parseFloat(saved)
+          if (!isNaN(num) && num >= 0) return num
+        }
+      } catch {}
+    }
+    return 1
+  }, [hasExplicitRadius, radiusProp, isNested, parentColorTheme])
+
+  const [currentRadius, setCurrentRadius] = React.useState<number>(initialRadius)
+
+  // Synchronize when explicit props change or when parent theme changes (if not explicitly overridden)
+  React.useEffect(() => {
+    if (hasExplicitWhitespace) {
+      setCurrentWhitespace(explicitWhitespace!)
+    } else if (isNested && parentColorTheme) {
+      setCurrentWhitespace(parentColorTheme.whitespace)
+    }
+  }, [hasExplicitWhitespace, explicitWhitespace, isNested, parentColorTheme?.whitespace])
+
+  React.useEffect(() => {
+    if (hasExplicitRadius) {
+      setCurrentRadius(radiusProp!)
+    } else if (isNested && parentColorTheme) {
+      setCurrentRadius(parentColorTheme.radius)
+    }
+  }, [hasExplicitRadius, radiusProp, isNested, parentColorTheme?.radius])
+
+  // Realtime synchronization to documentElement CSS custom properties for root provider
+  React.useEffect(() => {
+    if (isNested || typeof document === "undefined") return
+    const root = document.documentElement
+    root.style.setProperty("--theme-whitespace", String(currentWhitespace))
+    root.style.setProperty("--theme-radius", String(currentRadius))
+    root.style.setProperty("--spacing", `calc(0.25rem * ${currentWhitespace})`)
+    root.style.setProperty("--radius", `calc(0.625rem * ${currentRadius})`)
+    root.style.setProperty("--radius-xs", `calc(0.625rem * ${currentRadius} * 0.4)`)
+    root.style.setProperty("--radius-sm", `calc(0.625rem * ${currentRadius} * 0.6)`)
+    root.style.setProperty("--radius-md", `calc(0.625rem * ${currentRadius} * 0.8)`)
+    root.style.setProperty("--radius-lg", `calc(0.625rem * ${currentRadius})`)
+    root.style.setProperty("--radius-xl", `calc(0.625rem * ${currentRadius} * 1.4)`)
+    root.style.setProperty("--radius-2xl", `calc(0.625rem * ${currentRadius} * 1.8)`)
+    root.style.setProperty("--radius-3xl", `calc(0.625rem * ${currentRadius} * 2.2)`)
+    root.style.setProperty("--radius-4xl", `calc(0.625rem * ${currentRadius} * 2.6)`)
+  }, [isNested, currentWhitespace, currentRadius])
+
+  const handleSetWhitespace = React.useCallback(
+    (val: number) => {
+      const clamped = Math.max(0.4, Math.min(2.5, Number(val.toFixed(2))))
+      setCurrentWhitespace(clamped)
+      if (!isNested && typeof window !== "undefined") {
+        try {
+          localStorage.setItem("karan-theme-whitespace", clamped.toString())
+        } catch {}
+      }
+    },
+    [isNested]
+  )
+
+  const handleSetRadius = React.useCallback(
+    (val: number) => {
+      const clamped = Math.max(0, Math.min(3, Number(val.toFixed(2))))
+      setCurrentRadius(clamped)
+      if (!isNested && typeof window !== "undefined") {
+        try {
+          localStorage.setItem("karan-theme-radius", clamped.toString())
+        } catch {}
+      }
+    },
+    [isNested]
+  )
+
+  const handleResetGeometry = React.useCallback(() => {
+    setCurrentWhitespace(1)
+    setCurrentRadius(1)
+    if (!isNested && typeof window !== "undefined") {
+      try {
+        localStorage.removeItem("karan-theme-whitespace")
+        localStorage.removeItem("karan-theme-radius")
+      } catch {}
+    }
+  }, [isNested])
 
   const colorThemeContextValue: ColorThemeContextValue = React.useMemo(
     () => ({
@@ -731,6 +967,11 @@ export function ThemeProvider<Themes extends string = string>({
       resetPalette,
       setPaletteInput,
       paletteInput: paletteInputState,
+      whitespace: currentWhitespace,
+      setWhitespace: handleSetWhitespace,
+      radius: currentRadius,
+      setRadius: handleSetRadius,
+      resetGeometry: handleResetGeometry,
     }),
     [
       activeColorTheme,
@@ -745,6 +986,11 @@ export function ThemeProvider<Themes extends string = string>({
       resetPalette,
       setPaletteInput,
       paletteInputState,
+      currentWhitespace,
+      handleSetWhitespace,
+      currentRadius,
+      handleSetRadius,
+      handleResetGeometry,
     ]
   )
 
@@ -785,6 +1031,54 @@ export function ThemeProvider<Themes extends string = string>({
 }
 `
 
+  // Injected CSS variables stylesheet for geometry (whitespace & radius) cascading
+  const geometryCssString = `
+:root {
+  --theme-whitespace: ${currentWhitespace};
+  --theme-radius: ${currentRadius};
+  --spacing: calc(0.25rem * ${currentWhitespace});
+  --radius: calc(0.625rem * ${currentRadius});
+  --radius-xs: calc(0.625rem * ${currentRadius} * 0.4);
+  --radius-sm: calc(0.625rem * ${currentRadius} * 0.6);
+  --radius-md: calc(0.625rem * ${currentRadius} * 0.8);
+  --radius-lg: calc(0.625rem * ${currentRadius});
+  --radius-xl: calc(0.625rem * ${currentRadius} * 1.4);
+  --radius-2xl: calc(0.625rem * ${currentRadius} * 1.8);
+  --radius-3xl: calc(0.625rem * ${currentRadius} * 2.2);
+  --radius-4xl: calc(0.625rem * ${currentRadius} * 2.6);
+}
+`
+
+  const nestedGeometryStyle: React.CSSProperties = {
+    // @ts-expect-error CSS custom properties
+    "--theme-whitespace": String(currentWhitespace),
+    "--theme-radius": String(currentRadius),
+    "--spacing": `calc(0.25rem * ${currentWhitespace})`,
+    "--radius": `calc(0.625rem * ${currentRadius})`,
+    "--radius-xs": `calc(0.625rem * ${currentRadius} * 0.4)`,
+    "--radius-sm": `calc(0.625rem * ${currentRadius} * 0.6)`,
+    "--radius-md": `calc(0.625rem * ${currentRadius} * 0.8)`,
+    "--radius-lg": `calc(0.625rem * ${currentRadius})`,
+    "--radius-xl": `calc(0.625rem * ${currentRadius} * 1.4)`,
+    "--radius-2xl": `calc(0.625rem * ${currentRadius} * 1.8)`,
+    "--radius-3xl": `calc(0.625rem * ${currentRadius} * 2.2)`,
+    "--radius-4xl": `calc(0.625rem * ${currentRadius} * 2.6)`,
+  }
+
+  // When nested inside another ThemeProvider (e.g. inside a preview or story),
+  // DO NOT inject styles into :root or run scripts that hijack the global document.
+  if (isNested) {
+    return (
+      <ColorThemeContext.Provider value={colorThemeContextValue}>
+        <TypesetContext.Provider value={typesetContextValue}>
+          <div data-color-theme={activeColorTheme} style={nestedGeometryStyle} className="contents">
+            {content}
+          </div>
+        </TypesetContext.Provider>
+      </ColorThemeContext.Provider>
+    )
+  }
+
   return (
     <>
       {/* Theme pre-hydration bootstrap script from @wrksz/themes */}
@@ -820,6 +1114,12 @@ export function ThemeProvider<Themes extends string = string>({
           dangerouslySetInnerHTML={{ __html: paletteCssString }}
         />
       )}
+
+      {/* Global CSS variables injection for geometry (whitespace & radius) */}
+      <style
+        data-karan-geometry=""
+        dangerouslySetInnerHTML={{ __html: geometryCssString }}
+      />
 
       {/* Modern @wrksz/themes client provider */}
       <ClientThemeProvider<Themes>

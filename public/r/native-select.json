@@ -3,7 +3,7 @@
   "name": "native-select",
   "type": "registry:ui",
   "title": "Native select",
-  "description": "Luma native-select component built with Base UI.",
+  "description": "karan-ui native-select component built with Base UI.",
   "dependencies": [
     "lucide-react"
   ],

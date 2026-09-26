@@ -3,7 +3,7 @@
   "name": "chart",
   "type": "registry:ui",
   "title": "Chart",
-  "description": "Luma chart component built with Base UI.",
+  "description": "karan-ui chart component built with Base UI.",
   "dependencies": [
     "recharts"
   ],

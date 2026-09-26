@@ -3,7 +3,7 @@
   "name": "aspect-ratio",
   "type": "registry:ui",
   "title": "Aspect ratio",
-  "description": "Luma aspect-ratio component built with Base UI.",
+  "description": "karan-ui aspect-ratio component built with Base UI.",
   "dependencies": [],
   "registryDependencies": [],
   "files": [

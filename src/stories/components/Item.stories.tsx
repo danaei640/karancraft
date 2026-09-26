@@ -48,7 +48,7 @@ export const Default: Story = {
             <Sparkles className="h-5 w-5 text-purple-500" />
           </ItemMedia>
           <ItemContent>
-            <ItemTitle>Luma Design Tokens</ItemTitle>
+            <ItemTitle>karan-ui Design Tokens</ItemTitle>
             <ItemDescription>Authentic rounded-4xl pill aesthetics.</ItemDescription>
           </ItemContent>
         </Item>

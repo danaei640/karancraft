@@ -5,20 +5,14 @@ import Link from 'next/link';
 import {
   COMPONENTS_METADATA,
   ComponentMetadata,
-  ComponentPropDoc,
 } from '@/lib/components-meta';
 import { getComposedStories, PortableStoryItem } from '@/lib/portable-stories';
 import {
   Sparkles,
-  Play,
-  CheckCircle2,
   Copy,
   Check,
   RotateCcw,
   Sliders,
-  Table as TableIcon,
-  Code,
-  FlaskConical,
   Smartphone,
   Tablet,
   Monitor,
@@ -27,6 +21,7 @@ import {
   Terminal,
   BookOpen,
 } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/registry/bases/base/ui/tabs';
 
 interface ComponentWorkbenchProps {
   slug: string;
@@ -36,9 +31,8 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
   const metadata: ComponentMetadata =
     COMPONENTS_METADATA[slug] || COMPONENTS_METADATA.button;
 
-  const [activeTab, setActiveTab] = useState<
-    'playground' | 'guide' | 'stories' | 'props' | 'tests' | 'code'
-  >('playground');
+  // 3 Primary Tabs: Usage Guide, Canvas, Stories
+  const [activeTab, setActiveTab] = useState<'canvas' | 'guide' | 'stories'>('canvas');
 
   const [propsState, setPropsState] = useState<Record<string, any>>(
     metadata.defaultProps || {}
@@ -46,12 +40,16 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
   const [copiedCmd, setCopiedCmd] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedSnippetId, setCopiedSnippetId] = useState<string | null>(null);
+  const [copiedStoryId, setCopiedStoryId] = useState<string | null>(null);
 
-  const handleCopySnippet = (id: string, text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopySnippet = async (id: string, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {}
     setCopiedSnippetId(id);
     setTimeout(() => setCopiedSnippetId(null), 2000);
   };
+
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>(
     'desktop'
   );
@@ -73,8 +71,10 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
     setPropsState(metadata.defaultProps || {});
   };
 
-  const copyCommand = () => {
-    navigator.clipboard.writeText(metadata.installCmd);
+  const copyCommand = async () => {
+    try {
+      await navigator.clipboard.writeText(metadata.installCmd);
+    } catch {}
     setCopiedCmd(true);
     setTimeout(() => setCopiedCmd(false), 2000);
   };
@@ -106,13 +106,31 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
     return `<${metadata.name}${propsFormatted} />`;
   }, [metadata, propsState]);
 
-  const copyCodeSnippet = () => {
-    navigator.clipboard.writeText(generatedCode);
+  const copyCodeSnippet = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedCode);
+    } catch {}
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  // Single primary component story for the interactive playground
+  // Helper to generate code for a story variant
+  const getStoryCode = (story: PortableStoryItem) => {
+    const isDefault = story.id.toLowerCase() === 'default';
+    const variantProp = isDefault ? '' : ` variant="${story.id}"`;
+    return `import { ${metadata.name} } from "@/components/ui/${metadata.id}";\n\nexport function ${story.name.replace(/[^a-zA-Z0-9]/g, '')}Demo() {\n  return (\n    <${metadata.name}${variantProp}>${story.name}</${metadata.name}>\n  );\n}`;
+  };
+
+  const handleCopyStory = async (story: PortableStoryItem) => {
+    const code = getStoryCode(story);
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {}
+    setCopiedStoryId(story.id);
+    setTimeout(() => setCopiedStoryId(null), 2000);
+  };
+
+  // Single primary component story for the interactive canvas
   const PrimaryStory = useMemo(() => {
     if (stories.length === 0) return null;
     const def = stories.find((s) => s.id.toLowerCase() === 'default');
@@ -121,8 +139,8 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-neutral-surface text-neutral-text h-screen overflow-y-auto">
-      {/* Component Header Bar */}
-      <header className="border-b border-neutral-interactive/40 p-6 bg-neutral-surface/50 backdrop-blur-md sticky top-0 z-30 flex flex-col gap-4">
+      {/* Component Header Bar with Exactly 3 Tabs */}
+      <header className="border-b border-neutral-interactive/40 p-4 sm:p-6 bg-neutral-surface/50 backdrop-blur-md sticky top-0 z-30 flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-xs text-neutral-text-muted">
@@ -140,21 +158,18 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                 {metadata.baseUiPrimitive}
               </span>
             </div>
-            <p className="text-xs text-neutral-text-muted max-w-2xl">
-              {metadata.description}
-            </p>
           </div>
 
           {/* Action Tools & CLI Install */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-surface-alt/60 border border-neutral-interactive/50 font-mono text-xs text-neutral-text-muted">
-              <Terminal className="size-3.5 text-neutral-text-muted" />
+              <Terminal className="size-3.5 text-neutral-text-muted shrink-0" />
               <span className="truncate max-w-[280px]">
                 {metadata.installCmd}
               </span>
               <button
                 onClick={copyCommand}
-                className="hover:text-neutral-text transition-colors p-1"
+                className="hover:text-neutral-text transition-colors p-1 cursor-pointer"
                 title="Copy Shadcn CLI Install Command"
               >
                 {copiedCmd ? (
@@ -167,336 +182,322 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
           </div>
         </div>
 
-        {/* View Mode Navigation Tabs */}
-        <div className="flex items-center gap-1 border-b border-neutral-interactive/20 pt-1">
-          <button
-            onClick={() => setActiveTab('playground')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-medium border-b-2 transition-all ${
-              activeTab === 'playground'
-                ? 'border-neutral-text text-neutral-text'
-                : 'border-transparent text-neutral-text-muted hover:text-neutral-text'
-            }`}
+        {/* View Mode Navigation Tabs — Exactly 3 Tabs: Usage Guide, Canvas, Stories */}
+        <div className="pt-1">
+          <Tabs
+            value={activeTab}
+            onValueChange={(val) => setActiveTab(val as 'guide' | 'canvas' | 'stories')}
           >
-            <Sliders className="size-3.5" />
-            <span>Interactive Playground</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('guide')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-medium border-b-2 transition-all ${
-              activeTab === 'guide'
-                ? 'border-neutral-text text-neutral-text'
-                : 'border-transparent text-neutral-text-muted hover:text-neutral-text'
-            }`}
-          >
-            <BookOpen className="size-3.5" />
-            <span>Usage Guide & Docs</span>
-            {metadata.usageGuide && (
-              <span className="size-1.5 rounded-full bg-primary-fill" />
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab('stories')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-medium border-b-2 transition-all ${
-              activeTab === 'stories'
-                ? 'border-neutral-text text-neutral-text'
-                : 'border-transparent text-neutral-text-muted hover:text-neutral-text'
-            }`}
-          >
-            <FlaskConical className="size-3.5" />
-            <span>Portable Stories ({stories.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('props')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-medium border-b-2 transition-all ${
-              activeTab === 'props'
-                ? 'border-neutral-text text-neutral-text'
-                : 'border-transparent text-neutral-text-muted hover:text-neutral-text'
-            }`}
-          >
-            <TableIcon className="size-3.5" />
-            <span>Props Table ({metadata.props.length})</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('tests')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-medium border-b-2 transition-all ${
-              activeTab === 'tests'
-                ? 'border-neutral-text text-neutral-text'
-                : 'border-transparent text-neutral-text-muted hover:text-neutral-text'
-            }`}
-          >
-            <CheckCircle2 className="size-3.5 text-emerald-500" />
-            <span>Component Tests (4 Passing)</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('code')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-medium border-b-2 transition-all ${
-              activeTab === 'code'
-                ? 'border-neutral-text text-neutral-text'
-                : 'border-transparent text-neutral-text-muted hover:text-neutral-text'
-            }`}
-          >
-            <Code className="size-3.5" />
-            <span>Code Preview</span>
-          </button>
+            <TabsList variant="line" className="gap-6">
+              <TabsTrigger value="guide" className="flex items-center gap-2">
+                <BookOpen className="size-3.5" />
+                <span>Usage Guide</span>
+                {metadata.usageGuide && (
+                  <span className="size-1.5 rounded-full bg-primary-fill" />
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="canvas" className="flex items-center gap-2">
+                <Sliders className="size-3.5" />
+                <span>Canvas</span>
+              </TabsTrigger>
+              <TabsTrigger value="stories" className="flex items-center gap-2">
+                <Layers className="size-3.5" />
+                <span>Stories ({stories.length})</span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </header>
 
       {/* Main Tab Content */}
       <main className="flex-1 p-6">
-        {/* 1. Interactive Playground Tab */}
-        {activeTab === 'playground' && (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-            {/* Center Canvas */}
-            <div className="lg:col-span-3 flex flex-col rounded-3xl border border-neutral-interactive/50 bg-neutral-surface overflow-hidden shadow-xs">
-              {/* Canvas Controls Toolbar */}
-              <div className="p-3 border-b border-neutral-interactive/40 bg-neutral-interactive/20 flex items-center justify-between text-xs text-neutral-text-muted">
+        {/* ================================================================ */}
+        {/* TAB 1: CANVAS (Component description + Canvas view in same tab) */}
+        {/* ================================================================ */}
+        {activeTab === 'canvas' && (
+          <div className="space-y-6">
+            {/* Description & Overview in the same tab as Canvas */}
+            <div className="rounded-3xl border border-neutral-interactive/50 bg-neutral-surface-alt/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+              <div className="space-y-1.5 max-w-3xl">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-neutral-text">Canvas</span>
-                  <div className="h-3 w-px bg-neutral-interactive/60 mx-1" />
-                  {/* Viewport switchers */}
-                  <div className="flex items-center rounded-full bg-neutral-surface-alt p-0.5 border border-neutral-interactive/30">
-                    <button
-                      onClick={() => setViewport('desktop')}
-                      className={`p-1 rounded-full transition-colors ${
-                        viewport === 'desktop'
-                          ? 'bg-neutral-surface text-neutral-text shadow-xs'
-                          : 'hover:text-neutral-text'
-                      }`}
-                      title="Desktop (100%)"
-                    >
-                      <Monitor className="size-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setViewport('tablet')}
-                      className={`p-1 rounded-full transition-colors ${
-                        viewport === 'tablet'
-                          ? 'bg-neutral-surface text-neutral-text shadow-xs'
-                          : 'hover:text-neutral-text'
-                      }`}
-                      title="Tablet (768px)"
-                    >
-                      <Tablet className="size-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setViewport('mobile')}
-                      className={`p-1 rounded-full transition-colors ${
-                        viewport === 'mobile'
-                          ? 'bg-neutral-surface text-neutral-text shadow-xs'
-                          : 'hover:text-neutral-text'
-                      }`}
-                      title="Mobile (375px)"
-                    >
-                      <Smartphone className="size-3.5" />
-                    </button>
-                  </div>
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary-interactive text-primary-text border border-primary-interactive font-mono">
+                    {metadata.baseUiPrimitive}
+                  </span>
+                  <span className="text-xs text-neutral-text-muted">•</span>
+                  <span className="text-xs font-mono text-neutral-text-muted">{metadata.category}</span>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  {/* Background pattern */}
-                  <div className="flex items-center rounded-full bg-neutral-surface-alt p-0.5 border border-neutral-interactive/30 text-[11px]">
-                    <button
-                      onClick={() => setCanvasBg('dots')}
-                      className={`px-2 py-0.5 rounded-full transition-colors ${
-                        canvasBg === 'dots'
-                          ? 'bg-neutral-surface text-neutral-text shadow-xs'
-                          : ''
-                      }`}
-                    >
-                      Dots
-                    </button>
-                    <button
-                      onClick={() => setCanvasBg('grid')}
-                      className={`px-2 py-0.5 rounded-full transition-colors ${
-                        canvasBg === 'grid'
-                          ? 'bg-neutral-surface text-neutral-text shadow-xs'
-                          : ''
-                      }`}
-                    >
-                      Grid
-                    </button>
-                    <button
-                      onClick={() => setCanvasBg('solid')}
-                      className={`px-2 py-0.5 rounded-full transition-colors ${
-                        canvasBg === 'solid'
-                          ? 'bg-neutral-surface text-neutral-text shadow-xs'
-                          : ''
-                      }`}
-                    >
-                      Solid
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={handleResetProps}
-                    className="p-1 rounded-full hover:bg-neutral-surface-alt text-neutral-text-muted hover:text-neutral-text transition-colors"
-                    title="Reset props to default"
-                  >
-                    <RotateCcw className="size-3.5" />
-                  </button>
-                </div>
+                <h2 className="text-lg font-bold font-heading text-neutral-text">
+                  {metadata.name} Interactive Canvas
+                </h2>
+                <p className="text-xs text-neutral-text-muted leading-relaxed">
+                  {metadata.description}
+                </p>
               </div>
 
-              {/* Render Area */}
-              <div
-                className={`min-h-[380px] p-12 flex items-center justify-center transition-all ${
-                  canvasBg === 'dots'
-                    ? 'bg-[radial-gradient(var(--neutral-interactive)_1px,transparent_1px)] bg-[size:16px_16px]'
-                    : canvasBg === 'grid'
-                    ? 'bg-[linear-gradient(to_right,var(--neutral-interactive)_1px,transparent_1px),linear-gradient(to_bottom,var(--neutral-interactive)_1px,transparent_1px)] bg-[size:24px_24px]'
-                    : 'bg-neutral-surface'
-                }`}
-              >
-                <div
-                  className={`transition-all flex items-center justify-center ${
-                    viewport === 'mobile'
-                      ? 'w-[375px] border border-dashed border-neutral-interactive/60 p-6 rounded-2xl bg-neutral-surface/80 shadow-xs'
-                      : viewport === 'tablet'
-                      ? 'w-[768px] border border-dashed border-neutral-interactive/60 p-8 rounded-2xl bg-neutral-surface/80 shadow-xs'
-                      : 'w-full max-w-2xl'
-                  }`}
-                >
-                  {PrimaryStory ? (
-                    <PrimaryStory {...propsState} />
-                  ) : (
-                    <div className="text-sm text-neutral-text-muted">
-                      No primary story available.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Bottom Quick Code Bar */}
-              <div className="p-3 border-t border-neutral-interactive/40 bg-neutral-interactive/10 flex items-center justify-between text-xs font-mono text-neutral-text-muted">
-                <span className="truncate max-w-md">{generatedCode.split('\n')[0]}</span>
+              <div className="flex items-center gap-2 shrink-0">
                 <button
-                  onClick={copyCodeSnippet}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-interactive hover:bg-neutral-interactive-hover text-neutral-text transition-colors text-xs font-sans font-medium"
+                  onClick={() => setActiveTab('guide')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-interactive hover:bg-neutral-interactive-hover text-neutral-text text-xs font-medium transition-colors cursor-pointer"
                 >
-                  {copiedCode ? (
-                    <>
-                      <Check className="size-3 text-emerald-500" />
-                      <span>Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="size-3" />
-                      <span>Copy Code</span>
-                    </>
-                  )}
+                  <BookOpen className="size-3.5" />
+                  <span>View Full Guide</span>
                 </button>
               </div>
             </div>
 
-            {/* Right Controls Panel */}
-            <div className="lg:col-span-1 rounded-3xl border border-neutral-interactive/50 bg-neutral-surface p-4 flex flex-col gap-4 shadow-xs">
-              <div className="flex items-center justify-between border-b border-neutral-interactive/30 pb-2">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-text-muted">
-                  Props Controls
-                </h3>
-                <span className="text-[10px] font-mono text-neutral-text-muted">
-                  {metadata.props.length} props
-                </span>
+            {/* Canvas Grid: Center Canvas + Right Controls */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+              {/* Center Canvas */}
+              <div className="lg:col-span-3 flex flex-col rounded-3xl border border-neutral-interactive/50 bg-neutral-surface overflow-hidden shadow-xs">
+                {/* Canvas Controls Toolbar */}
+                <div className="p-3 border-b border-neutral-interactive/40 bg-neutral-interactive/20 flex items-center justify-between text-xs text-neutral-text-muted">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-neutral-text">Canvas</span>
+                    <div className="h-3 w-px bg-neutral-interactive/60 mx-1" />
+                    {/* Viewport switchers */}
+                    <div className="flex items-center rounded-full bg-neutral-surface-alt p-0.5 border border-neutral-interactive/30">
+                      <button
+                        onClick={() => setViewport('desktop')}
+                        className={`p-1 rounded-full transition-colors cursor-pointer ${
+                          viewport === 'desktop'
+                            ? 'bg-neutral-surface text-neutral-text shadow-xs'
+                            : 'hover:text-neutral-text'
+                        }`}
+                        title="Desktop (100%)"
+                      >
+                        <Monitor className="size-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setViewport('tablet')}
+                        className={`p-1 rounded-full transition-colors cursor-pointer ${
+                          viewport === 'tablet'
+                            ? 'bg-neutral-surface text-neutral-text shadow-xs'
+                            : 'hover:text-neutral-text'
+                        }`}
+                        title="Tablet (768px)"
+                      >
+                        <Tablet className="size-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setViewport('mobile')}
+                        className={`p-1 rounded-full transition-colors cursor-pointer ${
+                          viewport === 'mobile'
+                            ? 'bg-neutral-surface text-neutral-text shadow-xs'
+                            : 'hover:text-neutral-text'
+                        }`}
+                        title="Mobile (375px)"
+                      >
+                        <Smartphone className="size-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {/* Background pattern */}
+                    <div className="flex items-center rounded-full bg-neutral-surface-alt p-0.5 border border-neutral-interactive/30 text-[11px]">
+                      <button
+                        onClick={() => setCanvasBg('dots')}
+                        className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
+                          canvasBg === 'dots'
+                            ? 'bg-neutral-surface text-neutral-text shadow-xs'
+                            : ''
+                        }`}
+                      >
+                        Dots
+                      </button>
+                      <button
+                        onClick={() => setCanvasBg('grid')}
+                        className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
+                          canvasBg === 'grid'
+                            ? 'bg-neutral-surface text-neutral-text shadow-xs'
+                            : ''
+                        }`}
+                      >
+                        Grid
+                      </button>
+                      <button
+                        onClick={() => setCanvasBg('solid')}
+                        className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
+                          canvasBg === 'solid'
+                            ? 'bg-neutral-surface text-neutral-text shadow-xs'
+                            : ''
+                        }`}
+                      >
+                        Solid
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={handleResetProps}
+                      className="p-1 rounded-full hover:bg-neutral-surface-alt text-neutral-text-muted hover:text-neutral-text transition-colors cursor-pointer"
+                      title="Reset props to default"
+                    >
+                      <RotateCcw className="size-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Render Area */}
+                <div
+                  className={`min-h-[380px] p-12 flex items-center justify-center transition-all ${
+                    canvasBg === 'dots'
+                      ? 'bg-[radial-gradient(var(--neutral-interactive)_1px,transparent_1px)] bg-[size:16px_16px]'
+                      : canvasBg === 'grid'
+                      ? 'bg-[linear-gradient(to_right,var(--neutral-interactive)_1px,transparent_1px),linear-gradient(to_bottom,var(--neutral-interactive)_1px,transparent_1px)] bg-[size:24px_24px]'
+                      : 'bg-neutral-surface'
+                  }`}
+                >
+                  <div
+                    className={`transition-all flex items-center justify-center ${
+                      viewport === 'mobile'
+                        ? 'w-[375px] border border-dashed border-neutral-interactive/60 p-6 rounded-2xl bg-neutral-surface/80 shadow-xs'
+                        : viewport === 'tablet'
+                        ? 'w-[768px] border border-dashed border-neutral-interactive/60 p-8 rounded-2xl bg-neutral-surface/80 shadow-xs'
+                        : 'w-full max-w-2xl'
+                    }`}
+                  >
+                    {PrimaryStory ? (
+                      <PrimaryStory {...propsState} />
+                    ) : (
+                      <div className="text-sm text-neutral-text-muted">
+                        No primary story available.
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bottom Quick Code Bar */}
+                <div className="p-3 border-t border-neutral-interactive/40 bg-neutral-interactive/10 flex items-center justify-between text-xs font-mono text-neutral-text-muted">
+                  <span className="truncate max-w-md">{generatedCode.split('\n')[0]}</span>
+                  <button
+                    onClick={copyCodeSnippet}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-interactive hover:bg-neutral-interactive-hover text-neutral-text transition-colors text-xs font-sans font-medium cursor-pointer"
+                  >
+                    {copiedCode ? (
+                      <>
+                        <Check className="size-3 text-emerald-500" />
+                        <span>Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="size-3" />
+                        <span>Copy Code</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
-              {metadata.props.length === 0 ? (
-                <div className="text-xs text-neutral-text-muted py-4 text-center">
-                  This component uses compound sub-components or unstyled children. Explore the{' '}
-                  <button
-                    onClick={() => setActiveTab('stories')}
-                    className="text-neutral-text underline underline-offset-2"
-                  >
-                    Portable Stories
-                  </button>{' '}
-                  tab to see all variations.
+              {/* Right Controls Panel */}
+              <div className="lg:col-span-1 rounded-3xl border border-neutral-interactive/50 bg-neutral-surface p-4 flex flex-col gap-4 shadow-xs">
+                <div className="flex items-center justify-between border-b border-neutral-interactive/30 pb-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-text-muted">
+                    Props Controls
+                  </h3>
+                  <span className="text-[10px] font-mono text-neutral-text-muted">
+                    {metadata.props.length} props
+                  </span>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  {metadata.props.map((prop) => (
-                    <div key={prop.name} className="space-y-1.5 text-xs">
-                      <div className="flex items-center justify-between">
-                        <label className="font-mono text-[11px] font-semibold text-neutral-text">
-                          {prop.name}
-                        </label>
-                        <span className="text-[10px] text-neutral-text-muted font-mono">
-                          {prop.type}
-                        </span>
-                      </div>
 
-                      {prop.controlType === 'select' && prop.options && (
-                        <select
-                          value={propsState[prop.name] ?? prop.defaultValue}
-                          onChange={(e) =>
-                            handlePropChange(prop.name, e.target.value)
-                          }
-                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none focus:border-primary-interactive-focus"
-                        >
-                          {prop.options.map((opt) => (
-                            <option key={opt} value={opt}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-
-                      {prop.controlType === 'boolean' && (
-                        <div className="flex items-center justify-between py-1">
-                          <span className="text-neutral-text-muted text-[11px]">
-                            {propsState[prop.name] ? 'Enabled' : 'Disabled'}
+                {metadata.props.length === 0 ? (
+                  <div className="text-xs text-neutral-text-muted py-4 text-center">
+                    This component uses compound sub-components or unstyled children. Explore the{' '}
+                    <button
+                      onClick={() => setActiveTab('stories')}
+                      className="text-neutral-text underline underline-offset-2 cursor-pointer"
+                    >
+                      Stories
+                    </button>{' '}
+                    tab to see all variations.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {metadata.props.map((prop) => (
+                      <div key={prop.name} className="space-y-1.5 text-xs">
+                        <div className="flex items-center justify-between">
+                          <label className="font-mono text-[11px] font-semibold text-neutral-text">
+                            {prop.name}
+                          </label>
+                          <span className="text-[10px] text-neutral-text-muted font-mono truncate max-w-[120px]">
+                            {prop.type}
                           </span>
-                          <input
-                            type="checkbox"
-                            checked={!!propsState[prop.name]}
-                            onChange={(e) =>
-                              handlePropChange(prop.name, e.target.checked)
-                            }
-                            className="size-4 accent-foreground rounded cursor-pointer"
-                          />
                         </div>
-                      )}
 
-                      {prop.controlType === 'text' && (
-                        <input
-                          type="text"
-                          value={propsState[prop.name] ?? ''}
-                          onChange={(e) =>
-                            handlePropChange(prop.name, e.target.value)
-                          }
-                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none focus:border-primary-interactive-focus"
-                        />
-                      )}
+                        {prop.controlType === 'select' && prop.options && (
+                          <select
+                            value={propsState[prop.name] ?? prop.defaultValue}
+                            onChange={(e) =>
+                              handlePropChange(prop.name, e.target.value)
+                            }
+                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none focus:border-primary-interactive-focus cursor-pointer"
+                          >
+                            {prop.options.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        )}
 
-                      {prop.controlType === 'number' && (
-                        <input
-                          type="number"
-                          value={propsState[prop.name] ?? 0}
-                          onChange={(e) =>
-                            handlePropChange(prop.name, Number(e.target.value))
-                          }
-                          className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none focus:border-primary-interactive-focus"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                        {prop.controlType === 'boolean' && (
+                          <div className="flex items-center justify-between py-1">
+                            <span className="text-neutral-text-muted text-[11px]">
+                              {propsState[prop.name] ? 'Enabled' : 'Disabled'}
+                            </span>
+                            <input
+                              type="checkbox"
+                              checked={!!propsState[prop.name]}
+                              onChange={(e) =>
+                                handlePropChange(prop.name, e.target.checked)
+                              }
+                              className="size-4 accent-foreground rounded cursor-pointer"
+                            />
+                          </div>
+                        )}
+
+                        {prop.controlType === 'text' && (
+                          <input
+                            type="text"
+                            value={propsState[prop.name] ?? ''}
+                            onChange={(e) =>
+                              handlePropChange(prop.name, e.target.value)
+                            }
+                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none focus:border-primary-interactive-focus"
+                          />
+                        )}
+
+                        {prop.controlType === 'number' && (
+                          <input
+                            type="number"
+                            step="any"
+                            min="0"
+                            value={propsState[prop.name] ?? 0}
+                            onChange={(e) =>
+                              handlePropChange(prop.name, Number(e.target.value))
+                            }
+                            className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none focus:border-primary-interactive-focus"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
 
-        {/* 2. Usage Guide & Documentation Tab */}
+        {/* ================================================================ */}
+        {/* TAB 2: USAGE GUIDE (Props table + MDX descriptions + Code blocks) */}
+        {/* ================================================================ */}
         {activeTab === 'guide' && (
-          <div className="max-w-4xl space-y-8">
+          <div className="max-w-4xl space-y-10">
             {/* 1. Header Overview Banner */}
-            <div className="rounded-3xl border border-neutral-interactive/50 bg-gradient-to-br from-primary/5 via-muted/20 to-background p-6 space-y-4">
+            <div className="rounded-3xl border border-neutral-interactive/50 bg-gradient-to-br from-primary-surface via-neutral-surface-alt/40 to-neutral-surface p-6 space-y-4 shadow-xs">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary-interactive text-primary-text border border-primary-interactive">
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary-interactive text-primary-text border border-primary-interactive font-mono">
                       {metadata.baseUiPrimitive}
                     </span>
                     <span className="text-xs text-neutral-text-muted">•</span>
@@ -528,7 +529,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                 <span className="truncate select-all text-neutral-text">{metadata.installCmd}</span>
                 <button
                   onClick={copyCommand}
-                  className="ml-auto p-1.5 rounded-lg hover:bg-neutral-surface-alt text-neutral-text-muted hover:text-neutral-text transition-colors shrink-0"
+                  className="ml-auto p-1.5 rounded-lg hover:bg-neutral-surface-alt text-neutral-text-muted hover:text-neutral-text transition-colors shrink-0 cursor-pointer"
                   title="Copy CLI command"
                 >
                   {copiedCmd ? <Check className="size-4 text-emerald-500" /> : <Copy className="size-4" />}
@@ -536,7 +537,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
               </div>
             </div>
 
-            {/* 2. Root Layout Setup (if present) */}
+            {/* 2. Application Root Setup (if present) */}
             {metadata.usageGuide?.rootLayoutSetup && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -552,7 +553,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                 </div>
 
                 {metadata.usageGuide.rootLayoutSetup.explanation && (
-                  <p className="text-xs text-neutral-text-muted">
+                  <p className="text-xs text-neutral-text-muted leading-relaxed">
                     {metadata.usageGuide.rootLayoutSetup.explanation}
                   </p>
                 )}
@@ -562,7 +563,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                     <span>{metadata.usageGuide.rootLayoutSetup.filename}</span>
                     <button
                       onClick={() => handleCopySnippet('setup', metadata.usageGuide!.rootLayoutSetup!.code)}
-                      className="flex items-center gap-1.5 hover:text-neutral-text transition-colors"
+                      className="flex items-center gap-1.5 hover:text-neutral-text transition-colors cursor-pointer"
                     >
                       {copiedSnippetId === 'setup' ? (
                         <>
@@ -577,19 +578,74 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                       )}
                     </button>
                   </div>
-                  <pre className="p-4 text-xs font-mono overflow-x-auto text-neutral-text">
+                  <pre className="p-4 text-xs font-mono overflow-x-auto text-neutral-text leading-relaxed">
                     <code>{metadata.usageGuide.rootLayoutSetup.code}</code>
                   </pre>
                 </div>
               </div>
             )}
 
-            {/* 3. Features & Code Examples */}
+            {/* 3. PROPS SPECIFICATION TABLE (Integrated directly into Usage Guide) */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="size-6 rounded-full bg-primary-interactive text-primary-text flex items-center justify-center font-bold text-xs">
+                    {metadata.usageGuide?.rootLayoutSetup ? '2' : '1'}
+                  </div>
+                  <h3 className="text-base font-bold font-heading">Props Specification</h3>
+                </div>
+                <span className="text-xs font-mono text-neutral-text-muted bg-neutral-interactive/50 px-2.5 py-1 rounded-md border border-neutral-interactive/40">
+                  {metadata.props.length} props documented
+                </span>
+              </div>
+              <p className="text-xs text-neutral-text-muted leading-relaxed">
+                Complete API props specification, types, and default values supported by <code className="font-mono text-[11px] bg-neutral-interactive px-1.5 py-0.5 rounded">{metadata.name}</code>.
+              </p>
+
+              {metadata.props.length === 0 ? (
+                <div className="p-4 rounded-2xl border border-neutral-interactive/40 bg-neutral-interactive/10 text-xs text-neutral-text-muted">
+                  This component uses compound sub-components or unstyled children without top-level scalar props.
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-neutral-interactive/50 overflow-hidden shadow-xs">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-neutral-interactive/40 border-b border-neutral-interactive/40 font-semibold text-neutral-text-muted">
+                      <tr>
+                        <th className="p-3 pl-4">Prop</th>
+                        <th className="p-3">Type</th>
+                        <th className="p-3">Default</th>
+                        <th className="p-3 pr-4">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/30">
+                      {metadata.props.map((prop) => (
+                        <tr key={prop.name} className="hover:bg-neutral-interactive/20 transition-colors">
+                          <td className="p-3 pl-4 font-mono font-medium text-neutral-text whitespace-nowrap">
+                            {prop.name}
+                          </td>
+                          <td className="p-3 font-mono text-[11px] text-primary-text whitespace-nowrap">
+                            {prop.type}
+                          </td>
+                          <td className="p-3 font-mono text-[11px] text-neutral-text-muted whitespace-nowrap">
+                            {prop.defaultValue || '—'}
+                          </td>
+                          <td className="p-3 pr-4 text-neutral-text-muted leading-relaxed">
+                            {prop.description}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* 4. Features & Implementation Recipes (with code blocks) */}
             {metadata.usageGuide?.features && metadata.usageGuide.features.length > 0 && (
               <div className="space-y-6">
                 <div className="flex items-center gap-2">
                   <div className="size-6 rounded-full bg-primary-interactive text-primary-text flex items-center justify-center font-bold text-xs">
-                    2
+                    {metadata.usageGuide?.rootLayoutSetup ? '3' : '2'}
                   </div>
                   <h3 className="text-base font-bold font-heading">Features & Implementation Recipes</h3>
                 </div>
@@ -621,7 +677,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                             <span>Example Code</span>
                             <button
                               onClick={() => handleCopySnippet(`feat-${idx}`, feature.code!)}
-                              className="flex items-center gap-1.5 hover:text-neutral-text transition-colors"
+                              className="flex items-center gap-1.5 hover:text-neutral-text transition-colors cursor-pointer"
                             >
                               {copiedSnippetId === `feat-${idx}` ? (
                                 <>
@@ -636,7 +692,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                               )}
                             </button>
                           </div>
-                          <pre className="p-3.5 text-xs font-mono overflow-x-auto text-neutral-text">
+                          <pre className="p-3.5 text-xs font-mono overflow-x-auto text-neutral-text leading-relaxed">
                             <code>{feature.code}</code>
                           </pre>
                         </div>
@@ -647,12 +703,12 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
               </div>
             )}
 
-            {/* 4. API & Hooks Reference */}
+            {/* 5. API & Exported Utilities Reference */}
             {metadata.usageGuide?.apiReference && metadata.usageGuide.apiReference.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="size-6 rounded-full bg-primary-interactive text-primary-text flex items-center justify-center font-bold text-xs">
-                    3
+                    {metadata.usageGuide?.rootLayoutSetup ? '4' : '3'}
                   </div>
                   <h3 className="text-base font-bold font-heading">API & Exported Utilities</h3>
                 </div>
@@ -668,14 +724,14 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                     </thead>
                     <tbody className="divide-y divide-border/30">
                       {metadata.usageGuide.apiReference.map((api) => (
-                        <tr key={api.name} className="hover:bg-neutral-interactive/20">
+                        <tr key={api.name} className="hover:bg-neutral-interactive/20 transition-colors">
                           <td className="p-3 pl-4 font-mono font-medium text-neutral-text">
                             {api.name}
                           </td>
                           <td className="p-3 font-mono text-[11px] text-neutral-text-muted">
                             {api.type}
                           </td>
-                          <td className="p-3 pr-4 text-neutral-text-muted">
+                          <td className="p-3 pr-4 text-neutral-text-muted leading-relaxed">
                             {api.description}
                           </td>
                         </tr>
@@ -686,7 +742,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
               </div>
             )}
 
-            {/* 5. Production Tips & Hydration Safety */}
+            {/* 6. Production Tips & Hydration Safety */}
             {metadata.usageGuide?.tips && metadata.usageGuide.tips.length > 0 && (
               <div className="space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-text-muted">
@@ -696,7 +752,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                   {metadata.usageGuide.tips.map((tip, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-2.5 p-3.5 rounded-xl border border-neutral-interactive/40 bg-neutral-interactive/15 text-xs text-neutral-text-muted"
+                      className="flex items-start gap-2.5 p-3.5 rounded-xl border border-neutral-interactive/40 bg-neutral-interactive/15 text-xs text-neutral-text-muted leading-relaxed"
                     >
                       <Sparkles className="size-4 text-primary-text shrink-0 mt-0.5" />
                       <span>{tip}</span>
@@ -727,265 +783,70 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
           </div>
         )}
 
-        {/* 3. Portable Stories & Variants Tab */}
+        {/* ================================================================ */}
+        {/* TAB 3: STORIES (Grid of all variants with copy code button for each) */}
+        {/* ================================================================ */}
         {activeTab === 'stories' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h2 className="text-base font-bold font-heading">
-                  Portable Stories Gallery
+                  All {metadata.name} Variants & Stories
                 </h2>
                 <p className="text-xs text-neutral-text-muted">
-                  Stories authored in Component Story Format (CSF) executed as standard portable React components via Storybook composeStories.
+                  Explore all authored variants and states. Click &quot;Copy Code&quot; on any variant to use it immediately in your code.
                 </p>
               </div>
-              <span className="text-xs font-mono px-3 py-1 rounded-full bg-neutral-surface-alt text-neutral-text-muted border border-neutral-interactive/40">
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-neutral-surface-alt text-neutral-text-muted border border-neutral-interactive/40 w-fit">
                 {stories.length} stories rendered
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               {stories.map((story) => {
                 const StoryComp = story.Component;
+                const isCopied = copiedStoryId === story.id;
                 return (
                   <div
                     key={story.id}
-                    className="flex flex-col rounded-3xl border border-neutral-interactive/50 bg-neutral-surface overflow-hidden shadow-xs"
+                    className="flex flex-col rounded-3xl border border-neutral-interactive/50 bg-neutral-surface overflow-hidden shadow-xs hover:border-neutral-interactive transition-all"
                   >
                     <div className="p-3 px-4 border-b border-neutral-interactive/30 bg-neutral-interactive/20 flex items-center justify-between">
-                      <span className="font-semibold text-xs text-neutral-text font-heading">
-                        {story.name}
-                      </span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-interactive text-neutral-text">
-                        {story.id}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-xs text-neutral-text font-heading">
+                          {story.name}
+                        </span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-interactive text-neutral-text-muted">
+                          {story.id}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleCopyStory(story)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-surface hover:bg-neutral-interactive border border-neutral-interactive/60 text-[11px] font-medium text-neutral-text transition-colors cursor-pointer shadow-2xs"
+                        title="Copy variant code"
+                      >
+                        {isCopied ? (
+                          <>
+                            <Check className="size-3 text-emerald-500" />
+                            <span className="text-emerald-500 font-semibold">Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="size-3 text-neutral-text-muted" />
+                            <span>Copy Code</span>
+                          </>
+                        )}
+                      </button>
                     </div>
-                    <div className="min-h-[160px] p-8 flex items-center justify-center bg-[radial-gradient(var(--neutral-interactive)_1px,transparent_1px)] bg-[size:16px_16px]">
-                      <StoryComp />
+                    <div className="min-h-[200px] p-6 sm:p-8 flex items-center justify-center overflow-x-auto bg-[radial-gradient(var(--neutral-interactive)_1px,transparent_1px)] bg-[size:16px_16px]">
+                      <div className="w-full flex justify-center py-2">
+                        <StoryComp />
+                      </div>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </div>
-        )}
-
-        {/* 3. Props Table Tab */}
-        {activeTab === 'props' && (
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-base font-bold font-heading">
-                Props Specification
-              </h2>
-              <p className="text-xs text-neutral-text-muted">
-                All props, types, default values, and controls supported by {metadata.name}.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-neutral-interactive/50 overflow-hidden shadow-xs">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-neutral-interactive/40 border-b border-neutral-interactive/40 font-semibold text-neutral-text-muted">
-                  <tr>
-                    <th className="p-3 pl-4">Prop</th>
-                    <th className="p-3">Type</th>
-                    <th className="p-3">Default</th>
-                    <th className="p-3">Description</th>
-                    <th className="p-3 pr-4">Interactive Control</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/30">
-                  {metadata.props.map((prop) => (
-                    <tr key={prop.name} className="hover:bg-neutral-interactive/20">
-                      <td className="p-3 pl-4 font-mono font-medium text-neutral-text">
-                        {prop.name}
-                      </td>
-                      <td className="p-3 font-mono text-[11px] text-neutral-text-muted">
-                        {prop.type}
-                      </td>
-                      <td className="p-3 font-mono text-[11px] text-neutral-text-muted">
-                        {prop.defaultValue || '—'}
-                      </td>
-                      <td className="p-3 text-neutral-text-muted">
-                        {prop.description}
-                      </td>
-                      <td className="p-3 pr-4">
-                        {prop.controlType === 'select' && prop.options && (
-                          <select
-                            value={propsState[prop.name] ?? prop.defaultValue}
-                            onChange={(e) =>
-                              handlePropChange(prop.name, e.target.value)
-                            }
-                            className="text-xs px-2 py-1 rounded-md border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none"
-                          >
-                            {prop.options.map((opt) => (
-                              <option key={opt} value={opt}>
-                                {opt}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                        {prop.controlType === 'boolean' && (
-                          <input
-                            type="checkbox"
-                            checked={!!propsState[prop.name]}
-                            onChange={(e) =>
-                              handlePropChange(prop.name, e.target.checked)
-                            }
-                            className="size-4 accent-foreground rounded cursor-pointer"
-                          />
-                        )}
-                        {prop.controlType === 'text' && (
-                          <input
-                            type="text"
-                            value={propsState[prop.name] ?? ''}
-                            onChange={(e) =>
-                              handlePropChange(prop.name, e.target.value)
-                            }
-                            className="text-xs px-2 py-1 rounded-md border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none max-w-[140px]"
-                          />
-                        )}
-                        {prop.controlType === 'number' && (
-                          <input
-                            type="number"
-                            value={propsState[prop.name] ?? 0}
-                            onChange={(e) =>
-                              handlePropChange(prop.name, Number(e.target.value))
-                            }
-                            className="text-xs px-2 py-1 rounded-md border border-neutral-interactive/60 bg-neutral-interactive/20 outline-none w-20"
-                          />
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* 4. Component Tests Tab */}
-        {activeTab === 'tests' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold font-heading">
-                  Automated Component Tests & Assertions
-                </h2>
-                <p className="text-xs text-neutral-text-muted">
-                  Continuous validation results covering DOM mount, Base UI primitives, design tokens, and accessibility.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-medium">
-                <CheckCircle2 className="size-3.5" />
-                <span>All 4 Test Suites Passing</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-2xl border border-neutral-interactive/40 bg-neutral-surface flex flex-col gap-2 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-xs text-neutral-text font-heading">
-                    1. Render & Mount Test
-                  </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">
-                    PASSED (2ms)
-                  </span>
-                </div>
-                <p className="text-xs text-neutral-text-muted">
-                  Component mounted to DOM without throwing runtime errors or React 19 hydration mismatches.
-                </p>
-                <div className="p-2 rounded-lg bg-neutral-interactive/30 font-mono text-[11px] text-neutral-text-muted">
-                  assert(rootElement !== null) // OK
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl border border-neutral-interactive/40 bg-neutral-surface flex flex-col gap-2 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-xs text-neutral-text font-heading">
-                    2. Design Tokens & Styling Compliance
-                  </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">
-                    PASSED (1ms)
-                  </span>
-                </div>
-                <p className="text-xs text-neutral-text-muted">
-                  Verified presence of design system classes, border radii, and OKLCH color rules.
-                </p>
-                <div className="p-2 rounded-lg bg-neutral-interactive/30 font-mono text-[11px] text-neutral-text-muted">
-                  assert(element.hasAttribute(&apos;data-slot&apos;)) // OK
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl border border-neutral-interactive/40 bg-neutral-surface flex flex-col gap-2 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-xs text-neutral-text font-heading">
-                    3. WAI-ARIA & Keyboard Accessibility
-                  </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">
-                    PASSED (3ms)
-                  </span>
-                </div>
-                <p className="text-xs text-neutral-text-muted">
-                  Base UI primitive compliant: supports tab focus, key navigation, and required ARIA roles.
-                </p>
-                <div className="p-2 rounded-lg bg-neutral-interactive/30 font-mono text-[11px] text-neutral-text-muted">
-                  a11y: 0 violations detected
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl border border-neutral-interactive/40 bg-neutral-surface flex flex-col gap-2 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-xs text-neutral-text font-heading">
-                    4. Portable Story Execution
-                  </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">
-                    PASSED ({stories.length} stories)
-                  </span>
-                </div>
-                <p className="text-xs text-neutral-text-muted">
-                  Verified each CSF story executes cleanly in headless and DOM contexts.
-                </p>
-                <div className="p-2 rounded-lg bg-neutral-interactive/30 font-mono text-[11px] text-neutral-text-muted">
-                  composeStories({metadata.name}Stories) // {stories.length} stories OK
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 5. Code Preview Tab */}
-        {activeTab === 'code' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold font-heading">
-                  Generated Code
-                </h2>
-                <p className="text-xs text-neutral-text-muted">
-                  Copy and paste this snippet directly into your Next.js application.
-                </p>
-              </div>
-              <button
-                onClick={copyCodeSnippet}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-text text-neutral-surface font-medium text-xs hover:opacity-90 transition-opacity"
-              >
-                {copiedCode ? (
-                  <>
-                    <Check className="size-3.5 text-emerald-500" />
-                    <span>Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="size-3.5" />
-                    <span>Copy Snippet</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            <pre className="p-4 rounded-2xl border border-neutral-interactive/50 bg-neutral-interactive/30 font-mono text-xs overflow-x-auto text-neutral-text">
-              <code>{`import { ${metadata.name} } from "@/components/ui/${metadata.id}"\n\nexport default function Example() {\n  return (\n    ${generatedCode}\n  )\n}`}</code>
-            </pre>
           </div>
         )}
       </main>

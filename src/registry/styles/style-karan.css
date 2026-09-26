@@ -1,19 +1,19 @@
-.style-luma {
+.style-karan {
   /* MARK: Slider */
   .cn-slider {
-    @apply data-vertical:min-h-40;
+    @apply w-full data-[orientation=vertical]:min-h-40;
   }
 
   .cn-slider-track {
-    @apply bg-neutral-interactive rounded-full data-horizontal:h-2 data-horizontal:w-full data-vertical:h-full data-vertical:w-2;
+    @apply bg-neutral-interactive rounded-full h-2 w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-2 relative grow overflow-hidden;
   }
 
   .cn-slider-range {
-    @apply bg-primary-fill;
+    @apply bg-primary-fill h-full data-[orientation=vertical]:w-full;
   }
 
   .cn-slider-thumb {
-    @apply ring-black/10 not-dark:bg-clip-padding ring-1 h-4 w-6 rounded-full bg-white shadow-md transition-[color,box-shadow,background-color] hover:ring-4 hover:ring-primary-interactive-focus/30 focus-visible:ring-4 focus-visible:ring-primary-interactive-focus/30 focus-visible:outline-hidden data-vertical:h-6 data-vertical:w-4;
+    @apply ring-1 ring-black/10 dark:ring-white/20 size-5 rounded-full bg-neutral-surface border-2 border-primary-fill shadow-md transition-all hover:scale-110 hover:ring-4 hover:ring-primary-interactive-focus/30 focus-visible:ring-4 focus-visible:ring-primary-interactive-focus/30 focus-visible:outline-hidden cursor-grab active:cursor-grabbing data-[orientation=vertical]:size-5;
   }
 
   /* MARK: Switch */
@@ -56,7 +56,7 @@
 
   /* MARK: Checkbox */
   .cn-checkbox {
-    @apply bg-neutral-interactive data-checked:bg-primary-fill data-checked:text-primary-on-fill dark:data-checked:bg-primary-fill data-checked:border-primary-fill border-transparent aria-invalid:aria-checked:border-primary-fill aria-invalid:border-danger-fill dark:aria-invalid:border-danger-fill/50 focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30 aria-invalid:ring-danger-interactive-focus/20 dark:aria-invalid:ring-danger-interactive-focus/40 flex size-4 items-center justify-center rounded-[5px] border transition-shadow group-has-disabled/field:opacity-50 focus-visible:ring-3 aria-invalid:ring-3 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-data-checked:border-transparent group-has-[:focus-visible]/field-label:data-checked:border-primary-fill;
+    @apply bg-neutral-interactive data-checked:bg-primary-fill data-checked:text-primary-on-fill dark:data-checked:bg-primary-fill data-checked:border-primary-fill border-transparent aria-invalid:aria-checked:border-primary-fill aria-invalid:border-danger-fill dark:aria-invalid:border-danger-fill/50 focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30 aria-invalid:ring-danger-interactive-focus/20 dark:aria-invalid:ring-danger-interactive-focus/40 flex size-4 items-center justify-center rounded-sm border transition-shadow group-has-disabled/field:opacity-50 focus-visible:ring-3 aria-invalid:ring-3 group-has-[:focus-visible]/field-label:ring-0 group-has-[:focus-visible]/field-label:not-data-checked:border-transparent group-has-[:focus-visible]/field-label:data-checked:border-primary-fill;
   }
 
   .cn-checkbox-aria {
@@ -423,11 +423,11 @@
   }
 
   .cn-tabs-list {
-    @apply rounded-full p-1 group-data-horizontal/tabs:h-9 group-data-vertical/tabs:rounded-2xl data-[variant=line]:rounded-none;
+    @apply rounded-full p-1 group-data-horizontal/tabs:h-9 group-data-vertical/tabs:rounded-2xl data-[variant=line]:rounded-none data-[variant=line]:p-0 data-[variant=line]:h-auto data-[variant=line]:border-b data-[variant=line]:border-neutral-interactive/40 data-[variant=line]:bg-transparent data-[variant=line]:w-full data-[variant=line]:justify-start data-[variant=line]:gap-6;
   }
 
   .cn-tabs-trigger {
-    @apply gap-2 rounded-full border border-transparent! px-3 py-1 text-sm font-medium group-data-vertical/tabs:px-3 group-data-vertical/tabs:py-1.5 group-data-vertical/tabs:rounded-2xl [&_svg:not([class*='size-'])]:size-4 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2;
+    @apply gap-2 px-3 py-1 text-sm font-medium group-data-vertical/tabs:px-3 group-data-vertical/tabs:py-1.5 [&_svg:not([class*='size-'])]:size-4 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2;
   }
 
   .cn-tabs-content {
@@ -1620,7 +1620,7 @@
   }
 
   .cn-questionnaire-choice-indicator {
-    @apply bg-neutral-interactive group-data-checked/questionnaire-choice:bg-primary-fill dark:group-data-checked/questionnaire-choice:bg-primary-fill group-data-checked/questionnaire-choice:text-primary-on-fill group-data-checked/questionnaire-choice:border-primary-fill size-4 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 rounded-[5px] border-transparent;
+    @apply bg-neutral-interactive group-data-checked/questionnaire-choice:bg-primary-fill dark:group-data-checked/questionnaire-choice:bg-primary-fill group-data-checked/questionnaire-choice:text-primary-on-fill group-data-checked/questionnaire-choice:border-primary-fill size-4 translate-y-[--spacing(0.45)] group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 rounded-sm border-transparent;
   }
 
   .cn-questionnaire-choice-indicator-dot {

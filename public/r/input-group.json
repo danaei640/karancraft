@@ -3,7 +3,7 @@
   "name": "input-group",
   "type": "registry:ui",
   "title": "Input group",
-  "description": "Luma input-group component built with Base UI.",
+  "description": "karan-ui input-group component built with Base UI.",
   "dependencies": [
     "class-variance-authority"
   ],

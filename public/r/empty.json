@@ -3,7 +3,7 @@
   "name": "empty",
   "type": "registry:ui",
   "title": "Empty",
-  "description": "Luma empty component built with Base UI.",
+  "description": "karan-ui empty component built with Base UI.",
   "dependencies": [
     "class-variance-authority"
   ],

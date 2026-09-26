@@ -85,6 +85,26 @@ const DARK_LIGHTNESS = {
 // ============================================================================
 
 /**
+ * Maximum chroma reached by neutral tokens at 100% tint.
+ * - At 0% tint, every neutral token has chroma = 0 (pure achromatic grayscale).
+ * - At 100% tint, tokens reach these rich peaks so the tint slider is expressive & meaningful.
+ */
+const NEUTRAL_PEAK_CHROMA = {
+  surface: 0.028,
+  surfaceAlt: 0.038,
+  interactive: 0.058,
+  interactiveHover: 0.072,
+  interactiveActive: 0.088,
+  interactiveFocus: 0.12,
+  fill: 0.09,
+  fillHover: 0.085,
+  fillActive: 0.08,
+  text: 0.04,
+  textSecondary: 0.032,
+  textMuted: 0.024,
+} as const
+
+/**
  * Chroma multipliers per token role (applied to the set's base chroma).
  *
  * Surfaces and text have low chroma for readability.
@@ -112,7 +132,7 @@ const CHROMA_MULTIPLIERS = {
  */
 const SET_MAX_CHROMA: Record<ColorSetName, number> = {
   primary: 0.25,
-  neutral: 0.025,  // Neutral is near-achromatic
+  neutral: 0.08,  // Neutral scales with tint
   info: 0.20,
   success: 0.19,
   warning: 0.18,
@@ -157,9 +177,9 @@ export function generatePalette(input: PaletteInput): GeneratedPalette {
     // For other sets: chroma is controlled by the global chroma slider
     const effectiveChromaScale = isNeutral ? tintScale : chromaScale
 
-    // For neutral, the max chroma is much lower but tint opens it up
+    // For neutral, max chroma scales from 0 (achromatic) up to peak tint
     const effectiveMaxChroma = isNeutral
-      ? lerp(0, 0.035, tintScale) // At 100% tint, neutral reaches 0.035 chroma
+      ? lerp(0, 0.09, tintScale)
       : maxChroma
 
     light[setName] = generateSetTokens({
@@ -224,7 +244,7 @@ function generateSetTokens(config: {
     fillC = 0.18 * chromaScale
   } else if (setName === "neutral") {
     fillL = isLight ? 0.20 : 0.88
-    fillC = maxChroma * CHROMA_MULTIPLIERS.fill
+    fillC = NEUTRAL_PEAK_CHROMA.fill * chromaScale
   } else {
     // Semantic sets (info, success, danger)
     if (setName === "success") {
@@ -265,17 +285,19 @@ function generateSetTokens(config: {
       c = fillC
     } else if (tokenName === "fillHover") {
       l = fillHoverL
-      c = fillC * CHROMA_MULTIPLIERS.fillHover
+      c = isNeutral ? NEUTRAL_PEAK_CHROMA.fillHover * chromaScale : fillC * CHROMA_MULTIPLIERS.fillHover
     } else if (tokenName === "fillActive") {
       l = fillActiveL
-      c = fillC * CHROMA_MULTIPLIERS.fillActive
+      c = isNeutral ? NEUTRAL_PEAK_CHROMA.fillActive * chromaScale : fillC * CHROMA_MULTIPLIERS.fillActive
     } else if (tokenName === "interactiveFocus") {
       l = interactiveFocusL
-      c = maxChroma * chromaScale * CHROMA_MULTIPLIERS.interactiveFocus
+      c = isNeutral
+        ? NEUTRAL_PEAK_CHROMA.interactiveFocus * chromaScale
+        : maxChroma * chromaScale * CHROMA_MULTIPLIERS.interactiveFocus
     } else {
       l = lightnessMap[tokenName]
       if (isNeutral) {
-        c = maxChroma * CHROMA_MULTIPLIERS[tokenName]
+        c = (NEUTRAL_PEAK_CHROMA[tokenName] ?? 0.03) * chromaScale
       } else {
         c = maxChroma * chromaScale * CHROMA_MULTIPLIERS[tokenName]
       }
@@ -290,7 +312,9 @@ function generateSetTokens(config: {
   // Before 0.60: onFill is WHITE (0.98)
   // At or after 0.60: onFill is BLACK (0.12)
   const onFillL = bestOnFillLightness(fillL)
-  const onFillC = isNeutral ? 0 : (fillL >= 0.60 ? 0.02 : 0.005)
+  const onFillC = isNeutral
+    ? (fillL >= 0.60 ? 0.015 * chromaScale : 0.005 * chromaScale)
+    : (fillL >= 0.60 ? 0.02 : 0.005)
   tokens.onFill = formatOklch(oklch(onFillL, onFillC, hue))
 
   return tokens as unknown as ColorSetTokens

@@ -139,35 +139,35 @@ async function extractDependencies(content) {
 }
 
 async function main() {
-  console.log("🔨 Building Karan-UI Shadcn Registry (Luma Style)...")
+  console.log("🔨 Building Karan-UI Shadcn Registry (Karan Style)...")
 
   await fs.mkdir(OUTPUT_PATH, { recursive: true })
   await fs.mkdir(path.join(OUTPUT_PATH, "styles"), { recursive: true })
 
   const items = []
 
-  // 1. Build Luma Style definition
-  const styleCssPath = path.join(REGISTRY_PATH, "styles", "style-luma.css")
+  // 1. Build Karan Style definition
+  const styleCssPath = path.join(REGISTRY_PATH, "styles", "style-karan.css")
   let styleCss = ""
   try {
     styleCss = await fs.readFile(styleCssPath, "utf-8")
   } catch (err) {
-    console.warn("style-luma.css not found, skipping style content.")
+    console.warn("style-karan.css not found, skipping style content.")
   }
 
-  const lumaStyleItem = {
+  const karanStyleItem = {
     $schema: "https://ui.shadcn.com/schema/registry-item.json",
-    name: "luma",
+    name: "karan",
     type: "registry:style",
-    title: "Luma Style",
+    title: "Karan Style",
     description: "Fluid, luminous, and soft style for karan-ui components.",
     dependencies: ["@base-ui/react", "class-variance-authority", "clsx", "tailwind-merge"],
     files: [
       {
-        path: "styles/style-luma.css",
+        path: "styles/style-karan.css",
         content: styleCss,
         type: "registry:style",
-        target: "styles/style-luma.css",
+        target: "styles/style-karan.css",
       },
     ],
     cssVars: {
@@ -337,14 +337,14 @@ async function main() {
   }
 
   await fs.writeFile(
-    path.join(OUTPUT_PATH, "styles", "luma.json"),
-    JSON.stringify(lumaStyleItem, null, 2)
+    path.join(OUTPUT_PATH, "styles", "karan.json"),
+    JSON.stringify(karanStyleItem, null, 2)
   )
   await fs.writeFile(
-    path.join(OUTPUT_PATH, "luma.json"),
-    JSON.stringify(lumaStyleItem, null, 2)
+    path.join(OUTPUT_PATH, "karan.json"),
+    JSON.stringify(karanStyleItem, null, 2)
   )
-  items.push(lumaStyleItem)
+  items.push(karanStyleItem)
 
   // 2. Build UI Components
   const uiDir = path.join(REGISTRY_PATH, "bases", "base", "ui")
@@ -367,7 +367,7 @@ async function main() {
     const { dependencies, registryDependencies } = await extractDependencies(rawContent)
     const meta = COMPONENT_METADATA[name] || {
       title: name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, " "),
-      description: `Luma ${name} component built with Base UI.`,
+      description: `karan-ui ${name} component built with Base UI.`,
     }
 
     const item = {

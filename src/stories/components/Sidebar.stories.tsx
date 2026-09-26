@@ -58,7 +58,7 @@ export const Default: Story = {
             </SidebarGroup>
           </SidebarContent>
           <SidebarFooter className="p-4 border-t text-xs text-neutral-text-muted">
-            v0.1.0 • Luma Registry
+            v0.1.0 • karan-ui
           </SidebarFooter>
         </Sidebar>
         <SidebarInset className="p-6 flex-1 flex flex-col">

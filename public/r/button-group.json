@@ -3,7 +3,7 @@
   "name": "button-group",
   "type": "registry:ui",
   "title": "Button group",
-  "description": "Luma button-group component built with Base UI.",
+  "description": "karan-ui button-group component built with Base UI.",
   "dependencies": [
     "@base-ui/react",
     "class-variance-authority"

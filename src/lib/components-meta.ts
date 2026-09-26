@@ -1159,38 +1159,52 @@ export const COMPONENTS_METADATA: Record<string, ComponentMetadata> = {
     registryUrl: 'https://karan-ui.dev/r/theme-provider.json',
     props: [
       {
-        name: 'themes',
-        type: 'string[]',
-        defaultValue: "['light', 'dark']",
+        name: 'accentColor',
+        type: 'OklchColor ({ l, c, h })',
+        defaultValue: '{ l: 0.55, c: 0.24, h: 264 }',
         description:
-          'List of valid themes. Supports custom strings (e.g. ["dark-modern", "light-vintage"]).',
-        options: [
-          '["light", "dark"]',
-          '["dark-modern", "light-vintage"]',
-          '["light", "dark", "high-contrast"]',
-        ],
-        controlType: 'select',
+          'Primary brand accent in OKLCH color space. Defines the base hue angle (0–360°), saturation (0–0.35), and lightness (0.35–0.95, e.g. 0.88 for Canary Yellow). Drives the entire 6×13×2 palette.',
+        controlType: 'text',
+      },
+      {
+        name: 'tint',
+        type: 'number (0–100%)',
+        defaultValue: '20',
+        description:
+          'Neutral Surface Tint factor. At 0%, neutral surfaces and text are pure achromatic grayscale (0 saturation). At 100%, neutral surfaces and borders become richly tinted by the accent color.',
+        controlType: 'number',
+      },
+      {
+        name: 'chroma',
+        type: 'number (0–100%)',
+        defaultValue: '80',
+        description:
+          'Global Vibrancy Scale. Controls overall saturation multiplier across all 6 functional color sets (Primary, Neutral, Info, Success, Warning, Danger).',
+        controlType: 'number',
       },
       {
         name: 'defaultTheme',
-        type: 'string',
+        type: "'system' | 'light' | 'dark'",
         defaultValue: "'system'",
-        description: 'Initial theme when no user preference is stored.',
-        options: ['system', 'light', 'dark', 'dark-modern', 'light-vintage'],
+        description:
+          'Initial theme mode when no preference is saved in localStorage. Selects system, light, or dark.',
+        options: ['system', 'light', 'dark'],
         controlType: 'select',
       },
       {
         name: 'enableSystem',
         type: 'boolean',
         defaultValue: 'true',
-        description: 'Detects system preference changes via prefers-color-scheme.',
+        description:
+          'Automatically tracks operating system dark/light mode preference via the prefers-color-scheme media query.',
         controlType: 'boolean',
       },
       {
         name: 'attribute',
         type: "'class' | 'data-theme' | 'data-mode'",
         defaultValue: "'class'",
-        description: 'HTML attribute modified on the target document element.',
+        description:
+          'HTML attribute applied to the target document element (<html> by default) to set theme styles.',
         options: ['class', 'data-theme', 'data-mode'],
         controlType: 'select',
       },
@@ -1199,7 +1213,7 @@ export const COMPONENTS_METADATA: Record<string, ComponentMetadata> = {
         type: "'default' | 'docs' | 'chat' | 'reading' | 'compact' | 'large'",
         defaultValue: "'default'",
         description:
-          'Shadcn Typeset vertical rhythm preset controlling size, leading, flow, and measure.',
+          'Shadcn Typeset vertical rhythm preset controlling font size (--typeset-size), line-height leading, block flow spacing, and reading measure.',
         options: ['default', 'docs', 'chat', 'reading', 'compact', 'large'],
         controlType: 'select',
       },
@@ -1208,7 +1222,7 @@ export const COMPONENTS_METADATA: Record<string, ComponentMetadata> = {
         type: 'boolean | Partial<ToasterProps>',
         defaultValue: 'true',
         description:
-          'Automatically mounts the native Base UI Toast manager & viewport (<Toaster />).',
+          'Automatically mounts Base UI’s accessible Toast manager and viewport (<Toaster />). Enables toast.create() across your app.',
         controlType: 'boolean',
       },
       {
@@ -1216,28 +1230,52 @@ export const COMPONENTS_METADATA: Record<string, ComponentMetadata> = {
         type: 'boolean | Partial<TooltipProviderProps>',
         defaultValue: 'true',
         description:
-          'Wraps children with the native Base UI TooltipProvider with global delay.',
+          'Wraps children with Base UI’s global TooltipProvider for synchronized hover delay and positioning.',
         controlType: 'boolean',
       },
       {
-        name: 'colorTheme',
-        type: 'string',
-        defaultValue: "'zinc'",
+        name: 'whitespace',
+        type: 'number (0.5–2.0)',
+        defaultValue: '1',
         description:
-          'Design token color theme identifier (e.g. zinc, slate, neutral, rose, blue).',
-        options: ['zinc', 'slate', 'neutral', 'rose', 'blue'],
+          'White-space and element sizing multiplier. Proportionally scales all component padding, margin, gap, and dimension utilities without altering font sizes or typography.',
+        controlType: 'number',
+      },
+      {
+        name: 'radius',
+        type: 'number (0–3.0)',
+        defaultValue: '1',
+        description:
+          'Border radius curvature multiplier. Proportionally scales all rounded-* values (from rounded-xs to rounded-4xl), preserving rounded-none and rounded-full.',
+        controlType: 'number',
+      },
+      {
+        name: 'themes',
+        type: 'string[]',
+        defaultValue: "['light', 'dark']",
+        description:
+          'List of valid theme names supported by the application. Supports custom strings (e.g. ["dark-modern", "light-vintage"]).',
+        options: [
+          '["light", "dark"]',
+          '["dark-modern", "light-vintage"]',
+          '["light", "dark", "high-contrast"]',
+        ],
         controlType: 'select',
       },
     ],
     defaultProps: {
-      themes: ['light', 'dark'],
+      accentColor: { l: 0.55, c: 0.24, h: 264 },
+      tint: 20,
+      chroma: 80,
+      whitespace: 1,
+      radius: 1,
       defaultTheme: 'system',
       enableSystem: true,
       attribute: 'class',
       typeset: 'default',
       toast: true,
       tooltip: true,
-      colorTheme: 'zinc',
+      themes: ['light', 'dark'],
     },
     usageGuide: {
       summary:
@@ -1410,6 +1448,31 @@ export function ColorThemeBadge() {
   );
 }`,
         },
+        {
+          title: 'Geometry & Density Multipliers (whitespace & radius)',
+          badge: 'Design System Scaling',
+          description:
+            'ThemeProvider provides two first-class multipliers: whitespace (scales padding, margin, gap, and component sizing without touching typography) and radius (scales rounded-* tokens proportionally, preserving rounded-none and rounded-full). Access them anywhere via useThemeGeometry().',
+          code: `import { useThemeGeometry } from "@/components/theme-provider";
+
+export function GeometryToolbar() {
+  const { whitespace, setWhitespace, radius, setRadius, resetGeometry } = useThemeGeometry();
+
+  return (
+    <div className="flex items-center gap-4">
+      {/* Sizing & Density */}
+      <button onClick={() => setWhitespace(0.8)}>Compact (0.8x)</button>
+      <button onClick={() => setWhitespace(1.0)}>Default (1.0x)</button>
+      <button onClick={() => setWhitespace(1.25)}>Relaxed (1.25x)</button>
+
+      {/* Border Radius */}
+      <button onClick={() => setRadius(0)}>Sharp (0x)</button>
+      <button onClick={() => setRadius(1.5)}>Curved (1.5x)</button>
+      <button onClick={() => resetGeometry()}>Reset</button>
+    </div>
+  );
+}`,
+        },
       ],
       apiReference: [
         {
@@ -1417,6 +1480,12 @@ export function ColorThemeBadge() {
           type: '() => ThemeContextValue',
           description:
             'Returns { theme, resolvedTheme, setTheme, themes, systemTheme } from @wrksz/themes.',
+        },
+        {
+          name: 'useThemeGeometry()',
+          type: '() => { whitespace, setWhitespace, radius, setRadius, resetGeometry }',
+          description:
+            'Returns current whitespace and radius multipliers along with updater functions and resetGeometry().',
         },
         {
           name: 'useTypeset()',

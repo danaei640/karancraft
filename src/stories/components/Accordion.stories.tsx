@@ -25,9 +25,9 @@ export const Default: Story = {
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
-        <AccordionTrigger>Is it styled with Luma?</AccordionTrigger>
+        <AccordionTrigger>Is it styled with karan-ui?</AccordionTrigger>
         <AccordionContent>
-          Yes. It features authentic Luma tokens, OKLCH colors, and smooth transitions.
+          Yes. It features modern OKLCH tokens and smooth transitions.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">

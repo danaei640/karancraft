@@ -3,7 +3,7 @@
   "name": "label",
   "type": "registry:ui",
   "title": "Label",
-  "description": "Luma label component built with Base UI.",
+  "description": "karan-ui label component built with Base UI.",
   "dependencies": [],
   "registryDependencies": [],
   "files": [

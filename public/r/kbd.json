@@ -3,7 +3,7 @@
   "name": "kbd",
   "type": "registry:ui",
   "title": "Kbd",
-  "description": "Luma kbd component built with Base UI.",
+  "description": "karan-ui kbd component built with Base UI.",
   "dependencies": [],
   "registryDependencies": [],
   "files": [

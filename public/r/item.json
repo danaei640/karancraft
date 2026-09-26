@@ -3,7 +3,7 @@
   "name": "item",
   "type": "registry:ui",
   "title": "Item",
-  "description": "Luma item component built with Base UI.",
+  "description": "karan-ui item component built with Base UI.",
   "dependencies": [
     "@base-ui/react",
     "class-variance-authority"

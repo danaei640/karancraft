@@ -42,7 +42,7 @@ export const Default: Story = {
                 <NavigationMenuLink href="/docs/introduction">
                   <div className="text-sm font-medium leading-none">Introduction</div>
                   <p className="line-clamp-2 text-sm leading-snug text-neutral-text-muted">
-                    Re-usable components and tokens styled with Luma.
+                    Re-usable components and tokens styled with karan-ui.
                   </p>
                 </NavigationMenuLink>
               </li>

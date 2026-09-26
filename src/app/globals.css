@@ -1,10 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant style-luma (&:where(.style-luma *));
+@custom-variant style-karan (&:where(.style-karan *));
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --spacing: calc(0.25rem * var(--theme-whitespace, 1));
+  --radius-xs: calc(var(--radius) * 0.4);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -209,7 +211,9 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --theme-whitespace: 1;
+  --theme-radius: 1;
+  --radius: calc(0.625rem * var(--theme-radius, 1));
   --primary-surface: oklch(0.985 0.01 264);
   --primary-surface-alt: oklch(0.95 0.016 264);
   --primary-interactive: oklch(0.91 0.024 264);
@@ -371,7 +375,34 @@
   --danger-on-fill: oklch(0.15 0.0058 25);
 }
 
-@import "../registry/styles/style-luma.css";
+@import "../registry/styles/style-karan.css";
+
+/* Custom Sleek Scrollbar */
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--neutral-interactive) transparent;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-interactive);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-interactive-hover);
+}
 
 * {
   border-color: var(--neutral-interactive);
