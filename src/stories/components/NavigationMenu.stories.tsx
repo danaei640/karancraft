@@ -33,7 +33,7 @@ export const Default: Story = {
                   <div className="mb-2 mt-4 text-lg font-medium font-heading">
                     Karan UI
                   </div>
-                  <p className="text-sm leading-tight text-muted-foreground">
+                  <p className="text-sm leading-tight text-neutral-text-muted">
                     Modern UI components built with Base UI and Tailwind CSS v4.
                   </p>
                 </NavigationMenuLink>
@@ -41,7 +41,7 @@ export const Default: Story = {
               <li>
                 <NavigationMenuLink href="/docs/introduction">
                   <div className="text-sm font-medium leading-none">Introduction</div>
-                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                  <p className="line-clamp-2 text-sm leading-snug text-neutral-text-muted">
                     Re-usable components and tokens styled with Luma.
                   </p>
                 </NavigationMenuLink>
@@ -49,7 +49,7 @@ export const Default: Story = {
               <li>
                 <NavigationMenuLink href="/docs/installation">
                   <div className="text-sm font-medium leading-none">Installation</div>
-                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                  <p className="line-clamp-2 text-sm leading-snug text-neutral-text-muted">
                     How to install dependencies and configure your app.
                   </p>
                 </NavigationMenuLink>
@@ -64,7 +64,7 @@ export const Default: Story = {
               <li>
                 <NavigationMenuLink href="/docs/button">
                   <div className="text-sm font-medium leading-none">Button</div>
-                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                  <p className="line-clamp-2 text-sm leading-snug text-neutral-text-muted">
                     Displays a button or component that looks like a button.
                   </p>
                 </NavigationMenuLink>
@@ -72,7 +72,7 @@ export const Default: Story = {
               <li>
                 <NavigationMenuLink href="/docs/dialog">
                   <div className="text-sm font-medium leading-none">Dialog</div>
-                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                  <p className="line-clamp-2 text-sm leading-snug text-neutral-text-muted">
                     A window overlaid on either the primary window or another dialog window.
                   </p>
                 </NavigationMenuLink>

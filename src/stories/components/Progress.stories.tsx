@@ -25,7 +25,7 @@ export const WithLabelAndValue: Story = {
   render: () => (
     <div className="w-[350px]">
       <Progress value={78}>
-        <div className="flex justify-between w-full text-xs text-muted-foreground mb-1">
+        <div className="flex justify-between w-full text-xs text-neutral-text-muted mb-1">
           <ProgressLabel>Downloading assets...</ProgressLabel>
           <ProgressValue />
         </div>

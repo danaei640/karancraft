@@ -22,7 +22,7 @@ export const Default: Story = {
         <h4 className="mb-4 text-sm font-medium leading-none font-heading">Tags</h4>
         {tags.map((tag) => (
           <div key={tag}>
-            <div className="text-sm py-1 font-mono text-muted-foreground">{tag}</div>
+            <div className="text-sm py-1 font-mono text-neutral-text-muted">{tag}</div>
             <Separator className="my-2" />
           </div>
         ))}

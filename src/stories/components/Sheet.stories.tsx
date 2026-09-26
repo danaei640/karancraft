@@ -36,7 +36,7 @@ export const Default: Story = {
             This sheet dynamically mounts on the selected side.
           </SheetDescription>
         </SheetHeader>
-        <div className="py-6 text-sm text-muted-foreground">
+        <div className="py-6 text-sm text-neutral-text-muted">
           Single sheet component responsive to controls.
         </div>
         <SheetFooter>

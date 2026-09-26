@@ -25,7 +25,7 @@ export const Default: Story = {
       <Empty>
         <EmptyHeader>
           <EmptyMedia variant="icon">
-            <FolderArchive className="h-10 w-10 text-muted-foreground" />
+            <FolderArchive className="h-10 w-10 text-neutral-text-muted" />
           </EmptyMedia>
           <EmptyTitle>No projects found</EmptyTitle>
           <EmptyDescription>

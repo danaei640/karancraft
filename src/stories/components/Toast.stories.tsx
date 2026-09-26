@@ -31,7 +31,7 @@ export const Default: Story = {
       >
         Trigger Base UI Toast ({args?.type || 'success'})
       </Button>
-      <span className="text-xs text-muted-foreground font-mono">
+      <span className="text-xs text-neutral-text-muted font-mono">
         Native @base-ui/react/toast notification
       </span>
     </div>

@@ -24,7 +24,7 @@ type Story = StoryObj<typeof ContextMenu>;
 export const Default: Story = {
   render: () => (
     <ContextMenu>
-      <ContextMenuTrigger className="flex h-[180px] w-[340px] items-center justify-center rounded-2xl border border-dashed text-sm text-muted-foreground select-none">
+      <ContextMenuTrigger className="flex h-[180px] w-[340px] items-center justify-center rounded-2xl border border-dashed text-sm text-neutral-text-muted select-none">
         Right click anywhere in this area
       </ContextMenuTrigger>
       <ContextMenuContent className="w-64">

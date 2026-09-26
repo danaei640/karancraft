@@ -1307,7 +1307,7 @@ export function ThemeSwitcher() {
         <button
           key={t}
           onClick={() => setTheme(t)}
-          className={theme === t ? "font-bold text-primary" : "text-muted-foreground"}
+          className={theme === t ? "font-bold text-primary-text" : "text-neutral-text-muted"}
         >
           {t}
         </button>
@@ -1403,7 +1403,7 @@ export function ColorThemeBadge() {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-muted-foreground">Palette:</span>
+      <span className="text-xs text-neutral-text-muted">Palette:</span>
       <span className="font-mono font-semibold">{colorTheme}</span>
       <button onClick={() => setColorTheme("rose")}>Switch to Rose</button>
     </div>

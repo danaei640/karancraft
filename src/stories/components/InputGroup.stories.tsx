@@ -18,7 +18,7 @@ export const Default: Story = {
     <div className="w-[350px]">
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <Search className="h-4 w-4 text-muted-foreground" />
+          <Search className="h-4 w-4 text-neutral-text-muted" />
         </InputGroupAddon>
         <Input placeholder="Search components..." />
       </InputGroup>
@@ -31,7 +31,7 @@ export const WithLeadingIcon: Story = {
     <div className="w-[350px]">
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <Search className="h-4 w-4 text-muted-foreground" />
+          <Search className="h-4 w-4 text-neutral-text-muted" />
         </InputGroupAddon>
         <Input placeholder="Search components..." />
       </InputGroup>
@@ -44,7 +44,7 @@ export const WithTrailingButton: Story = {
     <div className="w-[400px]">
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <Mail className="h-4 w-4 text-muted-foreground" />
+          <Mail className="h-4 w-4 text-neutral-text-muted" />
         </InputGroupAddon>
         <Input placeholder="Enter recipient email" />
         <InputGroupAddon align="inline-end">

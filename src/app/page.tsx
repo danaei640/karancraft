@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import {
   Sparkles,
   Copy,
@@ -161,12 +162,12 @@ export default function HomePage() {
   })
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
+    <div className="min-h-screen bg-neutral-surface text-neutral-text transition-colors duration-200">
       {/* Top Ambient Glow Banner */}
       <div className="relative isolate overflow-hidden">
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <div
-            className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-linear-to-tr from-primary/30 to-accent/40 opacity-40 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+            className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-linear-to-tr from-primary/30 to-primary-interactive/40 opacity-40 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
             style={{
               clipPath:
                 "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
@@ -175,28 +176,33 @@ export default function HomePage() {
         </div>
 
         {/* Navigation Bar */}
-        <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
+        <header className="sticky top-0 z-50 w-full border-b border-neutral-interactive/40 bg-neutral-surface/80 backdrop-blur-md">
           <div className="container flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md font-bold tracking-tight">
+              <div className="flex size-9 items-center justify-center rounded-2xl bg-primary-fill text-primary-on-fill shadow-md font-bold tracking-tight">
                 K
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-semibold tracking-tight">karan-ui</span>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                <span className="rounded-full bg-primary-interactive px-2 py-0.5 text-[10px] font-medium text-primary-text">
                   Registry v4
                 </span>
               </div>
             </div>
 
-            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
-              <a href="#playground" className="transition-colors hover:text-foreground">Playground</a>
-              <a href="#catalog" className="transition-colors hover:text-foreground">Components ({REGISTRY_ITEMS.length})</a>
-              <a href="#guide" className="transition-colors hover:text-foreground">Registry Spec</a>
+            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-text-muted">
+              <Link href="/colors" className="flex items-center gap-1.5 transition-colors text-neutral-text font-semibold hover:text-primary-fill">
+                <Palette className="size-3.5 text-primary-fill" />
+                <span>Color System</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-primary-surface text-primary-text font-mono font-medium border border-primary-interactive/50">OKLCH</span>
+              </Link>
+              <Link href="/components" className="transition-colors hover:text-neutral-text">Components ({REGISTRY_ITEMS.length})</Link>
+              <a href="#playground" className="transition-colors hover:text-neutral-text">Playground</a>
+              <a href="#guide" className="transition-colors hover:text-neutral-text">Registry Spec</a>
               <a
                 href="/r/index.json"
                 target="_blank"
-                className="flex items-center gap-1 transition-colors hover:text-foreground"
+                className="flex items-center gap-1 transition-colors hover:text-neutral-text"
               >
                 /r/index.json <ExternalLink className="size-3" />
               </a>
@@ -224,7 +230,7 @@ export default function HomePage() {
                   </>
                 ) : (
                   <>
-                    <Terminal className="size-3.5 text-muted-foreground" />
+                    <Terminal className="size-3.5 text-neutral-text-muted" />
                     <span>Install Button</span>
                   </>
                 )}
@@ -235,21 +241,21 @@ export default function HomePage() {
 
         {/* Hero Section */}
         <section className="container pt-20 pb-16 text-center lg:pt-28 lg:pb-24">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-xs font-medium backdrop-blur-md mb-8 shadow-xs">
-            <Sparkles className="size-3.5 text-primary" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-neutral-interactive bg-neutral-surface-alt/60 px-4 py-1.5 text-xs font-medium backdrop-blur-md mb-8 shadow-xs">
+            <Sparkles className="size-3.5 text-primary-text" />
             <span>Modern Shadcn Component System</span>
             <Separator orientation="vertical" className="h-3" />
-            <span className="text-muted-foreground">Base UI Primitives</span>
+            <span className="text-neutral-text-muted">Base UI Primitives</span>
           </div>
 
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl max-w-4xl mx-auto leading-[1.1]">
             Fluid, luminous, <br className="hidden sm:inline" />
-            <span className="bg-linear-to-r from-foreground via-foreground/80 to-muted-foreground bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-neutral-text via-neutral-text/80 to-muted-foreground bg-clip-text text-transparent">
               and soft.
             </span>
           </h1>
 
-          <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 text-lg text-neutral-text-muted max-w-2xl mx-auto leading-relaxed">
             A production-ready Shadcn Component Registry built on <strong>Next.js 16</strong>,{" "}
             <strong>Base UI</strong>, and <strong>Tailwind CSS v4</strong>. 55+ accessible primitives with
             signature rounded-4xl geometries, OKLCH tokens, and tactile micro-interactions.
@@ -257,11 +263,11 @@ export default function HomePage() {
 
           {/* Interactive Quick Install Bar */}
           <div className="mt-10 max-w-xl mx-auto">
-            <div className="flex items-center justify-between rounded-full border border-border bg-card/90 p-2 shadow-lg backdrop-blur-md pl-4">
+            <div className="flex items-center justify-between rounded-full border border-neutral-interactive bg-neutral-surface-alt/90 p-2 shadow-lg backdrop-blur-md pl-4">
               <div className="flex items-center gap-3 overflow-hidden text-left">
-                <Terminal className="size-4 shrink-0 text-primary" />
-                <span className="truncate font-mono text-xs text-muted-foreground">
-                  npx shadcn add <strong className="text-foreground">http://localhost:3000/r/button.json</strong>
+                <Terminal className="size-4 shrink-0 text-primary-text" />
+                <span className="truncate font-mono text-xs text-neutral-text-muted">
+                  npx shadcn add <strong className="text-neutral-text">http://localhost:3000/r/button.json</strong>
                 </span>
               </div>
               <Button
@@ -284,31 +290,46 @@ export default function HomePage() {
                 )}
               </Button>
             </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Or configure in <code className="text-foreground font-mono">components.json</code> with{" "}
-              <code className="text-foreground font-mono">&quot;style&quot;: &quot;luma&quot;</code>
+            <p className="mt-3 text-xs text-neutral-text-muted">
+              Or configure in <code className="text-neutral-text font-mono">components.json</code> with{" "}
+              <code className="text-neutral-text font-mono">&quot;style&quot;: &quot;luma&quot;</code>
             </p>
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link href="/colors">
+                <Button size="default" variant="default" className="gap-2">
+                  <Palette className="size-4" />
+                  <span>Explore OKLCH Color System</span>
+                </Button>
+              </Link>
+              <Link href="/components">
+                <Button size="default" variant="outline" className="gap-2">
+                  <Layers className="size-4" />
+                  <span>Browse 55+ Components</span>
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
       </div>
 
       {/* Interactive Playground Section */}
-      <section id="playground" className="container py-16 border-t border-border/40">
+      <section id="playground" className="container py-16 border-t border-neutral-interactive/40">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-wider mb-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-primary-text uppercase tracking-wider mb-2">
               <Sliders className="size-3.5" />
               <span>Interactive Showcase</span>
             </div>
             <h2 className="text-3xl font-bold tracking-tight">Experience Components</h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-neutral-text-muted mt-1">
               Test real live components rendered directly with Base UI.
             </p>
           </div>
 
           {/* Color Palette Selector */}
-          <div className="flex items-center gap-2 bg-card p-2 rounded-full border border-border shadow-xs">
-            <Palette className="size-4 ml-2 text-muted-foreground" />
+          <div className="flex items-center gap-2 bg-neutral-surface-alt p-2 rounded-full border border-neutral-interactive shadow-xs">
+            <Palette className="size-4 ml-2 text-neutral-text-muted" />
             <div className="flex items-center gap-1.5">
               {PALETTES.map((p) => (
                 <button
@@ -316,7 +337,7 @@ export default function HomePage() {
                   onClick={() => setActivePalette(p.name)}
                   title={p.label}
                   className={`size-6 rounded-full ${p.bg} transition-transform ${
-                    activePalette === p.name ? "ring-2 ring-primary ring-offset-2 ring-offset-background scale-110" : "opacity-80 hover:opacity-100"
+                    activePalette === p.name ? "ring-2 ring-primary-interactive-focus ring-offset-2 ring-offset-neutral-surface scale-110" : "opacity-80 hover:opacity-100"
                   }`}
                 />
               ))}
@@ -331,7 +352,7 @@ export default function HomePage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <Badge variant="outline">Action Primitives</Badge>
-                <span className="font-mono text-xs text-muted-foreground">button.tsx</span>
+                <span className="font-mono text-xs text-neutral-text-muted">button.tsx</span>
               </div>
               <CardTitle className="mt-2">Pill Geometries</CardTitle>
               <CardDescription>
@@ -354,7 +375,7 @@ export default function HomePage() {
                 <Button size="lg" variant="default">Large Pill</Button>
               </div>
             </CardContent>
-            <CardFooter className="border-t pt-4 flex justify-between items-center text-xs text-muted-foreground">
+            <CardFooter className="border-t pt-4 flex justify-between items-center text-xs text-neutral-text-muted">
               <span>Variants: 6 | Sizes: 8</span>
               <Button
                 size="xs"
@@ -372,7 +393,7 @@ export default function HomePage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <Badge variant="outline">Form Controls</Badge>
-                <span className="font-mono text-xs text-muted-foreground">switch.tsx</span>
+                <span className="font-mono text-xs text-neutral-text-muted">switch.tsx</span>
               </div>
               <CardTitle className="mt-2">Fluid Controls</CardTitle>
               <CardDescription>
@@ -384,7 +405,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <span className="text-sm font-medium">Luminous Ambient Glow</span>
-                  <p className="text-xs text-muted-foreground">Enable active focus ring styling</p>
+                  <p className="text-xs text-neutral-text-muted">Enable active focus ring styling</p>
                 </div>
                 <Switch
                   checked={switchState}
@@ -395,7 +416,7 @@ export default function HomePage() {
               {/* Slider Demo */}
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
-                  <span className="font-medium text-muted-foreground">Intensity Range</span>
+                  <span className="font-medium text-neutral-text-muted">Intensity Range</span>
                   <span className="font-mono">{sliderVal}%</span>
                 </div>
                 <Slider
@@ -415,13 +436,13 @@ export default function HomePage() {
                 />
                 <label
                   htmlFor="agree"
-                  className="text-xs font-medium text-muted-foreground cursor-pointer select-none leading-none"
+                  className="text-xs font-medium text-neutral-text-muted cursor-pointer select-none leading-none"
                 >
                   Strict OKLCH color token conformity enabled
                 </label>
               </div>
             </CardContent>
-            <CardFooter className="border-t pt-4 flex justify-between items-center text-xs text-muted-foreground">
+            <CardFooter className="border-t pt-4 flex justify-between items-center text-xs text-neutral-text-muted">
               <span>Active State: {switchState ? "Enabled" : "Disabled"}</span>
               <Button
                 size="xs"
@@ -439,7 +460,7 @@ export default function HomePage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <Badge variant="outline">Overlays</Badge>
-                <span className="font-mono text-xs text-muted-foreground">dialog.tsx</span>
+                <span className="font-mono text-xs text-neutral-text-muted">dialog.tsx</span>
               </div>
               <CardTitle className="mt-2">Modal & Portals</CardTitle>
               <CardDescription>
@@ -447,8 +468,8 @@ export default function HomePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-2xl border border-border/80 bg-muted/30 p-4 text-center">
-                <p className="text-xs text-muted-foreground mb-3">
+              <div className="rounded-2xl border border-neutral-interactive/80 bg-neutral-interactive/30 p-4 text-center">
+                <p className="text-xs text-neutral-text-muted mb-3">
                   Click below to preview the responsive Base UI modal dialog:
                 </p>
                 <Dialog>
@@ -468,7 +489,7 @@ export default function HomePage() {
                       </DialogDescription>
                     </DialogHeader>
                     <div className="py-2">
-                      <div className="rounded-2xl border border-border bg-muted/40 p-3 font-mono text-xs">
+                      <div className="rounded-2xl border border-neutral-interactive bg-neutral-interactive/40 p-3 font-mono text-xs">
                         npx shadcn add http://localhost:3000/r/dialog.json
                       </div>
                     </div>
@@ -492,7 +513,7 @@ export default function HomePage() {
                 <Badge variant="destructive">Destructive</Badge>
               </div>
             </CardContent>
-            <CardFooter className="border-t pt-4 flex justify-between items-center text-xs text-muted-foreground">
+            <CardFooter className="border-t pt-4 flex justify-between items-center text-xs text-neutral-text-muted">
               <span>Portals: React 19 + Base UI</span>
               <Button
                 size="xs"
@@ -508,22 +529,22 @@ export default function HomePage() {
       </section>
 
       {/* Component Catalog Grid Section */}
-      <section id="catalog" className="container py-16 border-t border-border/40">
+      <section id="catalog" className="container py-16 border-t border-neutral-interactive/40">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-wider mb-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-primary-text uppercase tracking-wider mb-2">
               <PackageCheck className="size-3.5" />
               <span>Full Registry Index</span>
             </div>
             <h2 className="text-3xl font-bold tracking-tight">Component Directory</h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-neutral-text-muted mt-1">
               All 55 components ready to install directly into your project.
             </p>
           </div>
 
           {/* Search Box */}
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-text-muted" />
             <Input
               placeholder="Search components..."
               value={searchQuery}
@@ -552,27 +573,27 @@ export default function HomePage() {
           {filteredItems.map((item) => (
             <div
               key={item.name}
-              className="group relative flex flex-col justify-between rounded-3xl border border-border bg-card/60 p-5 transition-all hover:bg-card hover:shadow-md hover:border-primary/40"
+              className="group relative flex flex-col justify-between rounded-3xl border border-neutral-interactive bg-neutral-surface-alt/60 p-5 transition-all hover:bg-neutral-surface-alt hover:shadow-md hover:border-primary-interactive-focus"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold text-base capitalize tracking-tight group-hover:text-primary transition-colors">
+                  <span className="font-semibold text-base capitalize tracking-tight group-hover:text-primary-text transition-colors">
                     {item.name.replace(/-/g, " ")}
                   </span>
                   <Badge variant="outline" className="text-[10px] px-2 py-0">
                     {item.category}
                   </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                <p className="text-xs text-neutral-text-muted line-clamp-2 leading-relaxed">
                   {item.desc}
                 </p>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-border/40 flex items-center justify-between">
+              <div className="mt-5 pt-3 border-t border-neutral-interactive/40 flex items-center justify-between">
                 <a
                   href={`/r/${item.name}.json`}
                   target="_blank"
-                  className="font-mono text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                  className="font-mono text-[11px] text-neutral-text-muted hover:text-neutral-text flex items-center gap-1 transition-colors"
                 >
                   /r/{item.name}.json <ExternalLink className="size-2.5" />
                 </a>
@@ -600,37 +621,37 @@ export default function HomePage() {
         </div>
 
         {filteredItems.length === 0 && (
-          <div className="text-center py-16 border border-dashed border-border rounded-3xl">
-            <Box className="size-10 mx-auto text-muted-foreground mb-3 opacity-40" />
+          <div className="text-center py-16 border border-dashed border-neutral-interactive rounded-3xl">
+            <Box className="size-10 mx-auto text-neutral-text-muted mb-3 opacity-40" />
             <p className="text-sm font-medium">No components match your query</p>
-            <p className="text-xs text-muted-foreground mt-1">Try clearing your search term</p>
+            <p className="text-xs text-neutral-text-muted mt-1">Try clearing your search term</p>
           </div>
         )}
       </section>
 
       {/* Registry Guide & CLI Spec Section */}
-      <section id="guide" className="container py-16 border-t border-border/40">
+      <section id="guide" className="container py-16 border-t border-neutral-interactive/40">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
             <Badge variant="outline" className="mb-2">Distribution Guide</Badge>
             <h2 className="text-3xl font-bold tracking-tight">Using with the Shadcn CLI</h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-neutral-text-muted mt-1">
               How developers can consume the <code>karan-ui</code> registry in their own applications.
             </p>
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
+            <div className="rounded-3xl border border-neutral-interactive bg-neutral-surface-alt p-6 shadow-xs">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xs">
+                <div className="flex size-7 items-center justify-center rounded-full bg-primary-interactive text-primary-text font-bold text-xs">
                   1
                 </div>
                 <h3 className="font-semibold text-base">Direct URL Installation</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="text-sm text-neutral-text-muted mb-3">
                 Install any component directly from the registry using its endpoint:
               </p>
-              <div className="flex items-center justify-between rounded-2xl bg-muted/60 p-3 font-mono text-xs">
+              <div className="flex items-center justify-between rounded-2xl bg-neutral-surface-alt/60 p-3 font-mono text-xs">
                 <span>npx shadcn add http://localhost:3000/r/button.json</span>
                 <Button
                   size="xs"
@@ -644,17 +665,17 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
+            <div className="rounded-3xl border border-neutral-interactive bg-neutral-surface-alt p-6 shadow-xs">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xs">
+                <div className="flex size-7 items-center justify-center rounded-full bg-primary-interactive text-primary-text font-bold text-xs">
                   2
                 </div>
                 <h3 className="font-semibold text-base">Add Luma Style & Tokens</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="text-sm text-neutral-text-muted mb-3">
                 Pull in the complete Luma CSS tokens and OKLCH color variables:
               </p>
-              <div className="flex items-center justify-between rounded-2xl bg-muted/60 p-3 font-mono text-xs">
+              <div className="flex items-center justify-between rounded-2xl bg-neutral-surface-alt/60 p-3 font-mono text-xs">
                 <span>npx shadcn add http://localhost:3000/r/luma.json</span>
                 <Button
                   size="xs"
@@ -668,17 +689,17 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-border bg-card p-6 shadow-xs">
+            <div className="rounded-3xl border border-neutral-interactive bg-neutral-surface-alt p-6 shadow-xs">
               <div className="flex items-center gap-3 mb-3">
-                <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xs">
+                <div className="flex size-7 items-center justify-center rounded-full bg-primary-interactive text-primary-text font-bold text-xs">
                   3
                 </div>
                 <h3 className="font-semibold text-base">Registry Configuration in components.json</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="text-sm text-neutral-text-muted mb-3">
                 Configure your project&apos;s <code>components.json</code> to register the karan-ui registry namespace:
               </p>
-              <pre className="rounded-2xl bg-muted/60 p-4 font-mono text-xs overflow-x-auto">
+              <pre className="rounded-2xl bg-neutral-surface-alt/60 p-4 font-mono text-xs overflow-x-auto">
 {`{
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "luma",
@@ -693,21 +714,21 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/40 py-10 bg-card/30">
-        <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+      <footer className="border-t border-neutral-interactive/40 py-10 bg-neutral-surface-alt/30">
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-text-muted">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-foreground">karan-ui</span>
+            <span className="font-semibold text-neutral-text">karan-ui</span>
             <span>—</span>
             <span>Crafted with Next.js 16, Base UI, and Tailwind CSS v4.</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="/r/index.json" className="hover:text-foreground transition-colors">
+            <a href="/r/index.json" className="hover:text-neutral-text transition-colors">
               Index Manifest
             </a>
-            <a href="/r/luma.json" className="hover:text-foreground transition-colors">
+            <a href="/r/luma.json" className="hover:text-neutral-text transition-colors">
               Luma Preset
             </a>
-            <span className="text-primary font-medium">Phase 1 Complete</span>
+            <span className="text-primary-text font-medium">Phase 1 Complete</span>
           </div>
         </div>
       </footer>

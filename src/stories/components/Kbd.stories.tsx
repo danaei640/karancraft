@@ -24,14 +24,14 @@ export const Default: Story = {
 export const InShortcutGroup: Story = {
   render: () => (
     <div className="flex items-center gap-6">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 text-sm text-neutral-text-muted">
         <span>Search commands:</span>
         <KbdGroup>
           <Kbd>⌘</Kbd>
           <Kbd>K</Kbd>
         </KbdGroup>
       </div>
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 text-sm text-neutral-text-muted">
         <span>Save file:</span>
         <KbdGroup>
           <Kbd>Ctrl</Kbd>

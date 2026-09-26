@@ -81,10 +81,10 @@ export const LineVariant: Story = {
         <TabsTrigger value="notifications">Notifications</TabsTrigger>
       </TabsList>
       <TabsContent value="overview" className="p-4">
-        <p className="text-sm text-muted-foreground">Overview content panel</p>
+        <p className="text-sm text-neutral-text-muted">Overview content panel</p>
       </TabsContent>
       <TabsContent value="analytics" className="p-4">
-        <p className="text-sm text-muted-foreground">Analytics metrics and data</p>
+        <p className="text-sm text-neutral-text-muted">Analytics metrics and data</p>
       </TabsContent>
     </Tabs>
   ),

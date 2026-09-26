@@ -16,7 +16,7 @@ function Avatar({
       data-slot="avatar"
       data-size={size}
       className={cn(
-        "cn-avatar group/avatar relative flex shrink-0 select-none after:absolute after:inset-0 after:border after:border-border after:mix-blend-darken dark:after:mix-blend-lighten",
+        "cn-avatar group/avatar relative flex shrink-0 select-none after:absolute after:inset-0 after:border after:border-neutral-interactive after:mix-blend-darken dark:after:mix-blend-lighten",
         className
       )}
       {...props}
@@ -90,7 +90,7 @@ function AvatarGroupCount({
     <div
       data-slot="avatar-group-count"
       className={cn(
-        "cn-avatar-group-count relative flex shrink-0 items-center justify-center ring-2 ring-background",
+        "cn-avatar-group-count relative flex shrink-0 items-center justify-center ring-2 ring-neutral-surface",
         "",
         className
       )}

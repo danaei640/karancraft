@@ -29,12 +29,12 @@ export const Default: Story = {
           </Avatar>
           <div className="space-y-1">
             <h4 className="text-sm font-semibold font-heading">Karan UI Registry</h4>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-neutral-text-muted">
               Official Shadcn-compatible Base UI registry with authentic Luma tokens.
             </p>
             <div className="flex items-center pt-2">
               <CalendarDays className="mr-2 h-4 w-4 opacity-70" />
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-neutral-text-muted">
                 Joined September 2026
               </span>
             </div>

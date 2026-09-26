@@ -40,10 +40,10 @@ export const Default: Story = {
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="flex items-center space-x-4 rounded-md border p-4">
-          <Bell className="h-5 w-5 text-muted-foreground" />
+          <Bell className="h-5 w-5 text-neutral-text-muted" />
           <div className="flex-1 space-y-1">
             <p className="text-sm font-medium leading-none">Push Notifications</p>
-            <p className="text-xs text-muted-foreground">Receive instant mobile pushes</p>
+            <p className="text-xs text-neutral-text-muted">Receive instant mobile pushes</p>
           </div>
         </div>
       </CardContent>
@@ -61,13 +61,13 @@ export const Interactive: Story = {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Karan Analytics</span>
-          <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+          <ArrowUpRight className="h-4 w-4 text-neutral-text-muted" />
         </CardTitle>
         <CardDescription>Real-time metrics & registry telemetry</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="text-3xl font-bold font-heading">128,490</div>
-        <p className="text-xs text-muted-foreground mt-1">+24.8% from last month</p>
+        <p className="text-xs text-neutral-text-muted mt-1">+24.8% from last month</p>
       </CardContent>
     </Card>
   ),

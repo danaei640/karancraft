@@ -42,8 +42,8 @@ function ThemeControlsDemo() {
           <h1 className="text-2xl font-bold tracking-tight">Karan UI ThemeProvider</h1>
           <Badge variant="outline" className="text-xs">Base UI + @wrksz/themes</Badge>
         </div>
-        <p className="text-muted-foreground text-sm">
-          Unified provider combining <code className="bg-muted px-1 py-0.5 rounded">@wrksz/themes</code>, Base UI Toast, Base UI Tooltip, Shadcn Typeset rhythm measurements, and ColorTheme slot.
+        <p className="text-neutral-text-muted text-sm">
+          Unified provider combining <code className="bg-neutral-surface-alt px-1 py-0.5 rounded">@wrksz/themes</code>, Base UI Toast, Base UI Tooltip, Shadcn Typeset rhythm measurements, and ColorTheme slot.
         </p>
       </div>
 
@@ -58,9 +58,9 @@ function ThemeControlsDemo() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-sm">
-              <span className="text-muted-foreground">Active Theme:</span>{" "}
-              <span className="font-semibold text-primary">{theme ?? "system"}</span>{" "}
-              <span className="text-xs text-muted-foreground">(Resolved: {resolvedTheme})</span>
+              <span className="text-neutral-text-muted">Active Theme:</span>{" "}
+              <span className="font-semibold text-primary-text">{theme ?? "system"}</span>{" "}
+              <span className="text-xs text-neutral-text-muted">(Resolved: {resolvedTheme})</span>
             </div>
             <div className="flex flex-wrap gap-2">
               {themes.map((t) => (
@@ -115,7 +115,7 @@ function ThemeControlsDemo() {
                 </TooltipContent>
               </Tooltip>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-neutral-text-muted">
               Notice that no separate &lt;Toaster&gt; or &lt;TooltipProvider&gt; had to be written inside this demo.
             </p>
           </CardContent>
@@ -145,40 +145,40 @@ function ThemeControlsDemo() {
             </div>
 
             {/* Custom Rhythm Sliders / Inputs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-lg bg-muted/40 border text-xs">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-lg bg-neutral-interactive/40 border text-xs">
               <div>
-                <span className="text-muted-foreground block font-mono">--typeset-size</span>
+                <span className="text-neutral-text-muted block font-mono">--typeset-size</span>
                 <span className="font-semibold text-sm">{measurements.size}</span>
               </div>
               <div>
-                <span className="text-muted-foreground block font-mono">--typeset-leading</span>
+                <span className="text-neutral-text-muted block font-mono">--typeset-leading</span>
                 <span className="font-semibold text-sm">{measurements.leading}</span>
               </div>
               <div>
-                <span className="text-muted-foreground block font-mono">--typeset-flow</span>
+                <span className="text-neutral-text-muted block font-mono">--typeset-flow</span>
                 <span className="font-semibold text-sm">{measurements.flow}</span>
               </div>
               <div>
-                <span className="text-muted-foreground block font-mono">--typeset-measure</span>
+                <span className="text-neutral-text-muted block font-mono">--typeset-measure</span>
                 <span className="font-semibold text-sm">{measurements.measure}</span>
               </div>
             </div>
 
             {/* Typeset Preview Box */}
-            <div className="border rounded-xl p-6 bg-card">
-              <Typeset className="border-l-2 border-primary/40 pl-4">
+            <div className="border rounded-xl p-6 bg-neutral-surface-alt">
+              <Typeset className="border-l-2 border-primary-interactive-focus pl-4">
                 <h3 className="font-bold text-lg">Typeset Typography Preview</h3>
                 <p>
                   Typeset brings intentional typography and proportional vertical rhythm to rendered content, prose, and chat bubbles.
                 </p>
-                <p className="text-muted-foreground">
+                <p className="text-neutral-text-muted">
                   When you switch presets above (e.g. from <strong>compact</strong> to <strong>reading</strong>), the line height, block spacing, and base size adjust instantaneously via CSS variables.
                 </p>
               </Typeset>
             </div>
           </CardContent>
-          <CardFooter className="text-xs text-muted-foreground">
-            Current Active Color Theme: <strong className="ml-1 text-foreground">{colorTheme}</strong>
+          <CardFooter className="text-xs text-neutral-text-muted">
+            Current Active Color Theme: <strong className="ml-1 text-neutral-text">{colorTheme}</strong>
           </CardFooter>
         </Card>
       </div>

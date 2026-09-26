@@ -32,7 +32,7 @@ export const Default: Story = {
           </DrawerHeader>
           <div className="p-4 pb-0 text-center">
             <div className="text-5xl font-bold tracking-tighter">350</div>
-            <div className="text-muted-foreground text-xs uppercase tracking-wider">
+            <div className="text-neutral-text-muted text-xs uppercase tracking-wider">
               Calories / day
             </div>
           </div>

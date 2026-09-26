@@ -2,6 +2,19 @@
 
 import * as React from "react"
 import { ClientThemeProvider, useTheme, useThemeValue, useHydrated } from "@wrksz/themes/client"
+import {
+  generatePalette,
+  paletteToCssVars,
+  paletteToCssString,
+  getResolvedHues,
+  type OklchColor,
+  type PaletteInput,
+  type GeneratedPalette,
+  type PaletteCssVars,
+  type ResolvedHues,
+  type ColorSetName,
+  type ColorSetTokens,
+} from "@/lib/color-system"
 import { ThemeScript } from "@wrksz/themes/script"
 import type {
   Attribute,
@@ -180,8 +193,30 @@ export function useTypeset(): TypesetContextValue {
 }
 
 // ============================================================================
-// Color Theme Types & Specification (extensible slot for upcoming color themes)
+// Color Theme Types & Specification — OKLCH Palette System
 // ============================================================================
+
+/**
+ * Palette generation inputs.
+ * When provided, the ThemeProvider will automatically generate 6×13×2 OKLCH
+ * color tokens and inject them as CSS custom properties.
+ */
+export interface PaletteConfig {
+  /** The accent / brand color in OKLCH */
+  accentColor: OklchColor
+  /**
+   * How much the accent hue tints the neutral set (0–100).
+   * 0 = pure achromatic neutrals, 100 = fully tinted with accent hue.
+   * @default 20
+   */
+  tint?: number
+  /**
+   * Global chroma intensity multiplier (0–100).
+   * 0 = completely desaturated, 100 = full vivid saturation.
+   * @default 80
+   */
+  chroma?: number
+}
 
 export interface ColorThemeConfig {
   /** Color theme identifier (e.g. 'neutral', 'zinc', 'slate', 'rose', etc.) */
@@ -191,6 +226,11 @@ export interface ColorThemeConfig {
     light?: Record<string, string>
     dark?: Record<string, string>
   }
+  /**
+   * OKLCH palette generation configuration.
+   * When provided, generates 6×13×2 color tokens automatically.
+   */
+  palette?: PaletteConfig
   [key: string]: unknown
 }
 
@@ -201,6 +241,26 @@ export interface ColorThemeContextValue {
   setColorTheme: (colorTheme: string) => void
   /** Current color theme configuration if provided */
   config?: ColorThemeConfig
+
+  // ── Palette system ──
+  /** Generated palette (null if no palette config is provided) */
+  palette: GeneratedPalette | null
+  /** CSS variable maps for both modes (null if no palette) */
+  paletteCssVars: PaletteCssVars | null
+  /** Resolved hue angles for all 6 sets after conflict resolution */
+  resolvedHues: ResolvedHues | null
+  /** Update accent color at runtime */
+  setAccentColor: (color: OklchColor) => void
+  /** Update tint at runtime (0–100) */
+  setTint: (tint: number) => void
+  /** Update chroma at runtime (0–100) */
+  setChroma: (chroma: number) => void
+  /** Reset palette to default or initial settings */
+  resetPalette: () => void
+  /** Set all palette input values at once */
+  setPaletteInput: (input: PaletteInput) => void
+  /** Current palette input values */
+  paletteInput: PaletteInput | null
 }
 
 const ColorThemeContext = React.createContext<ColorThemeContextValue | null>(null)
@@ -361,6 +421,29 @@ export interface ThemeProviderProps<Themes extends string = string> {
   defaultColorTheme?: string
 
   /**
+   * Direct accent color in OKLCH for dynamic palette generation.
+   * e.g. `{ l: 0.55, c: 0.24, h: 264 }`
+   */
+  accentColor?: OklchColor
+
+  /**
+   * Direct tint percentage (0–100) defining how much primary accent impacts neutral surfaces & text.
+   * @default 20
+   */
+  tint?: number
+
+  /**
+   * Direct chroma percentage (0–100) defining how saturated and sharp the palette is.
+   * @default 80
+   */
+  chroma?: number
+
+  /**
+   * Complete PaletteInput configuration.
+   */
+  palette?: PaletteInput
+
+  /**
    * Callback fired when color theme changes.
    */
   onColorThemeChange?: (colorTheme: string) => void
@@ -401,6 +484,10 @@ export function ThemeProvider<Themes extends string = string>({
   colorTheme: colorThemeProp,
   defaultColorTheme = "neutral",
   onColorThemeChange,
+  accentColor: accentColorProp,
+  tint: tintProp,
+  chroma: chromaProp,
+  palette: paletteProp,
 }: ThemeProviderProps<Themes>) {
   // 1. Resolve defaultTheme intelligently if not explicitly set
   const resolvedDefaultTheme = React.useMemo(() => {
@@ -510,7 +597,7 @@ export function ThemeProvider<Themes extends string = string>({
     [resolvedMeasurements, activePreset, setMeasurements, setPreset, typesetStyle, typesetClassName]
   )
 
-  // 3. Color Theme State (extensible slot)
+  // 3. Color Theme State
   const initialColorThemeName = React.useMemo(() => {
     if (typeof colorThemeProp === "string") return colorThemeProp
     if (typeof colorThemeProp === "object" && colorThemeProp?.name) return colorThemeProp.name
@@ -537,13 +624,128 @@ export function ThemeProvider<Themes extends string = string>({
 
   const colorThemeConfig = typeof colorThemeProp === "object" ? colorThemeProp : undefined
 
+  // 3b. OKLCH Palette Generation
+  const paletteConfig = colorThemeConfig?.palette
+
+  const DEFAULT_PALETTE_INPUT: PaletteInput = React.useMemo(() => ({
+    accentColor: accentColorProp ?? paletteProp?.accentColor ?? paletteConfig?.accentColor ?? { l: 0.55, c: 0.24, h: 264 },
+    tint: tintProp ?? paletteProp?.tint ?? paletteConfig?.tint ?? 20,
+    chroma: chromaProp ?? paletteProp?.chroma ?? paletteConfig?.chroma ?? 80,
+  }), [accentColorProp, paletteProp, paletteConfig, tintProp, chromaProp])
+
+  const [paletteInputState, setPaletteInputState] = React.useState<PaletteInput>(DEFAULT_PALETTE_INPUT)
+
+  // Sync palette from props or localStorage
+  React.useEffect(() => {
+    if (accentColorProp || paletteProp || paletteConfig) {
+      setPaletteInputState({
+        accentColor: accentColorProp ?? paletteProp?.accentColor ?? paletteConfig?.accentColor ?? DEFAULT_PALETTE_INPUT.accentColor,
+        tint: tintProp ?? paletteProp?.tint ?? paletteConfig?.tint ?? DEFAULT_PALETTE_INPUT.tint,
+        chroma: chromaProp ?? paletteProp?.chroma ?? paletteConfig?.chroma ?? DEFAULT_PALETTE_INPUT.chroma,
+      })
+    } else {
+      try {
+        const saved = localStorage.getItem("karan-palette-custom")
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (parsed?.accentColor?.l !== undefined && parsed?.accentColor?.h !== undefined) {
+            setPaletteInputState(parsed)
+          }
+        }
+      } catch {}
+    }
+  }, [
+    accentColorProp,
+    paletteProp,
+    paletteConfig,
+    tintProp,
+    chromaProp,
+    DEFAULT_PALETTE_INPUT,
+  ])
+
+  const generatedPalette = React.useMemo(() => {
+    return generatePalette(paletteInputState)
+  }, [paletteInputState])
+
+  const paletteCssVarsResult = React.useMemo(() => {
+    if (!generatedPalette) return null
+    return paletteToCssVars(generatedPalette)
+  }, [generatedPalette])
+
+  const resolvedHuesResult = React.useMemo(() => {
+    return getResolvedHues(paletteInputState.accentColor)
+  }, [paletteInputState])
+
+  const paletteCssString = React.useMemo(() => {
+    if (!generatedPalette) return ""
+    return paletteToCssString(generatedPalette)
+  }, [generatedPalette])
+
+  const updatePaletteInput = React.useCallback((updater: (prev: PaletteInput) => PaletteInput) => {
+    setPaletteInputState((prev) => {
+      const next = updater(prev)
+      try {
+        localStorage.setItem("karan-palette-custom", JSON.stringify(next))
+      } catch {}
+      return next
+    })
+  }, [])
+
+  const setAccentColor = React.useCallback((color: OklchColor) => {
+    updatePaletteInput((prev) => ({ ...prev, accentColor: color }))
+  }, [updatePaletteInput])
+
+  const setPaletteTint = React.useCallback((tint: number) => {
+    updatePaletteInput((prev) => ({ ...prev, tint }))
+  }, [updatePaletteInput])
+
+  const setPaletteChroma = React.useCallback((chroma: number) => {
+    updatePaletteInput((prev) => ({ ...prev, chroma }))
+  }, [updatePaletteInput])
+
+  const setPaletteInput = React.useCallback((input: PaletteInput) => {
+    setPaletteInputState(input)
+    try {
+      localStorage.setItem("karan-palette-custom", JSON.stringify(input))
+    } catch {}
+  }, [])
+
+  const resetPalette = React.useCallback(() => {
+    try {
+      localStorage.removeItem("karan-palette-custom")
+    } catch {}
+    setPaletteInputState(DEFAULT_PALETTE_INPUT)
+  }, [DEFAULT_PALETTE_INPUT])
+
   const colorThemeContextValue: ColorThemeContextValue = React.useMemo(
     () => ({
       colorTheme: activeColorTheme,
       setColorTheme: handleSetColorTheme,
       config: colorThemeConfig,
+      palette: generatedPalette,
+      paletteCssVars: paletteCssVarsResult,
+      resolvedHues: resolvedHuesResult,
+      setAccentColor,
+      setTint: setPaletteTint,
+      setChroma: setPaletteChroma,
+      resetPalette,
+      setPaletteInput,
+      paletteInput: paletteInputState,
     }),
-    [activeColorTheme, handleSetColorTheme, colorThemeConfig]
+    [
+      activeColorTheme,
+      handleSetColorTheme,
+      colorThemeConfig,
+      generatedPalette,
+      paletteCssVarsResult,
+      resolvedHuesResult,
+      setAccentColor,
+      setPaletteTint,
+      setPaletteChroma,
+      resetPalette,
+      setPaletteInput,
+      paletteInputState,
+    ]
   )
 
   // 4. Toast & Tooltip Props Resolution
@@ -610,6 +812,14 @@ export function ThemeProvider<Themes extends string = string>({
         data-karan-typeset=""
         dangerouslySetInnerHTML={{ __html: typesetCssVars }}
       />
+
+      {/* OKLCH Palette CSS variables injection */}
+      {paletteCssString && (
+        <style
+          data-karan-palette=""
+          dangerouslySetInnerHTML={{ __html: paletteCssString }}
+        />
+      )}
 
       {/* Modern @wrksz/themes client provider */}
       <ClientThemeProvider<Themes>
@@ -769,4 +979,15 @@ export {
   ToastProvider,
   // Base UI Tooltip
   TooltipProvider,
+}
+
+// Color system re-exports
+export type {
+  OklchColor,
+  PaletteInput,
+  GeneratedPalette,
+  PaletteCssVars,
+  ResolvedHues,
+  ColorSetName,
+  ColorSetTokens,
 }

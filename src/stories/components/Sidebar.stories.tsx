@@ -57,7 +57,7 @@ export const Default: Story = {
               </SidebarGroupContent>
             </SidebarGroup>
           </SidebarContent>
-          <SidebarFooter className="p-4 border-t text-xs text-muted-foreground">
+          <SidebarFooter className="p-4 border-t text-xs text-neutral-text-muted">
             v0.1.0 • Luma Registry
           </SidebarFooter>
         </Sidebar>
@@ -66,7 +66,7 @@ export const Default: Story = {
             <SidebarTrigger />
             <h2 className="text-xl font-bold font-heading">Dashboard</h2>
           </div>
-          <div className="rounded-xl border p-4 bg-muted/20 flex-1 flex items-center justify-center text-muted-foreground text-sm">
+          <div className="rounded-xl border p-4 bg-neutral-interactive/20 flex-1 flex items-center justify-center text-neutral-text-muted text-sm">
             Main content display area
           </div>
         </SidebarInset>

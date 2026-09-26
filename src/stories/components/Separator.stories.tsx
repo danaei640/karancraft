@@ -16,9 +16,9 @@ export const Default: Story = {
   },
   render: (args: any) => (
     <div className="w-[300px] py-4">
-      <div className="text-xs text-muted-foreground mb-2">Content Above</div>
+      <div className="text-xs text-neutral-text-muted mb-2">Content Above</div>
       <Separator orientation={args?.orientation || 'horizontal'} />
-      <div className="text-xs text-muted-foreground mt-2">Content Below</div>
+      <div className="text-xs text-neutral-text-muted mt-2">Content Below</div>
     </div>
   ),
 };
@@ -28,7 +28,7 @@ export const Horizontal: Story = {
     <div className="w-[300px] space-y-1">
       <div className="space-y-1">
         <h4 className="text-sm font-medium leading-none font-heading">Karan UI Core</h4>
-        <p className="text-xs text-muted-foreground">An open-source registry designed for modern React.</p>
+        <p className="text-xs text-neutral-text-muted">An open-source registry designed for modern React.</p>
       </div>
       <Separator className="my-4" />
       <div className="flex h-5 items-center space-x-4 text-xs">

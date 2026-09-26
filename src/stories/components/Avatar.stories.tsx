@@ -73,7 +73,7 @@ export const Group: Story = {
       <Avatar>
         <AvatarFallback>SL</AvatarFallback>
       </Avatar>
-      <AvatarGroupCount className="bg-muted text-xs font-medium px-2 py-1 rounded-full">
+      <AvatarGroupCount className="bg-neutral-surface-alt text-xs font-medium px-2 py-1 rounded-full">
         +5
       </AvatarGroupCount>
     </AvatarGroup>
