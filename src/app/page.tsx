@@ -183,14 +183,14 @@ export default function LandingPage() {
               {/* Tab 1: Buttons */}
               <TabsContent value="buttons" className="space-y-6 pt-2">
                 <div className="p-8 rounded-2xl border border-neutral-interactive/30 bg-neutral-surface/60 flex flex-wrap items-center justify-center gap-3">
-                  <Button variant="default">Primary Pill</Button>
+                  <Button variant="default">Primary Action</Button>
                   <Button variant="secondary">Secondary</Button>
                   <Button variant="outline">Outline</Button>
                   <Button variant="ghost">Ghost</Button>
-                  <Button variant="destructive">Destructive</Button>
+                  <Button intent="danger">Danger</Button>
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-neutral-text-muted font-mono pt-2">
-                  <span>Base UI Button · Signature Rounded-4xl</span>
+                  <span>Base UI Button · Proportional Radius &amp; Semantic Intents</span>
                   <Link href="/components/button" className="text-neutral-text hover:underline inline-flex items-center gap-1 shrink-0">
                     <span>Inspect button specs</span>
                     <ArrowRight className="size-3" />

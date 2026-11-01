@@ -96,9 +96,9 @@ const NEUTRAL_PEAK_CHROMA = {
   interactiveHover: 0.072,
   interactiveActive: 0.088,
   interactiveFocus: 0.12,
-  fill: 0.09,
-  fillHover: 0.085,
-  fillActive: 0.08,
+  fill: 0.08,
+  fillHover: 0.095,
+  fillActive: 0.11,
   text: 0.04,
   textSecondary: 0.032,
   textMuted: 0.024,
@@ -108,7 +108,8 @@ const NEUTRAL_PEAK_CHROMA = {
  * Chroma multipliers per token role (applied to the set's base chroma).
  *
  * Surfaces and text have low chroma for readability.
- * Fills have the highest chroma for visual prominence.
+ * Fills have the highest chroma for visual prominence and intensify slightly
+ * from rest -> hover -> active for harmonic state progression.
  * Interactive elements sit in between.
  */
 const CHROMA_MULTIPLIERS = {
@@ -117,10 +118,10 @@ const CHROMA_MULTIPLIERS = {
   interactive: 0.12,
   interactiveHover: 0.18,
   interactiveActive: 0.25,
-  interactiveFocus: 0.70,
-  fill: 1.0,
-  fillHover: 0.92,
-  fillActive: 0.85,
+  interactiveFocus: 0.75,
+  fill: 0.92,
+  fillHover: 1.0,
+  fillActive: 1.08,
   text: 0.45,
   textSecondary: 0.35,
   textMuted: 0.20,
@@ -231,11 +232,11 @@ function generateSetTokens(config: {
 
   if (setName === "primary") {
     if (isLight) {
-      // Light mode: respect the user's accent lightness directly (canary yellow L=0.88, violet L=0.55, etc.)
-      fillL = clamp(accent.l, 0.35, 0.95)
+      // Light mode: respect the user's accent lightness directly while keeping room for hover/active steps
+      fillL = clamp(accent.l, 0.36, 0.95)
     } else {
       // Dark mode: if accent is bright (like yellow), keep it bright; if dark/mid, use crisp button lightness
-      fillL = accent.l >= 0.70 ? clamp(accent.l, 0.75, 0.90) : clamp(accent.l, 0.48, 0.56)
+      fillL = accent.l >= 0.70 ? clamp(accent.l, 0.75, 0.90) : clamp(accent.l, 0.52, 0.60)
     }
     fillC = clamp(accent.c * chromaScale, 0, 0.35)
   } else if (setName === "warning") {
@@ -243,7 +244,7 @@ function generateSetTokens(config: {
     fillL = 0.80
     fillC = 0.18 * chromaScale
   } else if (setName === "neutral") {
-    fillL = isLight ? 0.20 : 0.88
+    fillL = isLight ? 0.16 : 0.88
     fillC = NEUTRAL_PEAK_CHROMA.fill * chromaScale
   } else {
     // Semantic sets (info, success, danger)
@@ -260,10 +261,12 @@ function generateSetTokens(config: {
     }
   }
 
-  // Calculate hover and active lightness relative to fillL
+  // Calculate harmonic hover and active lightness relative to fillL
+  // For neutral, contrast decreases from idle -> hover -> active (darkest to lighter in light mode, brightest to darker in dark mode)
   const isLightFill = fillL >= 0.60
-  const fillHoverL = clamp(fillL - 0.06, 0.15, 0.95)
-  const fillActiveL = clamp(fillL - 0.12, 0.12, 0.95)
+  const fillStep = isNeutral && isLight ? 0.07 : -0.07
+  const fillHoverL = clamp(fillL + fillStep, 0.15, 0.95)
+  const fillActiveL = clamp(fillL + fillStep * 2, 0.12, 0.95)
 
   // Determine interactive focus ring lightness
   const interactiveFocusL = isLightFill && isLight
@@ -282,7 +285,7 @@ function generateSetTokens(config: {
 
     if (tokenName === "fill") {
       l = fillL
-      c = fillC
+      c = isNeutral ? NEUTRAL_PEAK_CHROMA.fill * chromaScale : fillC * CHROMA_MULTIPLIERS.fill
     } else if (tokenName === "fillHover") {
       l = fillHoverL
       c = isNeutral ? NEUTRAL_PEAK_CHROMA.fillHover * chromaScale : fillC * CHROMA_MULTIPLIERS.fillHover

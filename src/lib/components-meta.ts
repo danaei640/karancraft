@@ -56,33 +56,35 @@ export const COMPONENTS_METADATA: Record<string, ComponentMetadata> = {
     name: 'Button',
     category: 'Actions & Inputs',
     description:
-      'Displays an interactive button supporting semantic intents, leading/trailing slots, full-width mode, and content alignment.',
+      'Displays an interactive button with proportional size-to-radius geometry, smart variant/intent color resolution, leading/trailing slots, full-width alignment, and async loading state.',
     baseUiPrimitive: '@base-ui/react/button',
     installCmd: 'npx shadcn@latest add @karan-ui/button',
     registryUrl: 'https://karan-ui.dev/r/button.json',
     props: [
       {
         name: 'variant',
-        type: "'default' | 'outline' | 'secondary' | 'ghost' | 'destructive' | 'link'",
+        type: "'default' | 'secondary' | 'outline' | 'ghost' | 'link'",
         defaultValue: "'default'",
-        description: 'The visual style variant of the button',
-        options: ['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'],
+        description: 'Structural emphasis variant of the button',
+        options: ['default', 'secondary', 'outline', 'ghost', 'link'],
         controlType: 'select',
       },
       {
         name: 'intent',
-        type: "'primary' | 'neutral' | 'success' | 'danger' | 'info' | 'destructive'",
-        defaultValue: "'primary'",
-        description: 'Semantic color intent applied across button variants',
-        options: ['primary', 'neutral', 'success', 'danger', 'info', 'destructive'],
+        type: "'primary' | 'neutral' | 'success' | 'info' | 'danger'",
+        defaultValue: "'auto'",
+        description:
+          'Semantic color intent (auto uses primary for default variant and neutral for others)',
+        options: ['auto', 'primary', 'neutral', 'success', 'info', 'danger'],
         controlType: 'select',
       },
       {
         name: 'size',
-        type: "'default' | 'xs' | 'sm' | 'lg' | 'icon' | 'icon-xs' | 'icon-sm' | 'icon-lg'",
+        type: "'xs' | 'sm' | 'default' | 'lg' | 'icon-xs' | 'icon-sm' | 'icon' | 'icon-lg'",
         defaultValue: "'default'",
-        description: 'The size dimension of the button (xs uses one step lower radius)',
-        options: ['default', 'xs', 'sm', 'lg', 'icon', 'icon-xs', 'icon-sm', 'icon-lg'],
+        description:
+          'Proportional height, corner radius (R/H ≈ 0.25), horizontal padding (Px ≥ R + 2px), and icon size',
+        options: ['xs', 'sm', 'default', 'lg', 'icon-xs', 'icon-sm', 'icon', 'icon-lg'],
         controlType: 'select',
       },
       {
@@ -101,6 +103,20 @@ export const COMPONENTS_METADATA: Record<string, ComponentMetadata> = {
         controlType: 'boolean',
       },
       {
+        name: 'loading',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'Renders an inline spinner in the leading slot and disables interactions',
+        controlType: 'boolean',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'Whether the button is disabled and prevents interactions',
+        controlType: 'boolean',
+      },
+      {
         name: 'leading',
         type: 'ReactNode',
         defaultValue: "''",
@@ -115,13 +131,6 @@ export const COMPONENTS_METADATA: Record<string, ComponentMetadata> = {
         controlType: 'text',
       },
       {
-        name: 'disabled',
-        type: 'boolean',
-        defaultValue: 'false',
-        description: 'Whether the button is disabled and prevents interactions',
-        controlType: 'boolean',
-      },
-      {
         name: 'children',
         type: 'ReactNode',
         defaultValue: "'Button'",
@@ -131,12 +140,162 @@ export const COMPONENTS_METADATA: Record<string, ComponentMetadata> = {
     ],
     defaultProps: {
       variant: 'default',
-      intent: 'primary',
+      intent: 'auto',
       size: 'default',
       align: 'center',
       wide: false,
+      loading: false,
       disabled: false,
       children: 'Click me',
+    },
+    usageGuide: {
+      summary:
+        'The Karan UI Button separates structural hierarchy (variant) from semantic color meaning (intent). When no intent is passed, variant="default" automatically resolves to primary, while secondary, outline, ghost, and link resolve to neutral. Corner radii, horizontal padding, icon dimensions, and internal gaps follow strict optical proportions (R/H ≈ 0.25 and Px ≥ R + 2px at 1x).',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/button',
+        registryUrl: 'https://karan-ui.dev/r/button.json',
+      },
+      features: [
+        {
+          title: 'Variants & Smart Default Intent Resolution',
+          badge: 'Hierarchy',
+          description:
+            'By default, variant="default" uses the primary accent palette to anchor the viewport CTA, whereas secondary, outline, ghost, and link automatically default to the neutral palette. Each variant follows a harmonic rest → hover → active color progression: default flows fill → fill-hover → fill-active, secondary flows interactive → interactive-hover → interactive-active, and link flows text-secondary → text → text-secondary.',
+          code: `import { Button } from "@/components/ui/button"
+
+export function ButtonVariantsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="default">Primary Action</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="outline">Outline</Button>
+      <Button variant="ghost">Ghost</Button>
+      <Button variant="link">Link Action</Button>
+    </div>
+  )
+}`,
+        },
+        {
+          title: 'Semantic Intents Across Variants (Replacing Destructive Variant)',
+          badge: '5 Intents',
+          description:
+            'Pass intent="primary" | "neutral" | "success" | "info" | "danger" to apply the 13-token OKLCH color scale to any structural variant with consistent lightness (-0.07 per step) and chroma intensification from rest → hover → active.',
+          code: `import { Button } from "@/components/ui/button"
+import { Trash2, CheckCircle2, Info } from "lucide-react"
+
+export function ButtonIntentsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button intent="primary">Primary</Button>
+      <Button intent="neutral">Neutral</Button>
+      <Button intent="success" leading={<CheckCircle2 />}>Approve</Button>
+      <Button intent="info" leading={<Info />}>Inspect</Button>
+      <Button intent="danger" leading={<Trash2 />}>Delete</Button>
+      <Button variant="outline" intent="danger">Revoke Access</Button>
+    </div>
+  )
+}`,
+        },
+        {
+          title: 'Proportional Size, Corner Radius & Padding Scale',
+          badge: '10px Default Radius at 1x',
+          description:
+            'At 1x theme geometry: default (h-8 / 32px) and lg (h-9 / 36px) use 10px corner radius (rounded-lg) with 12px (px-3) and 14px (px-3.5) horizontal padding. Compact xs (h-6 / 24px) and sm (h-7 / 28px) step down 1 level to 8px radius (rounded-md) with 8px padding (px-2).',
+          code: `import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
+
+export function ButtonSizesDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button size="xs" leading={<Plus />}>XS (24px · 8px radius)</Button>
+      <Button size="sm" leading={<Plus />}>SM (28px · 8px radius)</Button>
+      <Button size="default" leading={<Plus />}>Default (32px · 10px radius)</Button>
+      <Button size="lg" leading={<Plus />}>LG (36px · 10px radius)</Button>
+    </div>
+  )
+}`,
+        },
+        {
+          title: 'Leading, Trailing & Icon Alias Slots',
+          badge: 'Slots',
+          description:
+            'Use leading (or its alias icon) and trailing props to attach icons, badges, or keyboard shortcuts before and after button children. SVG icons without an explicit size-* class are automatically sized to match the button tier (12px for xs, 14px for sm, 16px for default/lg).',
+          code: `import { Button } from "@/components/ui/button"
+import { Mail, ArrowRight, Sparkles } from "lucide-react"
+
+export function ButtonAffixesDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button leading={<Mail />}>Continue with Email</Button>
+      <Button icon={<Sparkles />} variant="secondary">Generate</Button>
+      <Button trailing={<ArrowRight />} variant="outline">Next Step</Button>
+    </div>
+  )
+}`,
+        },
+        {
+          title: 'Full-Width Layout, Smart Slot Alignment & Async Loading',
+          badge: 'Layout & State',
+          description:
+            'When align="center", both leading and trailing stay grouped next to children in the center. When align="start", leading and children align to the start while trailing sticks to the end edge. Conversely, when align="end", leading sticks to the start edge while children and trailing align to the end.',
+          code: `import { Button } from "@/components/ui/button"
+import { Mail, ArrowRight, Sparkles } from "lucide-react"
+
+export function ButtonStateAndLayoutDemo() {
+  return (
+    <div className="flex flex-col gap-2.5 max-w-xs">
+      <Button wide align="start" variant="outline" leading={<Mail />} trailing={<ArrowRight />}>
+        Start (Trailing at End)
+      </Button>
+      <Button wide align="center" leading={<Sparkles />} trailing={<ArrowRight />}>
+        Center (Grouped)
+      </Button>
+      <Button wide align="end" variant="secondary" leading={<Mail />} trailing={<ArrowRight />}>
+        End (Leading at Start)
+      </Button>
+      <Button wide loading>
+        Saving Workspace...
+      </Button>
+    </div>
+  )
+}`,
+        },
+      ],
+      apiReference: [
+        {
+          name: 'Button',
+          type: 'React.FC<ButtonProps>',
+          description:
+            'Primary interactive button component built on @base-ui/react/button with variant, intent, size, wide, align, leading/icon, trailing, and loading props.',
+        },
+        {
+          name: 'buttonVariants',
+          type: '(props?: VariantProps<typeof buttonVariants>) => string',
+          description:
+            'CVA helper for applying button structural and size classes to custom elements or links.',
+        },
+        {
+          name: 'ButtonVariant',
+          type: "'default' | 'secondary' | 'outline' | 'ghost' | 'link'",
+          description: 'Union type representing structural emphasis levels.',
+        },
+        {
+          name: 'ButtonIntent',
+          type: "'primary' | 'neutral' | 'success' | 'info' | 'danger'",
+          description: 'Union type representing semantic OKLCH color intents.',
+        },
+        {
+          name: 'ButtonAlign',
+          type: "'start' | 'center' | 'end'",
+          description: 'Horizontal content alignment options inside the button.',
+        },
+      ],
+      tips: [
+        'Use intent="danger" across any variant (default, secondary, outline, ghost, or link) instead of a separate destructive variant.',
+        'Leave intent omitted for standard primary CTAs (variant="default") and neutral secondary actions (variant="secondary" | "outline" | "ghost") to preserve the 60-30-10 color balance.',
+        'Prefer passing icons via leading={<Icon />} or trailing={<Icon />} so automatic icon sizing (12px / 14px / 16px) and slot data attributes are applied consistently.',
+        'When rendering icon-only buttons (size="icon-xs" | "icon-sm" | "icon" | "icon-lg"), always provide an accessible aria-label.',
+      ],
     },
   },
 

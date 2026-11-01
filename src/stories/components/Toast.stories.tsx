@@ -63,7 +63,7 @@ export const ErrorToast: Story = {
     <div className="flex gap-4">
       <Toaster />
       <Button
-        variant="destructive"
+        intent="danger"
         onClick={() => {
           toast.add({
             title: 'Deployment Failed',

@@ -79,12 +79,27 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
     setTimeout(() => setCopiedCmd(false), 2000);
   };
 
-  // Generate JSX Code string based on active propsState
+  // Normalize props for live preview and code generation (strip 'auto' sentinel and empty affixes)
+  const resolvedProps = useMemo(() => {
+    const next: Record<string, any> = { ...propsState };
+    if (next.intent === 'auto') {
+      delete next.intent;
+    }
+    if (next.leading === '') {
+      delete next.leading;
+    }
+    if (next.trailing === '') {
+      delete next.trailing;
+    }
+    return next;
+  }, [propsState]);
+
+  // Generate JSX Code string based on active resolvedProps
   const generatedCode = useMemo(() => {
-    const propStrings = Object.entries(propsState)
+    const propStrings = Object.entries(resolvedProps)
       .filter(([key, value]) => {
         if (key === 'children') return false;
-        if (value === undefined || value === null) return false;
+        if (value === undefined || value === null || value === '') return false;
         if (typeof value === 'boolean' && !value) return false;
         return true;
       })
@@ -94,7 +109,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
         return `${key}={${JSON.stringify(value)}}`;
       });
 
-    const childrenContent = propsState.children || metadata.name;
+    const childrenContent = resolvedProps.children || metadata.name;
     const hasChildren = typeof childrenContent === 'string';
 
     const propsFormatted =
@@ -104,7 +119,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
       return `<${metadata.name}${propsFormatted}>\n  ${childrenContent}\n</${metadata.name}>`;
     }
     return `<${metadata.name}${propsFormatted} />`;
-  }, [metadata, propsState]);
+  }, [metadata, resolvedProps]);
 
   const copyCodeSnippet = async () => {
     try {
@@ -357,7 +372,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                     }`}
                   >
                     {PrimaryStory ? (
-                      <PrimaryStory {...propsState} />
+                      <PrimaryStory {...resolvedProps} />
                     ) : (
                       <div className="text-sm text-neutral-text-muted">
                         No primary story available.

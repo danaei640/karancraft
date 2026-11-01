@@ -295,7 +295,7 @@ function ThemeControlsDemo() {
                 <Button size="sm" className="rounded-md">rounded-md Button</Button>
                 <Button size="sm" variant="outline" className="rounded-lg">rounded-lg Button</Button>
                 <Button size="sm" variant="secondary" className="rounded-xl">rounded-xl Button</Button>
-                <Button size="sm" variant="destructive" className="rounded-full">rounded-full Button</Button>
+                <Button size="sm" intent="danger" className="rounded-full">rounded-full Button</Button>
                 <Badge variant="default" className="rounded-sm">rounded-sm Badge</Badge>
                 <Badge variant="outline" className="rounded-full">Pill Badge</Badge>
               </div>

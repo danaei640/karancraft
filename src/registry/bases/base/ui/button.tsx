@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
+import { Loader2 } from "lucide-react"
 import { cn } from "cn"
 
 export type ButtonVariant =
@@ -8,7 +9,6 @@ export type ButtonVariant =
   | "outline"
   | "secondary"
   | "ghost"
-  | "destructive"
   | "link"
 
 export type ButtonIntent =
@@ -17,94 +17,69 @@ export type ButtonIntent =
   | "success"
   | "danger"
   | "info"
-  | "destructive"
 
 export type ButtonAlign = "start" | "center" | "end"
 
 const INTENT_VARIANT_CLASSES: Record<ButtonIntent, Record<ButtonVariant, string>> = {
   primary: {
     default:
-      "bg-primary-fill text-primary-on-fill hover:bg-primary-fill-hover active:bg-primary-interactive-focus focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30",
+      "bg-primary-fill text-primary-on-fill hover:bg-primary-fill-hover active:bg-primary-fill-active focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30",
     secondary:
       "bg-primary-interactive text-primary-text hover:bg-primary-interactive-hover active:bg-primary-interactive-active focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30",
     outline:
-      "border-primary-interactive bg-neutral-surface dark:bg-transparent text-primary-text hover:bg-primary-interactive hover:text-primary-text active:bg-primary-interactive-hover dark:hover:bg-primary-interactive/30 dark:active:bg-primary-interactive-active/50 focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30",
+      "border-primary-interactive bg-neutral-surface dark:bg-transparent text-primary-text hover:bg-primary-interactive hover:text-primary-text active:bg-primary-interactive-hover focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30",
     ghost:
-      "bg-transparent text-primary-text hover:bg-primary-interactive hover:text-primary-text active:bg-primary-interactive-hover dark:hover:bg-primary-interactive/50 dark:active:bg-primary-interactive-active/70 focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30",
-    destructive:
-      "bg-primary-surface hover:bg-primary-interactive active:bg-primary-interactive-hover dark:bg-primary-interactive text-primary-text dark:hover:bg-primary-interactive-hover dark:active:bg-primary-interactive-active focus-visible:border-primary-fill/40 focus-visible:ring-primary-interactive-focus/30",
+      "bg-transparent text-primary-text hover:bg-primary-interactive hover:text-primary-text active:bg-primary-interactive-hover focus-visible:border-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30",
     link:
-      "bg-transparent text-primary-text underline-offset-4 hover:underline active:text-primary-interactive-focus focus-visible:ring-primary-interactive-focus/30",
+      "bg-transparent text-primary-text-secondary underline-offset-4 hover:text-primary-text hover:underline active:text-primary-text-secondary focus-visible:ring-primary-interactive-focus/30",
   },
   neutral: {
     default:
-      "bg-neutral-fill text-neutral-on-fill hover:bg-neutral-fill-hover active:bg-neutral-interactive-focus focus-visible:border-neutral-interactive-focus focus-visible:ring-neutral-interactive-focus/30",
+      "bg-neutral-fill text-neutral-on-fill hover:bg-neutral-fill-hover active:bg-neutral-fill-active focus-visible:border-neutral-interactive-focus focus-visible:ring-neutral-interactive-focus/30",
     secondary:
       "bg-neutral-interactive text-neutral-text hover:bg-neutral-interactive-hover active:bg-neutral-interactive-active focus-visible:border-neutral-interactive-focus focus-visible:ring-neutral-interactive-focus/30",
     outline:
-      "border-neutral-interactive bg-neutral-surface dark:bg-transparent text-neutral-text hover:bg-neutral-interactive hover:text-neutral-text active:bg-neutral-interactive-hover dark:hover:bg-neutral-interactive/30 dark:active:bg-neutral-interactive-active/50 focus-visible:border-neutral-interactive-focus focus-visible:ring-neutral-interactive-focus/30",
+      "border-neutral-interactive bg-neutral-surface dark:bg-transparent text-neutral-text hover:bg-neutral-interactive hover:text-neutral-text active:bg-neutral-interactive-hover focus-visible:border-neutral-interactive-focus focus-visible:ring-neutral-interactive-focus/30",
     ghost:
-      "bg-transparent text-neutral-text hover:bg-neutral-interactive hover:text-neutral-text active:bg-neutral-interactive-hover dark:hover:bg-neutral-interactive/50 dark:active:bg-neutral-interactive-active/70 focus-visible:border-neutral-interactive-focus focus-visible:ring-neutral-interactive-focus/30",
-    destructive:
-      "bg-neutral-surface-alt hover:bg-neutral-interactive active:bg-neutral-interactive-hover text-neutral-text focus-visible:border-neutral-fill/40 focus-visible:ring-neutral-interactive-focus/30",
+      "bg-transparent text-neutral-text hover:bg-neutral-interactive hover:text-neutral-text active:bg-neutral-interactive-hover focus-visible:border-neutral-interactive-focus focus-visible:ring-neutral-interactive-focus/30",
     link:
-      "bg-transparent text-neutral-text underline-offset-4 hover:underline active:text-neutral-interactive-focus focus-visible:ring-neutral-interactive-focus/30",
+      "bg-transparent text-neutral-text-secondary underline-offset-4 hover:text-neutral-text hover:underline active:text-neutral-text-secondary focus-visible:ring-neutral-interactive-focus/30",
   },
   success: {
     default:
-      "bg-success-fill text-success-on-fill hover:bg-success-fill-hover active:bg-success-interactive-focus focus-visible:border-success-interactive-focus focus-visible:ring-success-interactive-focus/30",
+      "bg-success-fill text-success-on-fill hover:bg-success-fill-hover active:bg-success-fill-active focus-visible:border-success-interactive-focus focus-visible:ring-success-interactive-focus/30",
     secondary:
       "bg-success-interactive text-success-text hover:bg-success-interactive-hover active:bg-success-interactive-active focus-visible:border-success-interactive-focus focus-visible:ring-success-interactive-focus/30",
     outline:
-      "border-success-interactive bg-neutral-surface dark:bg-transparent text-success-text hover:bg-success-interactive hover:text-success-text active:bg-success-interactive-hover dark:hover:bg-success-interactive/30 dark:active:bg-success-interactive-active/50 focus-visible:border-success-interactive-focus focus-visible:ring-success-interactive-focus/30",
+      "border-success-interactive bg-neutral-surface dark:bg-transparent text-success-text hover:bg-success-interactive hover:text-success-text active:bg-success-interactive-hover focus-visible:border-success-interactive-focus focus-visible:ring-success-interactive-focus/30",
     ghost:
-      "bg-transparent text-success-text hover:bg-success-interactive hover:text-success-text active:bg-success-interactive-hover dark:hover:bg-success-interactive/50 dark:active:bg-success-interactive-active/70 focus-visible:border-success-interactive-focus focus-visible:ring-success-interactive-focus/30",
-    destructive:
-      "bg-success-surface hover:bg-success-interactive active:bg-success-interactive-hover dark:bg-success-interactive text-success-text dark:hover:bg-success-interactive-hover dark:active:bg-success-interactive-active focus-visible:border-success-fill/40 focus-visible:ring-success-interactive-focus/30",
+      "bg-transparent text-success-text hover:bg-success-interactive hover:text-success-text active:bg-success-interactive-hover focus-visible:border-success-interactive-focus focus-visible:ring-success-interactive-focus/30",
     link:
-      "bg-transparent text-success-text underline-offset-4 hover:underline active:text-success-interactive-focus focus-visible:ring-success-interactive-focus/30",
+      "bg-transparent text-success-text-secondary underline-offset-4 hover:text-success-text hover:underline active:text-success-text-secondary focus-visible:ring-success-interactive-focus/30",
   },
   info: {
     default:
-      "bg-info-fill text-info-on-fill hover:bg-info-fill-hover active:bg-info-interactive-focus focus-visible:border-info-interactive-focus focus-visible:ring-info-interactive-focus/30",
+      "bg-info-fill text-info-on-fill hover:bg-info-fill-hover active:bg-info-fill-active focus-visible:border-info-interactive-focus focus-visible:ring-info-interactive-focus/30",
     secondary:
       "bg-info-interactive text-info-text hover:bg-info-interactive-hover active:bg-info-interactive-active focus-visible:border-info-interactive-focus focus-visible:ring-info-interactive-focus/30",
     outline:
-      "border-info-interactive bg-neutral-surface dark:bg-transparent text-info-text hover:bg-info-interactive hover:text-info-text active:bg-info-interactive-hover dark:hover:bg-info-interactive/30 dark:active:bg-info-interactive-active/50 focus-visible:border-info-interactive-focus focus-visible:ring-info-interactive-focus/30",
+      "border-info-interactive bg-neutral-surface dark:bg-transparent text-info-text hover:bg-info-interactive hover:text-info-text active:bg-info-interactive-hover focus-visible:border-info-interactive-focus focus-visible:ring-info-interactive-focus/30",
     ghost:
-      "bg-transparent text-info-text hover:bg-info-interactive hover:text-info-text active:bg-info-interactive-hover dark:hover:bg-info-interactive/50 dark:active:bg-info-interactive-active/70 focus-visible:border-info-interactive-focus focus-visible:ring-info-interactive-focus/30",
-    destructive:
-      "bg-info-surface hover:bg-info-interactive active:bg-info-interactive-hover dark:bg-info-interactive text-info-text dark:hover:bg-info-interactive-hover dark:active:bg-info-interactive-active focus-visible:border-info-fill/40 focus-visible:ring-info-interactive-focus/30",
+      "bg-transparent text-info-text hover:bg-info-interactive hover:text-info-text active:bg-info-interactive-hover focus-visible:border-info-interactive-focus focus-visible:ring-info-interactive-focus/30",
     link:
-      "bg-transparent text-info-text underline-offset-4 hover:underline active:text-info-interactive-focus focus-visible:ring-info-interactive-focus/30",
+      "bg-transparent text-info-text-secondary underline-offset-4 hover:text-info-text hover:underline active:text-info-text-secondary focus-visible:ring-info-interactive-focus/30",
   },
   danger: {
     default:
-      "bg-danger-fill text-danger-on-fill hover:bg-danger-fill-hover active:bg-danger-interactive-focus focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
+      "bg-danger-fill text-danger-on-fill hover:bg-danger-fill-hover active:bg-danger-fill-active focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
     secondary:
       "bg-danger-interactive text-danger-text hover:bg-danger-interactive-hover active:bg-danger-interactive-active focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
     outline:
-      "border-danger-interactive bg-neutral-surface dark:bg-transparent text-danger-text hover:bg-danger-interactive hover:text-danger-text active:bg-danger-interactive-hover dark:hover:bg-danger-interactive/30 dark:active:bg-danger-interactive-active/50 focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
+      "border-danger-interactive bg-neutral-surface dark:bg-transparent text-danger-text hover:bg-danger-interactive hover:text-danger-text active:bg-danger-interactive-hover focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
     ghost:
-      "bg-transparent text-danger-text hover:bg-danger-interactive hover:text-danger-text active:bg-danger-interactive-hover dark:hover:bg-danger-interactive/50 dark:active:bg-danger-interactive-active/70 focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
-    destructive:
-      "bg-danger-surface hover:bg-danger-interactive active:bg-danger-interactive-hover dark:bg-danger-interactive text-danger-text dark:hover:bg-danger-interactive-hover dark:active:bg-danger-interactive-active focus-visible:border-danger-fill/40 focus-visible:ring-danger-interactive-focus/30",
+      "bg-transparent text-danger-text hover:bg-danger-interactive hover:text-danger-text active:bg-danger-interactive-hover focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
     link:
-      "bg-transparent text-danger-text underline-offset-4 hover:underline active:text-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
-  },
-  destructive: {
-    default:
-      "bg-danger-surface hover:bg-danger-interactive active:bg-danger-interactive-hover dark:bg-danger-interactive text-danger-text dark:hover:bg-danger-interactive-hover dark:active:bg-danger-interactive-active focus-visible:border-danger-fill/40 focus-visible:ring-danger-interactive-focus/30",
-    secondary:
-      "bg-danger-interactive text-danger-text hover:bg-danger-interactive-hover active:bg-danger-interactive-active focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
-    outline:
-      "border-danger-interactive bg-neutral-surface dark:bg-transparent text-danger-text hover:bg-danger-interactive hover:text-danger-text active:bg-danger-interactive-hover dark:hover:bg-danger-interactive/30 dark:active:bg-danger-interactive-active/50 focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
-    ghost:
-      "bg-transparent text-danger-text hover:bg-danger-interactive hover:text-danger-text active:bg-danger-interactive-hover dark:hover:bg-danger-interactive/50 dark:active:bg-danger-interactive-active/70 focus-visible:border-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
-    destructive:
-      "bg-danger-surface hover:bg-danger-interactive active:bg-danger-interactive-hover dark:bg-danger-interactive text-danger-text dark:hover:bg-danger-interactive-hover dark:active:bg-danger-interactive-active focus-visible:border-danger-fill/40 focus-visible:ring-danger-interactive-focus/30",
-    link:
-      "bg-transparent text-danger-text underline-offset-4 hover:underline active:text-danger-interactive-focus focus-visible:ring-danger-interactive-focus/30",
+      "bg-transparent text-danger-text-secondary underline-offset-4 hover:text-danger-text hover:underline active:text-danger-text-secondary focus-visible:ring-danger-interactive-focus/30",
   },
 }
 
@@ -117,18 +92,17 @@ const buttonVariants = cva(
         outline: "cn-button-variant-outline",
         secondary: "cn-button-variant-secondary",
         ghost: "cn-button-variant-ghost",
-        destructive: "cn-button-variant-destructive",
         link: "cn-button-variant-link",
       },
       size: {
-        default: "cn-button-size-default",
-        xs: "cn-button-size-xs rounded-lg",
-        sm: "cn-button-size-sm",
-        lg: "cn-button-size-lg",
-        icon: "cn-button-size-icon",
-        "icon-xs": "cn-button-size-icon-xs rounded-lg",
-        "icon-sm": "cn-button-size-icon-sm",
-        "icon-lg": "cn-button-size-icon-lg",
+        xs: "cn-button-size-xs h-6 gap-1 rounded-md px-2 text-xs [&_svg:not([class*='size-'])]:size-3",
+        sm: "cn-button-size-sm h-7 gap-1 rounded-md px-2 text-xs [&_svg:not([class*='size-'])]:size-3.5",
+        default: "cn-button-size-default h-8 gap-1.5 rounded-lg px-3 text-sm [&_svg:not([class*='size-'])]:size-4",
+        lg: "cn-button-size-lg h-9 gap-2 rounded-lg px-3.5 text-sm [&_svg:not([class*='size-'])]:size-4",
+        "icon-xs": "cn-button-size-icon-xs size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm": "cn-button-size-icon-sm size-7 rounded-md [&_svg:not([class*='size-'])]:size-3.5",
+        icon: "cn-button-size-icon size-8 rounded-lg [&_svg:not([class*='size-'])]:size-4",
+        "icon-lg": "cn-button-size-icon-lg size-9 rounded-lg [&_svg:not([class*='size-'])]:size-4",
       },
       wide: {
         true: "flex w-full",
@@ -155,6 +129,7 @@ export interface ButtonProps
   className?: string
   /**
    * Semantic color intent for the button across variants.
+   * Defaults to `"primary"` for `variant="default"` and `"neutral"` for all other variants.
    */
   intent?: ButtonIntent
   /**
@@ -177,6 +152,10 @@ export interface ButtonProps
    * Element or icon rendered after `children`.
    */
   trailing?: React.ReactNode
+  /**
+   * Displays an inline spinner in the leading slot and disables interactions.
+   */
+  loading?: boolean
 }
 
 function Button({
@@ -189,25 +168,37 @@ function Button({
   leading,
   icon,
   trailing,
+  loading = false,
+  disabled,
   children,
   ...props
 }: ButtonProps) {
   const resolvedVariant: ButtonVariant = variant || "default"
-  const leadingNode = leading ?? icon
-  const hasAffixes = leadingNode !== undefined && leadingNode !== null || (trailing !== undefined && trailing !== null)
+  const resolvedIntent: ButtonIntent =
+    intent ?? (resolvedVariant === "default" ? "primary" : "neutral")
 
-  const intentClasses = intent
-    ? INTENT_VARIANT_CLASSES[intent]?.[resolvedVariant]
-    : undefined
+  const leadingNode = loading ? (
+    <Loader2 className="animate-spin" aria-hidden="true" />
+  ) : (
+    leading ?? icon
+  )
+  const hasAffixes =
+    (leadingNode !== undefined && leadingNode !== null) ||
+    (trailing !== undefined && trailing !== null)
+
+  const intentClasses = INTENT_VARIANT_CLASSES[resolvedIntent]?.[resolvedVariant]
 
   return (
     <ButtonPrimitive
       data-slot="button"
       data-variant={resolvedVariant}
       data-size={size || "default"}
-      data-intent={intent}
+      data-intent={resolvedIntent}
       data-wide={wide ? "" : undefined}
       data-align={align}
+      data-loading={loading ? "" : undefined}
+      aria-busy={loading || undefined}
+      disabled={disabled || loading}
       className={cn(
         buttonVariants({ variant: resolvedVariant, size, wide, align }),
         intentClasses,
@@ -221,7 +212,10 @@ function Button({
             <span
               data-slot="button-leading"
               data-icon="inline-start"
-              className="inline-flex shrink-0 items-center justify-center"
+              className={cn(
+                "inline-flex shrink-0 items-center justify-center",
+                align === "end" && "mr-auto"
+              )}
             >
               {leadingNode}
             </span>
@@ -231,7 +225,10 @@ function Button({
             <span
               data-slot="button-trailing"
               data-icon="inline-end"
-              className="inline-flex shrink-0 items-center justify-center"
+              className={cn(
+                "inline-flex shrink-0 items-center justify-center",
+                align === "start" && "ml-auto"
+              )}
             >
               {trailing}
             </span>
