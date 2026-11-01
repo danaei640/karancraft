@@ -108,8 +108,8 @@ export interface TypesetConfig extends TypesetMeasurements {
  */
 export const TYPESET_PRESETS: Record<TypesetPresetName, Required<TypesetMeasurements>> = {
   default: {
-    size: "1em",
-    leading: 1.75,
+    size: "16px",
+    leading: 1.65,
     flow: "1.25em",
     measure: "65ch",
     fontBody: "inherit",
@@ -126,8 +126,8 @@ export const TYPESET_PRESETS: Record<TypesetPresetName, Required<TypesetMeasurem
     fontMono: "inherit",
   },
   chat: {
-    size: "1em",
-    leading: 1.6,
+    size: "14.5px",
+    leading: 1.55,
     flow: "1em",
     measure: "60ch",
     fontBody: "inherit",
@@ -144,23 +144,39 @@ export const TYPESET_PRESETS: Record<TypesetPresetName, Required<TypesetMeasurem
     fontMono: "inherit",
   },
   compact: {
-    size: "14px",
-    leading: 1.6,
-    flow: "1em",
-    measure: "60ch",
+    size: "13.5px",
+    leading: 1.45,
+    flow: "0.9em",
+    measure: "58ch",
     fontBody: "inherit",
     fontHeading: "inherit",
     fontMono: "inherit",
   },
   large: {
-    size: "16px",
-    leading: 2,
-    flow: "2em",
+    size: "17px",
+    leading: 1.85,
+    flow: "1.75em",
     measure: "70ch",
     fontBody: "inherit",
     fontHeading: "inherit",
     fontMono: "inherit",
   },
+}
+
+function computeTypesetScale(size: string): number {
+  const trimmed = String(size || "16px").trim()
+  if (trimmed.endsWith("px")) {
+    const px = parseFloat(trimmed)
+    if (!isNaN(px) && px > 0) return Number((px / 16).toFixed(4))
+  }
+  if (trimmed.endsWith("rem") || trimmed.endsWith("em")) {
+    const em = parseFloat(trimmed)
+    if (!isNaN(em) && em > 0) return Number(em.toFixed(4))
+  }
+  const raw = parseFloat(trimmed)
+  if (!isNaN(raw) && raw > 4) return Number((raw / 16).toFixed(4))
+  if (!isNaN(raw) && raw > 0) return Number(raw.toFixed(4))
+  return 1
 }
 
 export interface TypesetContextValue {
@@ -848,15 +864,6 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
   const initialWhitespace = React.useMemo(() => {
     if (hasExplicitWhitespace) return explicitWhitespace!
     if (isNested && parentColorTheme) return parentColorTheme.whitespace
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem("karan-theme-whitespace")
-        if (saved) {
-          const num = parseFloat(saved)
-          if (!isNaN(num) && num > 0) return num
-        }
-      } catch {}
-    }
     return 1
   }, [hasExplicitWhitespace, explicitWhitespace, isNested, parentColorTheme])
 
@@ -867,19 +874,33 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
   const initialRadius = React.useMemo(() => {
     if (hasExplicitRadius) return radiusProp!
     if (isNested && parentColorTheme) return parentColorTheme.radius
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem("karan-theme-radius")
-        if (saved) {
-          const num = parseFloat(saved)
-          if (!isNaN(num) && num >= 0) return num
-        }
-      } catch {}
-    }
     return 1
   }, [hasExplicitRadius, radiusProp, isNested, parentColorTheme])
 
   const [currentRadius, setCurrentRadius] = React.useState<number>(initialRadius)
+
+  // Hydrate persisted geometry and typeset from localStorage after mount (prevents SSR/client hydration mismatch)
+  React.useEffect(() => {
+    if (isNested) return
+    if (!hasExplicitWhitespace) {
+      try {
+        const savedWs = localStorage.getItem("karan-theme-whitespace")
+        if (savedWs) {
+          const num = parseFloat(savedWs)
+          if (!isNaN(num) && num > 0) setCurrentWhitespace(num)
+        }
+      } catch {}
+    }
+    if (!hasExplicitRadius) {
+      try {
+        const savedRad = localStorage.getItem("karan-theme-radius")
+        if (savedRad) {
+          const num = parseFloat(savedRad)
+          if (!isNaN(num) && num >= 0) setCurrentRadius(num)
+        }
+      } catch {}
+    }
+  }, [isNested, hasExplicitWhitespace, hasExplicitRadius])
 
   // Synchronize when explicit props change or when parent theme changes (if not explicitly overridden)
   React.useEffect(() => {
@@ -898,6 +919,11 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
     }
   }, [hasExplicitRadius, radiusProp, isNested, parentColorTheme?.radius])
 
+  const typesetScale = React.useMemo(
+    () => computeTypesetScale(resolvedMeasurements.size),
+    [resolvedMeasurements.size]
+  )
+
   // Realtime synchronization to documentElement CSS custom properties for root provider
   React.useEffect(() => {
     if (isNested || typeof document === "undefined") return
@@ -914,11 +940,21 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
     root.style.setProperty("--radius-2xl", `calc(0.625rem * ${currentRadius} * 1.8)`)
     root.style.setProperty("--radius-3xl", `calc(0.625rem * ${currentRadius} * 2.2)`)
     root.style.setProperty("--radius-4xl", `calc(0.625rem * ${currentRadius} * 2.6)`)
-  }, [isNested, currentWhitespace, currentRadius])
+
+    // Typeset rhythm live synchronization
+    root.style.setProperty("--typeset-scale", String(typesetScale))
+    root.style.setProperty("--typeset-size", resolvedMeasurements.size)
+    root.style.setProperty("--typeset-leading", String(resolvedMeasurements.leading))
+    root.style.setProperty("--typeset-flow", resolvedMeasurements.flow)
+    root.style.setProperty("--typeset-measure", resolvedMeasurements.measure)
+    root.style.setProperty("--typeset-font-body", resolvedMeasurements.fontBody)
+    root.style.setProperty("--typeset-font-heading", resolvedMeasurements.fontHeading)
+    root.style.setProperty("--typeset-font-mono", resolvedMeasurements.fontMono)
+  }, [isNested, currentWhitespace, currentRadius, typesetScale, resolvedMeasurements])
 
   const handleSetWhitespace = React.useCallback(
     (val: number) => {
-      const clamped = Math.max(0.4, Math.min(2.5, Number(val.toFixed(2))))
+      const clamped = Math.max(0.4, Math.min(2.5, Number(val.toFixed(4))))
       setCurrentWhitespace(clamped)
       if (!isNested && typeof window !== "undefined") {
         try {
@@ -931,7 +967,7 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
 
   const handleSetRadius = React.useCallback(
     (val: number) => {
-      const clamped = Math.max(0, Math.min(3, Number(val.toFixed(2))))
+      const clamped = Math.max(0, Math.min(3, Number(val.toFixed(4))))
       setCurrentRadius(clamped)
       if (!isNested && typeof window !== "undefined") {
         try {
@@ -945,6 +981,8 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
   const handleResetGeometry = React.useCallback(() => {
     setCurrentWhitespace(1)
     setCurrentRadius(1)
+    setActivePreset("default")
+    setTypesetOverrides({})
     if (!isNested && typeof window !== "undefined") {
       try {
         localStorage.removeItem("karan-theme-whitespace")
@@ -1021,6 +1059,7 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
   // Injected CSS variables stylesheet for typeset root cascading
   const typesetCssVars = `
 :root, .typeset {
+  --typeset-scale: ${typesetScale};
   --typeset-size: ${resolvedMeasurements.size};
   --typeset-leading: ${resolvedMeasurements.leading};
   --typeset-flow: ${resolvedMeasurements.flow};
@@ -1104,6 +1143,7 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
       {/* Global CSS variables injection for typeset rhythm */}
       <style
         data-karan-typeset=""
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: typesetCssVars }}
       />
 
@@ -1111,6 +1151,7 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
       {paletteCssString && (
         <style
           data-karan-palette=""
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: paletteCssString }}
         />
       )}
@@ -1118,6 +1159,7 @@ function safeParseAccentColor(input: any): OklchColor | undefined {
       {/* Global CSS variables injection for geometry (whitespace & radius) */}
       <style
         data-karan-geometry=""
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: geometryCssString }}
       />
 

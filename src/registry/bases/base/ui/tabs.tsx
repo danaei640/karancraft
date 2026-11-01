@@ -32,9 +32,9 @@ const tabsListVariants = cva(
     variants: {
       variant: {
         default:
-          "cn-tabs-list-variant-default w-fit justify-center rounded-full bg-neutral-surface-alt p-1 border border-neutral-interactive/50 h-9 data-[orientation=vertical]:h-auto data-[orientation=vertical]:w-fit data-[orientation=vertical]:flex-col gap-1 shadow-2xs",
+          "cn-tabs-list-variant-default w-fit items-center justify-center rounded-full bg-neutral-surface-alt p-1 border border-neutral-interactive/60 h-9 data-[orientation=vertical]:h-auto data-[orientation=vertical]:w-fit data-[orientation=vertical]:flex-col gap-1 shadow-2xs",
         line:
-          "cn-tabs-list-variant-line w-full justify-start rounded-none bg-transparent p-0 border-b border-neutral-interactive/40 gap-4 sm:gap-6",
+          "cn-tabs-list-variant-line w-full items-center justify-start rounded-none bg-transparent p-0 border-b border-neutral-interactive/50 gap-1.5 h-auto",
       },
     },
     defaultVariants: {
@@ -73,8 +73,8 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
       className={cn(
         "cn-tabs-trigger relative inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary-interactive-focus disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 cursor-pointer select-none",
         variant === "line"
-          ? "rounded-none bg-transparent! shadow-none px-1 pb-2.5 pt-1 text-neutral-text-muted hover:text-neutral-text border-b-2 border-transparent data-[active]:border-primary-fill data-active:border-primary-fill data-[active]:text-neutral-text data-active:text-neutral-text data-[active]:font-semibold data-active:font-semibold -mb-px"
-          : "h-[calc(100%-2px)] flex-1 rounded-full px-3.5 py-1 text-neutral-text-muted hover:text-neutral-text data-[active]:bg-neutral-surface data-active:bg-neutral-surface data-[active]:text-neutral-text data-active:text-neutral-text data-[active]:shadow-sm data-active:shadow-sm data-[active]:border data-active:border data-[active]:border-neutral-interactive/70 data-active:border-neutral-interactive/70 data-[active]:font-semibold data-active:font-semibold dark:data-[active]:bg-neutral-interactive dark:data-active:bg-neutral-interactive dark:data-[active]:text-neutral-text dark:data-active:text-neutral-text dark:data-[active]:border-neutral-interactive-hover dark:data-active:border-neutral-interactive-hover",
+          ? "h-auto rounded-none bg-transparent! shadow-none px-3 pb-2.5 pt-1.5 text-neutral-text-muted hover:text-neutral-text border-b-2 border-transparent hover:border-neutral-interactive/70 data-[active]:border-primary-fill data-active:border-primary-fill data-[active]:text-neutral-text data-active:text-neutral-text -mb-px"
+          : "h-full flex-1 rounded-full px-3.5 py-0 leading-none text-neutral-text-muted hover:text-neutral-text border border-transparent data-[active]:bg-neutral-surface data-active:bg-neutral-surface data-[active]:text-neutral-text data-active:text-neutral-text data-[active]:shadow-xs data-active:shadow-xs data-[active]:border-neutral-interactive/70 data-active:border-neutral-interactive/70 dark:data-[active]:bg-neutral-interactive dark:data-active:bg-neutral-interactive dark:data-[active]:text-neutral-text dark:data-active:text-neutral-text dark:data-[active]:border-neutral-interactive-hover dark:data-active:border-neutral-interactive-hover",
         className
       )}
       {...props}

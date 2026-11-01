@@ -15,6 +15,15 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
+  --text-xs: calc(0.75rem * var(--typeset-scale, 1));
+  --text-sm: calc(0.875rem * var(--typeset-scale, 1));
+  --text-base: calc(1rem * var(--typeset-scale, 1));
+  --text-lg: calc(1.125rem * var(--typeset-scale, 1));
+  --text-xl: calc(1.25rem * var(--typeset-scale, 1));
+  --text-2xl: calc(1.5rem * var(--typeset-scale, 1));
+  --text-3xl: calc(1.875rem * var(--typeset-scale, 1));
+  --text-4xl: calc(2.25rem * var(--typeset-scale, 1));
+
   /* ── Primary Set (13 tokens) ── */
   --color-primary-surface: var(--primary-surface);
   --color-primary-surface-alt: var(--primary-surface-alt);
@@ -213,6 +222,11 @@
 :root {
   --theme-whitespace: 1;
   --theme-radius: 1;
+  --typeset-scale: 1;
+  --typeset-size: 16px;
+  --typeset-leading: 1.65;
+  --typeset-flow: 1.25em;
+  --typeset-measure: 65ch;
   --radius: calc(0.625rem * var(--theme-radius, 1));
   --primary-surface: oklch(0.985 0.01 264);
   --primary-surface-alt: oklch(0.95 0.016 264);
@@ -375,7 +389,7 @@
   --danger-on-fill: oklch(0.15 0.0058 25);
 }
 
-@import "../registry/styles/style-karan.css";
+@import "../registry/styles/style-karan.css" layer(components);
 
 /* Custom Sleek Scrollbar */
 @supports (scrollbar-width: thin) {
@@ -404,12 +418,28 @@
   background: var(--neutral-interactive-hover);
 }
 
-* {
-  border-color: var(--neutral-interactive);
+@layer base {
+  * {
+    border-color: var(--neutral-interactive);
+  }
+
+  body {
+    background-color: var(--neutral-surface);
+    color: var(--neutral-text);
+    font-size: var(--typeset-size, 16px);
+    line-height: var(--typeset-leading, 1.65);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  p {
+    line-height: var(--typeset-leading, 1.65);
+  }
 }
 
-body {
-  background-color: var(--neutral-surface);
-  color: var(--neutral-text);
-  font-feature-settings: "rlig" 1, "calt" 1;
+[data-theme-studio] {
+  --typeset-scale: 1;
+  --theme-whitespace: 1;
+  font-size: 14px;
+  line-height: 1.5;
 }
+

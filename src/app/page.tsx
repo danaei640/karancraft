@@ -168,7 +168,7 @@ export default function LandingPage() {
 
             {/* Stage Content with Tabs using Line Variant */}
             <Tabs defaultValue="buttons" className="mt-6">
-              <TabsList variant="line" className="gap-6 mb-6">
+              <TabsList variant="line" className="mb-6">
                 <TabsTrigger value="buttons" className="text-xs sm:text-sm">
                   Action Buttons
                 </TabsTrigger>

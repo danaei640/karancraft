@@ -188,7 +188,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
             value={activeTab}
             onValueChange={(val) => setActiveTab(val as 'guide' | 'canvas' | 'stories')}
           >
-            <TabsList variant="line" className="gap-6">
+            <TabsList variant="line">
               <TabsTrigger value="guide" className="flex items-center gap-2">
                 <BookOpen className="size-3.5" />
                 <span>Usage Guide</span>

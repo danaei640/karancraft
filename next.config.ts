@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: "standalone",
+  allowedDevOrigins: [
+    "**.run.app",
+    "*.run.app",
+    "**.google.com",
+    "**.googlers.com",
+  ],
 };
 
 export default nextConfig;
