@@ -17,7 +17,9 @@ import * as CardStories from '@/stories/components/Card.stories';
 import * as CarouselStories from '@/stories/components/Carousel.stories';
 import * as ChartStories from '@/stories/components/Chart.stories';
 import * as CheckboxStories from '@/stories/components/Checkbox.stories';
+import * as CheckboxGroupStories from '@/stories/components/CheckboxGroup.stories';
 import * as CollapsibleStories from '@/stories/components/Collapsible.stories';
+import * as CollapsibleSectionStories from '@/stories/components/CollapsibleSection.stories';
 import * as ComboboxStories from '@/stories/components/Combobox.stories';
 import * as CommandStories from '@/stories/components/Command.stories';
 import * as ContextMenuStories from '@/stories/components/ContextMenu.stories';
@@ -34,7 +36,6 @@ import * as ItemStories from '@/stories/components/Item.stories';
 import * as KbdStories from '@/stories/components/Kbd.stories';
 import * as LabelStories from '@/stories/components/Label.stories';
 import * as MenubarStories from '@/stories/components/Menubar.stories';
-import * as NativeSelectStories from '@/stories/components/NativeSelect.stories';
 import * as NavigationMenuStories from '@/stories/components/NavigationMenu.stories';
 import * as PaginationStories from '@/stories/components/Pagination.stories';
 import * as PopoverStories from '@/stories/components/Popover.stories';
@@ -73,7 +74,9 @@ const MODULES_MAP: Record<string, any> = {
   carousel: CarouselStories,
   chart: ChartStories,
   checkbox: CheckboxStories,
+  'checkbox-group': CheckboxGroupStories,
   collapsible: CollapsibleStories,
+  'collapsible-section': CollapsibleSectionStories,
   combobox: ComboboxStories,
   command: CommandStories,
   'context-menu': ContextMenuStories,
@@ -90,7 +93,6 @@ const MODULES_MAP: Record<string, any> = {
   kbd: KbdStories,
   label: LabelStories,
   menubar: MenubarStories,
-  'native-select': NativeSelectStories,
   'navigation-menu': NavigationMenuStories,
   pagination: PaginationStories,
   popover: PopoverStories,

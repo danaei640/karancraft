@@ -9,6 +9,7 @@ export default function ComponentsLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   return (
@@ -16,12 +17,19 @@ export default function ComponentsLayout({
       {/* Unified Global Site Header */}
       <SiteHeader
         showSidebarToggle
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
         onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)}
       />
 
       <div className="flex-1 flex min-w-0 overflow-hidden relative">
-        {/* Desktop Fixed Sidebar */}
-        <div className="hidden md:block shrink-0">
+        {/* Desktop Collapsible Sidebar */}
+        <div
+          aria-hidden={!sidebarOpen}
+          className={`hidden md:block shrink-0 overflow-hidden transition-[width,opacity] duration-200 ease-in-out ${
+            sidebarOpen ? 'w-72 opacity-100' : 'w-0 opacity-0 pointer-events-none'
+          }`}
+        >
           <ComponentSidebar />
         </div>
 

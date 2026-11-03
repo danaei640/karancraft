@@ -7,6 +7,7 @@ import {
   ComponentMetadata,
 } from '@/lib/components-meta';
 import { getComposedStories, PortableStoryItem } from '@/lib/portable-stories';
+import type { ExtractedStorySource } from '@/lib/story-source';
 import {
   Sparkles,
   Copy,
@@ -20,14 +21,101 @@ import {
   Layers,
   Terminal,
   BookOpen,
+  Code2,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/registry/bases/base/ui/tabs';
 
 interface ComponentWorkbenchProps {
   slug: string;
+  storySources?: Record<string, ExtractedStorySource>;
 }
 
-export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
+function injectLivePropsIntoTemplate(
+  rawTemplate: string,
+  resolvedProps: Record<string, any>
+): string {
+  const spreadMatch = rawTemplate.match(/\{\.\.\.(?:args|props)\}/);
+  if (!spreadMatch) {
+    return rawTemplate;
+  }
+
+  let updated = rawTemplate;
+
+  // Build prop strings and reconcile any attributes already present on the tag containing {...args}/{...props}
+  const propStrings: string[] = [];
+
+  for (const [key, value] of Object.entries(resolvedProps)) {
+    if (key === 'children') continue;
+    if (value === undefined || value === null || value === '') continue;
+
+    // Check if the template already has this boolean shorthand or key=... attribute before {...args}/{...props}
+    const existingAttrRegex = new RegExp(
+      `\\b${key}(?:=(?:"[^"]*"|'[^']*'|\\{[^}]*\\}))?\\b`
+    );
+
+    if (typeof value === 'boolean') {
+      if (existingAttrRegex.test(updated)) {
+        if (value) {
+          updated = updated.replace(existingAttrRegex, key);
+        } else {
+          // Remove standalone boolean prop if turned off
+          updated = updated
+            .replace(new RegExp(`\\n[ \\t]*${key}\\b[ \\t]*(?=\\n)`), '')
+            .replace(new RegExp(`\\s+${key}\\b`), '');
+        }
+      } else if (value) {
+        propStrings.push(key);
+      }
+      continue;
+    }
+
+    const formattedAttr =
+      typeof value === 'string'
+        ? `${key}="${value}"`
+        : `${key}={${JSON.stringify(value)}}`;
+
+    if (existingAttrRegex.test(updated)) {
+      updated = updated.replace(existingAttrRegex, formattedAttr);
+    } else {
+      propStrings.push(formattedAttr);
+    }
+  }
+
+  // Replace {...args} / {...props} with remaining propStrings
+  const standaloneLineRegex = /^([ \t]*)\{\.\.\.(?:args|props)\}[ \t]*$/m;
+  const lineMatch = updated.match(standaloneLineRegex);
+
+  if (lineMatch) {
+    const indent = lineMatch[1];
+    if (propStrings.length === 0) {
+      updated = updated.replace(
+        /\n[ \t]*\{\.\.\.(?:args|props)\}[ \t]*(?=\n)/,
+        ''
+      );
+    } else {
+      const replacementLines = propStrings.map((p) => `${indent}${p}`).join('\n');
+      updated = updated.replace(standaloneLineRegex, replacementLines);
+    }
+  } else {
+    if (propStrings.length === 0) {
+      updated = updated.replace(/\s*\{\.\.\.(?:args|props)\}/, '');
+    } else {
+      updated = updated.replace(
+        /\{\.\.\.(?:args|props)\}/,
+        propStrings.join(' ')
+      );
+    }
+  }
+
+  return updated;
+}
+
+export function ComponentWorkbench({
+  slug,
+  storySources = {},
+}: ComponentWorkbenchProps) {
   const metadata: ComponentMetadata =
     COMPONENTS_METADATA[slug] || COMPONENTS_METADATA.button;
 
@@ -41,6 +129,12 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedSnippetId, setCopiedSnippetId] = useState<string | null>(null);
   const [copiedStoryId, setCopiedStoryId] = useState<string | null>(null);
+
+  // Code visibility toggles for Canvas and Stories
+  const [showCanvasCode, setShowCanvasCode] = useState(false);
+  const [canvasCodeMode, setCanvasCodeMode] = useState<'jsx' | 'full'>('full');
+  const [openStoryCodeIds, setOpenStoryCodeIds] = useState<Record<string, boolean>>({});
+  const [storyCodeModes, setStoryCodeModes] = useState<Record<string, 'full' | 'jsx'>>({});
 
   const handleCopySnippet = async (id: string, text: string) => {
     try {
@@ -91,11 +185,26 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
     if (next.trailing === '') {
       delete next.trailing;
     }
+    if (
+      next.tooltip === '' ||
+      next.tooltip === 'null' ||
+      next.tooltip === 'false'
+    ) {
+      delete next.tooltip;
+    } else if (next.tooltip === 'true') {
+      next.tooltip = true;
+    }
     return next;
   }, [propsState]);
 
-  // Generate JSX Code string based on active resolvedProps
-  const generatedCode = useMemo(() => {
+  const primaryStorySource = useMemo(() => {
+    if (storySources.Default) return storySources.Default;
+    const keys = Object.keys(storySources);
+    return keys.length > 0 ? storySources[keys[0]] : undefined;
+  }, [storySources]);
+
+  // Generate JSX & Full Code for the Canvas based on active resolvedProps and Default story template
+  const { canvasJsxCode, canvasFullCode } = useMemo(() => {
     const propStrings = Object.entries(resolvedProps)
       .filter(([key, value]) => {
         if (key === 'children') return false;
@@ -111,38 +220,103 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
 
     const childrenContent = resolvedProps.children || metadata.name;
     const hasChildren = typeof childrenContent === 'string';
-
     const propsFormatted =
       propStrings.length > 0 ? ` ${propStrings.join(' ')}` : '';
 
-    if (hasChildren) {
-      return `<${metadata.name}${propsFormatted}>\n  ${childrenContent}\n</${metadata.name}>`;
+    const fallbackJsx = hasChildren
+      ? `<${metadata.name}${propsFormatted}>\n  ${childrenContent}\n</${metadata.name}>`
+      : `<${metadata.name}${propsFormatted} />`;
+
+    if (primaryStorySource && !primaryStorySource.isArgsOnly) {
+      const liveJsx = injectLivePropsIntoTemplate(
+        primaryStorySource.rawTemplate,
+        resolvedProps
+      );
+      const indentedJsx = liveJsx
+        .split('\n')
+        .map((l) => (l.trim() ? `    ${l}` : ''))
+        .join('\n');
+      const importBlock =
+        primaryStorySource.imports ||
+        `import { ${metadata.name} } from '@/components/ui/${metadata.id}';`;
+      const liveFull = liveJsx.startsWith('function ')
+        ? `${importBlock}\n\nexport ${liveJsx}`
+        : `${importBlock}\n\nexport function ${metadata.name.replace(/[^a-zA-Z0-9]/g, '')}Demo() {\n  return (\n${indentedJsx}\n  );\n}`;
+      return {
+        canvasJsxCode: liveJsx,
+        canvasFullCode: liveFull,
+      };
     }
-    return `<${metadata.name}${propsFormatted} />`;
-  }, [metadata, resolvedProps]);
+
+    const importLine =
+      primaryStorySource?.imports ||
+      `import { ${metadata.name} } from '@/components/ui/${metadata.id}';`;
+    const indentedFallback = fallbackJsx
+      .split('\n')
+      .map((l) => (l.trim() ? `    ${l}` : ''))
+      .join('\n');
+    const fullFallback = `${importLine}\n\nexport function ${metadata.name.replace(/[^a-zA-Z0-9]/g, '')}Demo() {\n  return (\n${indentedFallback}\n  );\n}`;
+
+    return {
+      canvasJsxCode: fallbackJsx,
+      canvasFullCode: fullFallback,
+    };
+  }, [metadata, resolvedProps, primaryStorySource]);
+
+  const activeCanvasCode =
+    canvasCodeMode === 'full' ? canvasFullCode : canvasJsxCode;
 
   const copyCodeSnippet = async () => {
     try {
-      await navigator.clipboard.writeText(generatedCode);
+      await navigator.clipboard.writeText(activeCanvasCode);
     } catch {}
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  // Helper to generate code for a story variant
-  const getStoryCode = (story: PortableStoryItem) => {
+  // Helper to get code for a story variant
+  const getStoryCode = (story: PortableStoryItem, mode: 'full' | 'jsx' = 'full') => {
+    const extracted = storySources[story.id];
+    if (extracted) {
+      return mode === 'jsx' ? extracted.jsx : extracted.fullCode;
+    }
     const isDefault = story.id.toLowerCase() === 'default';
     const variantProp = isDefault ? '' : ` variant="${story.id}"`;
-    return `import { ${metadata.name} } from "@/components/ui/${metadata.id}";\n\nexport function ${story.name.replace(/[^a-zA-Z0-9]/g, '')}Demo() {\n  return (\n    <${metadata.name}${variantProp}>${story.name}</${metadata.name}>\n  );\n}`;
+    const jsx = `<${metadata.name}${variantProp}>${story.name}</${metadata.name}>`;
+    if (mode === 'jsx') return jsx;
+    return `import { ${metadata.name} } from '@/components/ui/${metadata.id}';\n\nexport function ${story.name.replace(/[^a-zA-Z0-9]/g, '')}Demo() {\n  return (\n    ${jsx}\n  );\n}`;
   };
 
   const handleCopyStory = async (story: PortableStoryItem) => {
-    const code = getStoryCode(story);
+    const mode = storyCodeModes[story.id] || 'full';
+    const code = getStoryCode(story, mode);
     try {
       await navigator.clipboard.writeText(code);
     } catch {}
     setCopiedStoryId(story.id);
     setTimeout(() => setCopiedStoryId(null), 2000);
+  };
+
+  const toggleStoryCode = (storyId: string) => {
+    setOpenStoryCodeIds((prev) => ({
+      ...prev,
+      [storyId]: !prev[storyId],
+    }));
+  };
+
+  const allStoriesCodeOpen =
+    stories.length > 0 && stories.every((s) => !!openStoryCodeIds[s.id]);
+
+  const toggleAllStoriesCode = () => {
+    if (allStoriesCodeOpen) {
+      setOpenStoryCodeIds({});
+    } else {
+      const next: Record<string, boolean> = {};
+      for (const s of stories) {
+        next[s.id] = true;
+      }
+      setOpenStoryCodeIds(next);
+    }
   };
 
   // Single primary component story for the interactive canvas
@@ -265,7 +439,7 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
               {/* Center Canvas */}
               <div className="lg:col-span-3 flex flex-col rounded-3xl border border-neutral-interactive/50 bg-neutral-surface overflow-hidden shadow-xs">
                 {/* Canvas Controls Toolbar */}
-                <div className="p-3 border-b border-neutral-interactive/40 bg-neutral-interactive/20 flex items-center justify-between text-xs text-neutral-text-muted">
+                <div className="p-3 border-b border-neutral-interactive/40 bg-neutral-interactive/20 flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-text-muted">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-neutral-text">Canvas</span>
                     <div className="h-3 w-px bg-neutral-interactive/60 mx-1" />
@@ -349,6 +523,24 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                     >
                       <RotateCcw className="size-3.5" />
                     </button>
+
+                    <div className="h-3 w-px bg-neutral-interactive/60 mx-0.5" />
+
+                    {/* Toggle View Code button in Canvas Toolbar */}
+                    <button
+                      type="button"
+                      onClick={() => setShowCanvasCode((prev) => !prev)}
+                      aria-expanded={showCanvasCode}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium transition-colors cursor-pointer ${
+                        showCanvasCode
+                          ? 'bg-primary-interactive text-primary-text border-primary-interactive'
+                          : 'bg-neutral-surface-alt hover:bg-neutral-interactive text-neutral-text border-neutral-interactive/50'
+                      }`}
+                      title="Toggle Canvas source code"
+                    >
+                      <Code2 className="size-3.5" />
+                      <span>{showCanvasCode ? 'Hide Code' : 'View Code'}</span>
+                    </button>
                   </div>
                 </div>
 
@@ -381,26 +573,93 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                   </div>
                 </div>
 
-                {/* Bottom Quick Code Bar */}
-                <div className="p-3 border-t border-neutral-interactive/40 bg-neutral-interactive/10 flex items-center justify-between text-xs font-mono text-neutral-text-muted">
-                  <span className="truncate max-w-md">{generatedCode.split('\n')[0]}</span>
+                {/* Bottom Code Bar & Expandable Live Code Panel */}
+                <div className="p-3 border-t border-neutral-interactive/40 bg-neutral-interactive/10 flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-neutral-text-muted">
                   <button
-                    onClick={copyCodeSnippet}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-interactive hover:bg-neutral-interactive-hover text-neutral-text transition-colors text-xs font-sans font-medium cursor-pointer"
+                    type="button"
+                    onClick={() => setShowCanvasCode((prev) => !prev)}
+                    aria-expanded={showCanvasCode}
+                    className="flex items-center gap-2 text-left hover:text-neutral-text transition-colors cursor-pointer min-w-0"
                   >
-                    {copiedCode ? (
-                      <>
-                        <Check className="size-3 text-emerald-500" />
-                        <span>Copied</span>
-                      </>
+                    <Code2 className="size-3.5 text-primary-text shrink-0" />
+                    <span className="truncate max-w-md">
+                      {canvasJsxCode.split('\n')[0]}
+                    </span>
+                    {showCanvasCode ? (
+                      <ChevronUp className="size-3.5 shrink-0" />
                     ) : (
-                      <>
-                        <Copy className="size-3" />
-                        <span>Copy Code</span>
-                      </>
+                      <ChevronDown className="size-3.5 shrink-0" />
                     )}
                   </button>
+
+                  <div className="flex items-center gap-2 ml-auto">
+                    {showCanvasCode && (
+                      <div className="flex items-center rounded-full bg-neutral-surface-alt p-0.5 border border-neutral-interactive/40 font-sans text-[11px]">
+                        <button
+                          type="button"
+                          onClick={() => setCanvasCodeMode('full')}
+                          className={`px-2.5 py-0.5 rounded-full transition-colors cursor-pointer ${
+                            canvasCodeMode === 'full'
+                              ? 'bg-neutral-surface text-neutral-text font-medium shadow-2xs'
+                              : 'text-neutral-text-muted hover:text-neutral-text'
+                          }`}
+                        >
+                          Full Code
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCanvasCodeMode('jsx')}
+                          className={`px-2.5 py-0.5 rounded-full transition-colors cursor-pointer ${
+                            canvasCodeMode === 'jsx'
+                              ? 'bg-neutral-surface text-neutral-text font-medium shadow-2xs'
+                              : 'text-neutral-text-muted hover:text-neutral-text'
+                          }`}
+                        >
+                          JSX
+                        </button>
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCanvasCode((prev) => !prev)}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-full border transition-colors text-xs font-sans font-medium cursor-pointer ${
+                        showCanvasCode
+                          ? 'bg-primary-interactive text-primary-text border-primary-interactive'
+                          : 'bg-neutral-surface hover:bg-neutral-interactive text-neutral-text border-neutral-interactive/60'
+                      }`}
+                    >
+                      <Code2 className="size-3" />
+                      <span>{showCanvasCode ? 'Hide Code' : 'View Code'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={copyCodeSnippet}
+                      className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-interactive hover:bg-neutral-interactive-hover text-neutral-text transition-colors text-xs font-sans font-medium cursor-pointer"
+                    >
+                      {copiedCode ? (
+                        <>
+                          <Check className="size-3 text-emerald-500" />
+                          <span>Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-3" />
+                          <span>Copy Code</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
+
+                {showCanvasCode && (
+                  <div className="border-t border-neutral-interactive/40 bg-neutral-surface-alt/60">
+                    <pre className="p-4 text-xs font-mono overflow-x-auto max-h-[420px] overflow-y-auto text-neutral-text leading-relaxed select-all">
+                      <code>{activeCanvasCode}</code>
+                    </pre>
+                  </div>
+                )}
               </div>
 
               {/* Right Controls Panel */}
@@ -799,34 +1058,54 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
         )}
 
         {/* ================================================================ */}
-        {/* TAB 3: STORIES (Grid of all variants with copy code button for each) */}
+        {/* TAB 3: STORIES (Grid of all variants with View Code & Copy Code) */}
         {/* ================================================================ */}
         {activeTab === 'stories' && (
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-bold font-heading">
                   All {metadata.name} Variants & Stories
                 </h2>
                 <p className="text-xs text-neutral-text-muted">
-                  Explore all authored variants and states. Click &quot;Copy Code&quot; on any variant to use it immediately in your code.
+                  Explore all authored variants and states. Toggle &quot;View Code&quot; on any story to inspect its implementation or copy it directly.
                 </p>
               </div>
-              <span className="text-xs font-mono px-3 py-1 rounded-full bg-neutral-surface-alt text-neutral-text-muted border border-neutral-interactive/40 w-fit">
-                {stories.length} stories rendered
-              </span>
+              <div className="flex items-center gap-2 w-fit">
+                {stories.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={toggleAllStoriesCode}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-medium transition-colors cursor-pointer ${
+                      allStoriesCodeOpen
+                        ? 'bg-primary-interactive text-primary-text border-primary-interactive'
+                        : 'bg-neutral-surface-alt hover:bg-neutral-interactive text-neutral-text border-neutral-interactive/50'
+                    }`}
+                  >
+                    <Code2 className="size-3.5" />
+                    <span>{allStoriesCodeOpen ? 'Hide All Code' : 'View All Code'}</span>
+                  </button>
+                )}
+                <span className="text-xs font-mono px-3 py-1 rounded-full bg-neutral-surface-alt text-neutral-text-muted border border-neutral-interactive/40">
+                  {stories.length} stories rendered
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               {stories.map((story) => {
                 const StoryComp = story.Component;
                 const isCopied = copiedStoryId === story.id;
+                const isCodeOpen = !!openStoryCodeIds[story.id];
+                const codeMode = storyCodeModes[story.id] || 'full';
+                const storyCode = getStoryCode(story, codeMode);
+
                 return (
                   <div
                     key={story.id}
                     className="flex flex-col rounded-3xl border border-neutral-interactive/50 bg-neutral-surface overflow-hidden shadow-xs hover:border-neutral-interactive transition-all"
                   >
-                    <div className="p-3 px-4 border-b border-neutral-interactive/30 bg-neutral-interactive/20 flex items-center justify-between">
+                    <div className="p-3 px-4 border-b border-neutral-interactive/30 bg-neutral-interactive/20 flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-xs text-neutral-text font-heading">
                           {story.name}
@@ -835,29 +1114,94 @@ export function ComponentWorkbench({ slug }: ComponentWorkbenchProps) {
                           {story.id}
                         </span>
                       </div>
-                      <button
-                        onClick={() => handleCopyStory(story)}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-surface hover:bg-neutral-interactive border border-neutral-interactive/60 text-[11px] font-medium text-neutral-text transition-colors cursor-pointer shadow-2xs"
-                        title="Copy variant code"
-                      >
-                        {isCopied ? (
-                          <>
-                            <Check className="size-3 text-emerald-500" />
-                            <span className="text-emerald-500 font-semibold">Copied!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="size-3 text-neutral-text-muted" />
-                            <span>Copy Code</span>
-                          </>
+
+                      <div className="flex items-center gap-1.5">
+                        {isCodeOpen && (
+                          <div className="flex items-center rounded-full bg-neutral-surface-alt p-0.5 border border-neutral-interactive/40 text-[10px]">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setStoryCodeModes((prev) => ({
+                                  ...prev,
+                                  [story.id]: 'full',
+                                }))
+                              }
+                              className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
+                                codeMode === 'full'
+                                  ? 'bg-neutral-surface text-neutral-text font-medium shadow-2xs'
+                                  : 'text-neutral-text-muted hover:text-neutral-text'
+                              }`}
+                            >
+                              Full
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setStoryCodeModes((prev) => ({
+                                  ...prev,
+                                  [story.id]: 'jsx',
+                                }))
+                              }
+                              className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
+                                codeMode === 'jsx'
+                                  ? 'bg-neutral-surface text-neutral-text font-medium shadow-2xs'
+                                  : 'text-neutral-text-muted hover:text-neutral-text'
+                              }`}
+                            >
+                              JSX
+                            </button>
+                          </div>
                         )}
-                      </button>
+
+                        <button
+                          type="button"
+                          onClick={() => toggleStoryCode(story.id)}
+                          aria-expanded={isCodeOpen}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium transition-colors cursor-pointer shadow-2xs ${
+                            isCodeOpen
+                              ? 'bg-primary-interactive text-primary-text border-primary-interactive'
+                              : 'bg-neutral-surface hover:bg-neutral-interactive border-neutral-interactive/60 text-neutral-text'
+                          }`}
+                          title={isCodeOpen ? 'Hide story code' : 'View story code'}
+                        >
+                          <Code2 className="size-3" />
+                          <span>{isCodeOpen ? 'Hide Code' : 'View Code'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCopyStory(story)}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-surface hover:bg-neutral-interactive border border-neutral-interactive/60 text-[11px] font-medium text-neutral-text transition-colors cursor-pointer shadow-2xs"
+                          title="Copy variant code"
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check className="size-3 text-emerald-500" />
+                              <span className="text-emerald-500 font-semibold">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="size-3 text-neutral-text-muted" />
+                              <span>Copy Code</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
+
                     <div className="min-h-[200px] p-6 sm:p-8 flex items-center justify-center overflow-x-auto bg-[radial-gradient(var(--neutral-interactive)_1px,transparent_1px)] bg-[size:16px_16px]">
                       <div className="w-full flex justify-center py-2">
                         <StoryComp />
                       </div>
                     </div>
+
+                    {isCodeOpen && (
+                      <div className="border-t border-neutral-interactive/40 bg-neutral-surface-alt/60">
+                        <pre className="p-4 text-xs font-mono overflow-x-auto max-h-[380px] overflow-y-auto text-neutral-text leading-relaxed select-all">
+                          <code>{storyCode}</code>
+                        </pre>
+                      </div>
+                    )}
                   </div>
                 );
               })}

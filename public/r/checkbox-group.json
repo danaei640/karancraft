@@ -1,0 +1,17 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "checkbox-group",
+  "type": "registry:ui",
+  "title": "Checkbox Group",
+  "description": "Provides shared state and automatic parent indeterminate synchronization for a group of checkboxes.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "ui/checkbox-group.tsx",
+      "content": "\"use client\"\n\nexport {\n  CheckboxGroup,\n  type CheckboxGroupProps,\n} from \"@/components/ui/checkbox\"\n",
+      "type": "registry:ui",
+      "target": "components/ui/checkbox-group.tsx"
+    }
+  ]
+}

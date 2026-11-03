@@ -24,6 +24,7 @@ const config: StorybookConfig = {
       '@/components/ui': path.resolve(process.cwd(), 'src/registry/bases/base/ui'),
       '@': path.resolve(process.cwd(), 'src'),
       'cn': path.resolve(process.cwd(), 'src/lib/utils'),
+      'icons': path.resolve(process.cwd(), 'src/lib/icons'),
     };
     return config;
   },

@@ -4,6 +4,12 @@
 @custom-variant style-karan (&:where(.style-karan *));
 @custom-variant dark (&:is(.dark *));
 
+@property --current-surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
 @theme inline {
   --spacing: calc(0.25rem * var(--theme-whitespace, 1));
   --radius-xs: calc(var(--radius) * 0.4);
@@ -27,9 +33,9 @@
   /* ── Primary Set (13 tokens) ── */
   --color-primary-surface: var(--primary-surface);
   --color-primary-surface-alt: var(--primary-surface-alt);
-  --color-primary-interactive: var(--primary-interactive);
-  --color-primary-interactive-hover: var(--primary-interactive-hover);
-  --color-primary-interactive-active: var(--primary-interactive-active);
+  --color-primary-interactive: color-mix(in oklch, var(--current-surface) 78%, color-mix(in oklch, var(--primary-interactive-active) 70%, var(--primary-text) 30%) 22%);
+  --color-primary-interactive-hover: color-mix(in oklch, var(--current-surface) 67%, color-mix(in oklch, var(--primary-interactive-active) 70%, var(--primary-text) 30%) 33%);
+  --color-primary-interactive-active: color-mix(in oklch, var(--current-surface) 56%, color-mix(in oklch, var(--primary-interactive-active) 70%, var(--primary-text) 30%) 44%);
   --color-primary-interactive-focus: var(--primary-interactive-focus);
   --color-primary-fill: var(--primary-fill);
   --color-primary-fill-hover: var(--primary-fill-hover);
@@ -42,9 +48,9 @@
   /* ── Neutral Set (13 tokens) ── */
   --color-neutral-surface: var(--neutral-surface);
   --color-neutral-surface-alt: var(--neutral-surface-alt);
-  --color-neutral-interactive: var(--neutral-interactive);
-  --color-neutral-interactive-hover: var(--neutral-interactive-hover);
-  --color-neutral-interactive-active: var(--neutral-interactive-active);
+  --color-neutral-interactive: color-mix(in oklch, var(--current-surface) 78%, color-mix(in oklch, var(--neutral-interactive-active) 70%, var(--neutral-text) 30%) 22%);
+  --color-neutral-interactive-hover: color-mix(in oklch, var(--current-surface) 67%, color-mix(in oklch, var(--neutral-interactive-active) 70%, var(--neutral-text) 30%) 33%);
+  --color-neutral-interactive-active: color-mix(in oklch, var(--current-surface) 56%, color-mix(in oklch, var(--neutral-interactive-active) 70%, var(--neutral-text) 30%) 44%);
   --color-neutral-interactive-focus: var(--neutral-interactive-focus);
   --color-neutral-fill: var(--neutral-fill);
   --color-neutral-fill-hover: var(--neutral-fill-hover);
@@ -57,9 +63,9 @@
   /* ── Info Set (13 tokens) ── */
   --color-info-surface: var(--info-surface);
   --color-info-surface-alt: var(--info-surface-alt);
-  --color-info-interactive: var(--info-interactive);
-  --color-info-interactive-hover: var(--info-interactive-hover);
-  --color-info-interactive-active: var(--info-interactive-active);
+  --color-info-interactive: color-mix(in oklch, var(--current-surface) 78%, color-mix(in oklch, var(--info-interactive-active) 70%, var(--info-text) 30%) 22%);
+  --color-info-interactive-hover: color-mix(in oklch, var(--current-surface) 67%, color-mix(in oklch, var(--info-interactive-active) 70%, var(--info-text) 30%) 33%);
+  --color-info-interactive-active: color-mix(in oklch, var(--current-surface) 56%, color-mix(in oklch, var(--info-interactive-active) 70%, var(--info-text) 30%) 44%);
   --color-info-interactive-focus: var(--info-interactive-focus);
   --color-info-fill: var(--info-fill);
   --color-info-fill-hover: var(--info-fill-hover);
@@ -72,9 +78,9 @@
   /* ── Success Set (13 tokens) ── */
   --color-success-surface: var(--success-surface);
   --color-success-surface-alt: var(--success-surface-alt);
-  --color-success-interactive: var(--success-interactive);
-  --color-success-interactive-hover: var(--success-interactive-hover);
-  --color-success-interactive-active: var(--success-interactive-active);
+  --color-success-interactive: color-mix(in oklch, var(--current-surface) 78%, color-mix(in oklch, var(--success-interactive-active) 70%, var(--success-text) 30%) 22%);
+  --color-success-interactive-hover: color-mix(in oklch, var(--current-surface) 67%, color-mix(in oklch, var(--success-interactive-active) 70%, var(--success-text) 30%) 33%);
+  --color-success-interactive-active: color-mix(in oklch, var(--current-surface) 56%, color-mix(in oklch, var(--success-interactive-active) 70%, var(--success-text) 30%) 44%);
   --color-success-interactive-focus: var(--success-interactive-focus);
   --color-success-fill: var(--success-fill);
   --color-success-fill-hover: var(--success-fill-hover);
@@ -87,9 +93,9 @@
   /* ── Warning Set (13 tokens) ── */
   --color-warning-surface: var(--warning-surface);
   --color-warning-surface-alt: var(--warning-surface-alt);
-  --color-warning-interactive: var(--warning-interactive);
-  --color-warning-interactive-hover: var(--warning-interactive-hover);
-  --color-warning-interactive-active: var(--warning-interactive-active);
+  --color-warning-interactive: color-mix(in oklch, var(--current-surface) 78%, color-mix(in oklch, var(--warning-interactive-active) 70%, var(--warning-text) 30%) 22%);
+  --color-warning-interactive-hover: color-mix(in oklch, var(--current-surface) 67%, color-mix(in oklch, var(--warning-interactive-active) 70%, var(--warning-text) 30%) 33%);
+  --color-warning-interactive-active: color-mix(in oklch, var(--current-surface) 56%, color-mix(in oklch, var(--warning-interactive-active) 70%, var(--warning-text) 30%) 44%);
   --color-warning-interactive-focus: var(--warning-interactive-focus);
   --color-warning-fill: var(--warning-fill);
   --color-warning-fill-hover: var(--warning-fill-hover);
@@ -102,9 +108,9 @@
   /* ── Danger Set (13 tokens) ── */
   --color-danger-surface: var(--danger-surface);
   --color-danger-surface-alt: var(--danger-surface-alt);
-  --color-danger-interactive: var(--danger-interactive);
-  --color-danger-interactive-hover: var(--danger-interactive-hover);
-  --color-danger-interactive-active: var(--danger-interactive-active);
+  --color-danger-interactive: color-mix(in oklch, var(--current-surface) 78%, color-mix(in oklch, var(--danger-interactive-active) 70%, var(--danger-text) 30%) 22%);
+  --color-danger-interactive-hover: color-mix(in oklch, var(--current-surface) 67%, color-mix(in oklch, var(--danger-interactive-active) 70%, var(--danger-text) 30%) 33%);
+  --color-danger-interactive-active: color-mix(in oklch, var(--current-surface) 56%, color-mix(in oklch, var(--danger-interactive-active) 70%, var(--danger-text) 30%) 44%);
   --color-danger-interactive-focus: var(--danger-interactive-focus);
   --color-danger-fill: var(--danger-fill);
   --color-danger-fill-hover: var(--danger-fill-hover);
@@ -306,6 +312,7 @@
   --danger-text-secondary: oklch(0.38 0.0672 25);
   --danger-text-muted: oklch(0.53 0.0384 25);
   --danger-on-fill: oklch(0.98 0.005 25);
+  --current-surface: var(--neutral-surface);
 }
 
 .dark {
@@ -387,6 +394,7 @@
   --danger-text-secondary: oklch(0.76 0.0672 25);
   --danger-text-muted: oklch(0.62 0.0384 25);
   --danger-on-fill: oklch(0.98 0.005 25);
+  --current-surface: var(--neutral-surface);
 }
 
 @import "../registry/styles/style-karan.css" layer(components);

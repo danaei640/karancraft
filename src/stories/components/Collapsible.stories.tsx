@@ -5,7 +5,7 @@ import {
   CollapsibleContent,
 } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown } from 'icons';
 
 const meta: Meta<typeof Collapsible> = {
   title: 'Components/Collapsible',
@@ -37,3 +37,5 @@ export const Default: Story = {
     </Collapsible>
   ),
 };
+
+

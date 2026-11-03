@@ -110,6 +110,8 @@ function modePaletteToCssVars(palette: ModePalette): CssVariableMap {
     }
   }
 
+  vars["--current-surface"] = palette.neutral.surface
+
   return vars
 }
 

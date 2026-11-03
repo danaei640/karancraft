@@ -12,6 +12,8 @@ import {
   ExternalLink,
   Sparkles,
   PanelLeft,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -33,12 +35,16 @@ function GithubIcon({ className = 'size-4' }: { className?: string }) {
 }
 
 interface SiteHeaderProps {
+  onToggleSidebar?: () => void;
   onToggleMobileSidebar?: () => void;
+  sidebarOpen?: boolean;
   showSidebarToggle?: boolean;
 }
 
 export function SiteHeader({
+  onToggleSidebar,
   onToggleMobileSidebar,
+  sidebarOpen = true,
   showSidebarToggle = false,
 }: SiteHeaderProps) {
   const pathname = usePathname();
@@ -52,20 +58,41 @@ export function SiteHeader({
   const isComponentsActive = pathname?.startsWith('/components');
   const isColorsActive = pathname === '/colors';
 
+  const handleSidebarToggleClick = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      if (onToggleMobileSidebar) {
+        onToggleMobileSidebar();
+      } else {
+        onToggleSidebar?.();
+      }
+    } else {
+      if (onToggleSidebar) {
+        onToggleSidebar();
+      } else {
+        onToggleMobileSidebar?.();
+      }
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-neutral-interactive/40 bg-neutral-surface/80 backdrop-blur-xl">
       <div className="w-full px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3 sm:gap-4 flex-nowrap">
-        {/* Left: Brand & Mobile Sidebar Toggle */}
+        {/* Left: Sidebar Toggle & Brand */}
         <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
           {showSidebarToggle && (
             <button
               type="button"
-              onClick={onToggleMobileSidebar}
-              className="md:hidden size-8 rounded-full flex items-center justify-center text-neutral-text-muted hover:text-neutral-text hover:bg-neutral-interactive/50 border border-neutral-interactive/40 transition-colors cursor-pointer"
-              title="Toggle Component List"
-              aria-label="Toggle Component List"
+              onClick={handleSidebarToggleClick}
+              className="size-8 rounded-full flex items-center justify-center text-neutral-text-muted hover:text-neutral-text hover:bg-neutral-interactive/50 border border-neutral-interactive/40 transition-colors cursor-pointer"
+              title={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+              aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+              aria-expanded={sidebarOpen}
             >
-              <PanelLeft className="size-4" />
+              {sidebarOpen ? (
+                <PanelLeftClose className="size-4" />
+              ) : (
+                <PanelLeftOpen className="size-4" />
+              )}
             </button>
           )}
 

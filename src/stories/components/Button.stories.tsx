@@ -9,7 +9,7 @@ import {
   Info,
   Trash2,
   Plus,
-} from 'lucide-react';
+} from 'icons';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
@@ -23,7 +23,7 @@ const meta: Meta<typeof Button> = {
     },
     intent: {
       control: 'select',
-      options: ['primary', 'neutral', 'success', 'info', 'danger'],
+      options: ['primary', 'neutral', 'success', 'warning', 'info', 'danger'],
       description:
         'Semantic color intent (defaults to primary for default variant, neutral for others)',
     },
@@ -90,6 +90,9 @@ export const Intents: Story = {
       <Button intent="neutral">Neutral</Button>
       <Button intent="success" leading={<CheckCircle2 />}>
         Success
+      </Button>
+      <Button intent="warning" leading={<AlertTriangle />}>
+        Warning
       </Button>
       <Button intent="info" leading={<Info />}>
         Info

@@ -18,3 +18,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Always evaluate and select the modern, next-generation industry standards rather than superseded or legacy choices.
 - **Example**: While Radix UI was previously the standard headless foundation, modern ecosystems (such as Shadcn v4) have adopted Base UI (`@base-ui/react`) as the newer, more performant, and superior foundation.
 - Never scaffold deprecated versions, legacy patterns (e.g., outdated Tailwind configs or older primitive libraries), or superseded tooling unless explicitly demanded by the user.
+
+## 3. Component Pages: Canvas & Stories Code Toggle Rule
+- Every component page (`/components/[slug]`) **must** support toggling "View Code" / "Hide Code" on both the interactive **Canvas** and every individual **Story** (as well as "View All Code" across stories).
+- When adding or updating any component now or in the future:
+  1. Author a corresponding `<ComponentName>.stories.tsx` file in `src/stories/components/` with a `Default` story (accepting `args` / `props` for live Canvas controls) and variant stories.
+  2. Register the component in `src/lib/portable-stories.tsx`, `src/lib/components-meta.ts`, and `scripts/build-registry.mjs`.
+  3. Story and Canvas source code is automatically extracted by `src/lib/story-source.ts` and passed to `ComponentWorkbench` via `src/app/components/[slug]/page.tsx`—never hardcode placeholder snippet strings that bypass real story source code.

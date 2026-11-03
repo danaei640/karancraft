@@ -21,7 +21,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/components/ui/*": ["./src/registry/bases/base/ui/*"],
-      "cn": ["./src/lib/utils"]
+      "cn": ["./src/lib/utils"],
+      "icons": ["./src/lib/icons"]
     }
   },
   "include": [

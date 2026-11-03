@@ -16,7 +16,8 @@ const COMPONENT_METADATA = {
   textarea: { title: "Textarea", description: "Displays a form textarea or a component that looks like a textarea." },
   switch: { title: "Switch", description: "A control that allows the user to toggle between checked and not checked." },
   slider: { title: "Slider", description: "An input where the user selects a value from within a given range." },
-  checkbox: { title: "Checkbox", description: "A control that allows the user to toggle between checked and not checked." },
+  checkbox: { title: "Checkbox", description: "A control that allows the user to toggle between checked, unchecked, and indeterminate states." },
+  "checkbox-group": { title: "Checkbox Group", description: "Provides shared state and automatic parent indeterminate synchronization for a group of checkboxes." },
   "radio-group": { title: "Radio Group", description: "A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time." },
   dialog: { title: "Dialog", description: "A window overlaid on either the primary window or another dialog window." },
   "alert-dialog": { title: "Alert Dialog", description: "A modal dialog that interrupts the user with important content and expects a response." },
@@ -38,6 +39,7 @@ const COMPONENT_METADATA = {
   sheet: { title: "Sheet", description: "Extends the Dialog component to display content that complements the main screen." },
   drawer: { title: "Drawer", description: "A drawer component for React." },
   collapsible: { title: "Collapsible", description: "An interactive component which can be expanded/collapsed." },
+  "collapsible-section": { title: "Collapsible Section", description: "A collapsible section with a full-width trigger row (label + dedicated trailing chevron) and a content container below it." },
   command: { title: "Command", description: "Fast, composable, unstyled command menu for React." },
   "context-menu": { title: "Context Menu", description: "Displays a menu to the user — such as a set of actions or functions — triggered by a button." },
   "hover-card": { title: "Hover Card", description: "For sighted users to preview content available behind a link." },
@@ -106,7 +108,11 @@ async function extractDependencies(content) {
       deps.add("@base-ui/react")
     } else if (pkg.startsWith("@wrksz/themes")) {
       deps.add("@wrksz/themes")
-    } else if (pkg.startsWith("lucide-react") || pkg.includes("icon-placeholder")) {
+    } else if (
+      pkg === "icons" ||
+      pkg.startsWith("lucide-react") ||
+      pkg.includes("icon-placeholder")
+    ) {
       deps.add("lucide-react")
     } else if (pkg.startsWith("class-variance-authority")) {
       deps.add("class-variance-authority")

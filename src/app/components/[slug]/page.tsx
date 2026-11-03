@@ -1,4 +1,5 @@
 import { COMPONENTS_METADATA } from '@/lib/components-meta';
+import { getComponentStorySources } from '@/lib/story-source';
 import { ComponentWorkbench } from '@/components/preview/component-workbench';
 
 export function generateStaticParams() {
@@ -13,5 +14,6 @@ export default async function ComponentPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <ComponentWorkbench slug={slug} />;
+  const storySources = getComponentStorySources(slug);
+  return <ComponentWorkbench slug={slug} storySources={storySources} />;
 }
