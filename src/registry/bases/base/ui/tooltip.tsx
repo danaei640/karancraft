@@ -1,10 +1,11 @@
 "use client"
 
+import * as React from "react"
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
 import { cn } from "cn"
 
 function TooltipProvider({
-  delay = 0,
+  delay = 200,
   ...props
 }: TooltipPrimitive.Provider.Props) {
   return (
@@ -24,21 +25,32 @@ function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
 }
 
+export interface TooltipContentProps
+  extends Omit<TooltipPrimitive.Popup.Props, "className">,
+    Pick<
+      TooltipPrimitive.Positioner.Props,
+      "align" | "alignOffset" | "side" | "sideOffset"
+    > {
+  className?: string
+  /**
+   * When true (default), renders a subtle arrow pointing toward the anchor element.
+   * @default true
+   */
+  withArrow?: boolean
+}
+
 function TooltipContent({
   className,
   side = "top",
-  sideOffset = 4,
+  sideOffset = 6,
   align = "center",
   alignOffset = 0,
+  withArrow = true,
   children,
   ...props
-}: TooltipPrimitive.Popup.Props &
-  Pick<
-    TooltipPrimitive.Positioner.Props,
-    "align" | "alignOffset" | "side" | "sideOffset"
-  >) {
+}: TooltipContentProps) {
   return (
-    <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Portal data-slot="tooltip-portal">
       <TooltipPrimitive.Positioner
         align={align}
         alignOffset={alignOffset}
@@ -49,13 +61,17 @@ function TooltipContent({
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            "cn-tooltip-content cn-tooltip-content-logical z-50 w-fit max-w-xs origin-(--transform-origin) bg-neutral-text text-neutral-surface",
+            "cn-tooltip-content z-50 w-fit max-w-xs origin-(--transform-origin) rounded-md bg-neutral-text px-2.5 py-1 text-xs font-medium text-neutral-surface shadow-md outline-none transition-[opacity,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
             className
           )}
           {...props}
         >
           {children}
-          <TooltipPrimitive.Arrow className="cn-tooltip-arrow cn-tooltip-arrow-logical z-50 bg-neutral-text fill-neutral-text data-[side=bottom]:top-1 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
+          {withArrow && (
+            <TooltipPrimitive.Arrow
+              className="cn-tooltip-arrow z-50 bg-neutral-text fill-neutral-text"
+            />
+          )}
         </TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>

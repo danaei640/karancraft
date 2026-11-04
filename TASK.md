@@ -28,35 +28,42 @@ The following components have been **fully modernized**. Their prop architecture
 | **Field** | Multi-intent `FieldCaption` / `FormCaption` (`neutral`, `danger`, `success`, `warning`, `info`, `primary`), description spacing. | `[x] Modernized` |
 | **Toast** | Native Base UI toast implementation (replacing legacy sonner), swipe dismissal, semantic intent icons. | `[x] Modernized` |
 | **Theme Provider** | Dynamic OKLCH color engine, multi-accent selection, radius & spacing multipliers, typeset specs. | `[x] Modernized` |
+| **Dialog** | Base UI dialog primitive sync, animated soft backdrop blur (`backdrop-blur-sm`), header/title/description/body/footer slot architecture, close button in header slot at `end-0`, and smooth scale-in transition (`ease-[cubic-bezier(0.22,1,0.36,1)]`). | `[x] Modernized` |
+| **AlertDialog** | Destructive & urgent confirmation modal, accessible `alertdialog` role, prominent cancel/action button pairing with danger intent support, focus trap guarantees. | `[x] Modernized` |
+| **Drawer** | Native Base UI touch/gesture drawer with swipe-to-dismiss handle, `floating: boolean = true` default mode, 6-way side positioning (`start`, `end`, `top`, `bottom`, `left`, `right`). | `[x] Modernized` |
+| **Sheet** | Unified on Base UI drawer, `floating: boolean = true` default, smooth side sliding drawer panel on any edge, responsive viewport sizing. | `[x] Modernized` |
+| **Popover** | Floating portal anchored to trigger with collision detection, arrow pointer, soft shadow tiering, low-visual-load padding, `appearance="default" \| "inverted"`. | `[x] Modernized` |
+| **HoverCard** | Rich preview card with sighted user hover delay, accessible anchor positioning, smooth fade-in, and `appearance="default" \| "inverted"`. | `[x] Modernized` |
+| **Tooltip** | Fast hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), arrow pointer, 150ms spring easing. | `[x] Modernized` |
 
 ---
 
-## 🎯 Active Sprint Queue: Overlays & Modals (Current Priority)
+## 🎯 Active Sprint Queue: Overlays & Modals (Batch 1 Completed)
 
 | Priority | Component | Target Scope & Objectives | Status |
 | :--- | :--- | :--- | :--- |
-| **P0** | **Dialog** | Base UI dialog primitive sync, animated soft backdrop blur (`backdrop-blur-sm`), header/title/description/body/footer slot architecture, close button with accessible contrast, and smooth scale-in transition (`ease-[cubic-bezier(0.22,1,0.36,1)]`). | `[ ] Queued` |
-| **P0** | **AlertDialog** | Destructive & urgent confirmation modal, accessible `alertdialog` role, prominent cancel/action button pairing with danger intent support, and focus trap guarantees. | `[ ] Queued` |
-| **P1** | **Sheet** | Side sliding drawer panel (left, right, top, bottom), smooth slide-in motion, responsive viewport sizing (`w-full sm:max-w-md`), and seamless title/description layout slots. | `[ ] Queued` |
-| **P1** | **Drawer** | Native Base UI touch/gesture drawer with swipe-to-dismiss handle, vaul-like bottom sheet behavior, and responsive desktop modal fallback. | `[ ] Queued` |
-| **P1** | **Popover** | Floating portal anchored to trigger with smart collision detection, arrow pointer, soft shadow tiering, and low-visual-load padding. | `[ ] Queued` |
-| **P2** | **Tooltip** | Instant hover & keyboard focus micro-popup, high-contrast text on soft surface, collision avoidance, and delay customization (`delayDuration`). | `[ ] Queued` |
-| **P2** | **HoverCard** | Rich preview card with sighted user hover delay, accessible anchor positioning, smooth fade-in, and card-level typography hierarchy. | `[ ] Queued` |
+| **P0** | **Dialog** | Base UI dialog primitive sync, animated soft backdrop blur (`backdrop-blur-sm`), header/title/description/body/footer slot architecture, close button with accessible contrast, and smooth scale-in transition (`ease-[cubic-bezier(0.22,1,0.36,1)]`). | `[x] Completed` |
+| **P0** | **AlertDialog** | Destructive & urgent confirmation modal, accessible `alertdialog` role, prominent cancel/action button pairing with danger intent support, and focus trap guarantees. | `[x] Completed` |
+| **P1** | **Sheet** | Side sliding drawer panel (left, right, top, bottom, start, end), smooth slide-in motion, responsive viewport sizing (`w-full sm:max-w-md`), unified drawer architecture, and `floating: boolean = true` default. | `[x] Completed` |
+| **P1** | **Drawer** | Native Base UI touch/gesture drawer with swipe-to-dismiss handle, vaul-like bottom sheet behavior, responsive desktop modal fallback, and `floating: boolean = true` default. | `[x] Completed` |
+| **P1** | **Popover** | Floating portal anchored to trigger with smart collision detection, arrow pointer, soft shadow tiering, low-visual-load padding, and `appearance="default" \| "inverted"`. | `[x] Completed` |
+| **P2** | **Tooltip** | Instant hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), collision avoidance, and optional arrow tip. | `[x] Completed` |
+| **P2** | **HoverCard** | Rich preview card with sighted user hover delay, accessible anchor positioning, smooth fade-in, and `appearance="default" \| "inverted"`. | `[x] Completed` |
 
 ---
 
 ## 📋 Remaining Baseline Components (Catalog for Review & Upgrade)
 
-Total Remaining in Repository: **39 components**
+Total Remaining in Repository: **32 components**
 
-### Cluster 1: Overlays & Modals (7 Components)
-- [ ] **Dialog** — Modal window with animated backdrop blur, entry/exit scale transition, and header/content/footer slots.
-- [ ] **AlertDialog** — Interruptive modal for destructive actions, accessible alert role, keyboard trap.
-- [ ] **Sheet** — Slide-over panel (left, right, top, bottom), responsive slide animations.
-- [ ] **Drawer** — Mobile-friendly bottom drawer with swipe/drag gestures and responsive desktop fallback.
-- [ ] **Popover** — Floating rich content panel anchored to trigger with collision detection and arrow tip.
-- [ ] **Tooltip** — Fast hover/focus micro-popup with low visual load and accessible contrast.
-- [ ] **HoverCard** — Rich link preview popup with sighted hover delay and accessible anchor positioning.
+### Cluster 1: Overlays & Modals (7 Components) — [100% Complete]
+- [x] **Dialog** — Modal window with animated backdrop blur, entry/exit scale transition, and header/content/footer slots.
+- [x] **AlertDialog** — Interruptive modal for destructive actions, accessible alert role, keyboard trap.
+- [x] **Sheet** — Slide-over panel (left, right, top, bottom, start, end), responsive slide animations.
+- [x] **Drawer** — Mobile-friendly bottom drawer with swipe/drag gestures and responsive desktop fallback.
+- [x] **Popover** — Floating rich content panel anchored to trigger with collision detection and arrow tip.
+- [x] **Tooltip** — Fast hover/focus micro-popup with low visual load and accessible contrast.
+- [x] **HoverCard** — Rich link preview popup with sighted hover delay and accessible anchor positioning.
 
 ### Cluster 2: Menus & Navigation (7 Components)
 - [ ] **DropdownMenu** — Hierarchical flyout menu with submenus, checkbox/radio items, and Kbd shortcut labels.
@@ -139,3 +146,13 @@ Total Remaining in Repository: **39 components**
 - **Context**: High contrast is essential for accessibility (WCAG AA/AAA), but over-saturating borders, high-contrast heavy fills, or stark pure-black outlines cause high visual fatigue and clutter.
 - **Decision**: Maintain strict WCAG contrast for text and interactive indicators against surfaces, while keeping background surfaces, borders, and secondary states softly tiered using OKLCH chroma balance. Semantic intents use contextual subtle tinting in resting states and reserve full saturation for active/focused moments.
 - **Impact**: Clean, modern, calm UI with low visual load, crystal-clear readability, and zero contrast issues in both dark and light modes.
+
+### [DEC-010] Unified Drawer & Sheet Architecture with Floating Mode Default
+- **Context**: Separate Sheet and Drawer primitives created duplicate code and required custom `className` overrides to prevent sheet content from sticking directly to screen edges.
+- **Decision**: Unify `Sheet` on `@base-ui/react/drawer`. Add `floating: boolean = true` as default across Drawer and Sheet, rendering detached cards with margin and rounded corners while allowing `floating={false}` for edge-to-edge flush styling.
+- **Impact**: Single unified codebase for sliding panels, native gesture drag-to-dismiss physics everywhere, and clean DX without repetitive CSS overrides.
+
+### [DEC-011] Strict RTL/LTR Logical Coordinates & Header Close Button Standard
+- **Context**: Hardcoded physical utilities (`left-2`, `right-2`, `pl-*`, `pr-*`) break layout when flipped to RTL. Additionally, having `noCloseButton` / `showCloseButton` spread across multiple layers cluttered overlay APIs.
+- **Decision**: Ban all physical direction classes in favor of CSS logical properties (`start-*`, `end-*`, `ps-*`, `pe-*`, `ms-*`, `me-*`, `text-start`, `text-end`). Standardize the close button directly inside the header slot (`*Header`) positioned at `end-0`.
+- **Impact**: Seamless bidirectional support for RTL and LTR languages with consistent header action layouts and streamlined prop APIs.

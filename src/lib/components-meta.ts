@@ -1528,21 +1528,88 @@ export function SelectSizeRowDemo() {
     id: 'dialog',
     name: 'Dialog',
     category: 'Overlays & Dialogs',
-    description: 'A window overlaid on either the primary window or another dialog window.',
+    description:
+      'A modal window overlaid on the primary viewport with animated soft backdrop blur, smooth scale transition, and built-in header close button.',
     baseUiPrimitive: '@base-ui/react/dialog',
     installCmd: 'npx shadcn@latest add @karan-ui/dialog',
     registryUrl: 'https://karan-ui.dev/r/dialog.json',
     props: [
       {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg' | 'xl' | 'full'",
+        defaultValue: "'default'",
+        description: 'Proportional max-width scale of the dialog content container',
+        options: ['sm', 'default', 'lg', 'xl', 'full'],
+        controlType: 'select',
+      },
+      {
         name: 'showCloseButton',
         type: 'boolean',
         defaultValue: 'true',
-        description: 'Whether to render the top right close X button',
+        description: 'Whether to show the close action button in the dialog header',
         controlType: 'boolean',
       },
     ],
     defaultProps: {
+      size: 'default',
       showCloseButton: true,
+    },
+    usageGuide: {
+      summary:
+        'Built directly on @base-ui/react/dialog with an animated backdrop blur filter, smooth spring-like entrance cubic-bezier(0.22, 1, 0.36, 1), built-in header close button located at the end edge, and full RTL/LTR awareness using CSS logical properties.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/dialog',
+        registryUrl: 'https://karan-ui.dev/r/dialog.json',
+      },
+      features: [
+        {
+          title: 'Structured Slot Architecture',
+          badge: 'Semantic Layout',
+          description:
+            'Organize modal content using DialogHeader, DialogTitle, DialogDescription, DialogBody (with built-in overflow scrolling), and DialogFooter for responsive action button ordering.',
+          code: `import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogBody,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+
+export function DialogDemo() {
+  return (
+    <Dialog>
+      <DialogTrigger render={<Button>Open Dialog</Button>} />
+      <DialogContent size="default">
+        <DialogHeader>
+          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogDescription>
+            Update your account details and display preferences.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogBody>
+          <p className="text-sm text-neutral-text-muted">Form fields go here...</p>
+        </DialogBody>
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline">Cancel</Button>} />
+          <Button>Save Changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}`,
+        },
+        {
+          title: 'Responsive Desktop Dialog / Mobile Drawer Pattern',
+          badge: 'Responsive UX',
+          description:
+            'Pair with Drawer to render an elevated centered modal on desktop viewports and an authentic swipeable bottom sheet on mobile screens.',
+        },
+      ],
     },
   },
 
@@ -1550,22 +1617,71 @@ export function SelectSizeRowDemo() {
     id: 'alert-dialog',
     name: 'Alert Dialog',
     category: 'Overlays & Dialogs',
-    description: 'A modal dialog that interrupts the user with important content and expects a response.',
+    description:
+      'An interruptive confirmation modal that requires explicit user confirmation, featuring accessible alertdialog roles and focus trapping.',
     baseUiPrimitive: '@base-ui/react/alert-dialog',
     installCmd: 'npx shadcn@latest add @karan-ui/alert-dialog',
     registryUrl: 'https://karan-ui.dev/r/alert-dialog.json',
     props: [
       {
         name: 'size',
-        type: "'default' | 'sm'",
+        type: "'sm' | 'default' | 'lg'",
         defaultValue: "'default'",
-        description: 'Size of the alert dialog modal',
-        options: ['default', 'sm'],
+        description: 'Proportional width scale of the confirmation dialog',
+        options: ['sm', 'default', 'lg'],
         controlType: 'select',
       },
     ],
     defaultProps: {
       size: 'default',
+    },
+    usageGuide: {
+      summary:
+        'Built on @base-ui/react/alert-dialog for destructive operations and system warnings. Traps focus, suppresses background pointer events, and requires explicit choice via AlertDialogAction and AlertDialogCancel.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/alert-dialog',
+        registryUrl: 'https://karan-ui.dev/r/alert-dialog.json',
+      },
+      features: [
+        {
+          title: 'Semantic Destructive Actions',
+          badge: 'Safety First',
+          description:
+            'AlertDialogAction accepts an intent prop (defaults to danger) to immediately signal risk to the user using the OKLCH token scale.',
+          code: `import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+export function AlertDialogDemo() {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger render={<Button intent="danger">Delete Workspace</Button>} />
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your database.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction intent="danger">Confirm Deletion</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}`,
+        },
+      ],
     },
   },
 
@@ -1573,22 +1689,88 @@ export function SelectSizeRowDemo() {
     id: 'sheet',
     name: 'Sheet',
     category: 'Overlays & Dialogs',
-    description: 'Extends the Dialog component to display content that complements the main screen on any edge.',
-    baseUiPrimitive: '@base-ui/react/dialog',
+    description:
+      'A side-sliding panel on any viewport edge with gesture touch physics and default floating card mode.',
+    baseUiPrimitive: '@base-ui/react/drawer',
     installCmd: 'npx shadcn@latest add @karan-ui/sheet',
     registryUrl: 'https://karan-ui.dev/r/sheet.json',
     props: [
       {
         name: 'side',
-        type: "'top' | 'right' | 'bottom' | 'left'",
+        type: "'right' | 'left' | 'top' | 'bottom' | 'start' | 'end'",
         defaultValue: "'right'",
-        description: 'Edge of the viewport from which the sheet slides in',
-        options: ['top', 'right', 'bottom', 'left'],
+        description: 'Viewport edge from which the sheet enters',
+        options: ['right', 'left', 'top', 'bottom', 'start', 'end'],
+        controlType: 'select',
+      },
+      {
+        name: 'floating',
+        type: 'boolean',
+        defaultValue: 'true',
+        description: 'Renders as a detached floating card with perimeter margins and rounded corners',
+        controlType: 'boolean',
+      },
+      {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg' | 'xl' | 'full'",
+        defaultValue: "'default'",
+        description: 'Width scale for side sheets or height scale for vertical sheets',
+        options: ['sm', 'default', 'lg', 'xl', 'full'],
         controlType: 'select',
       },
     ],
     defaultProps: {
       side: 'right',
+      floating: true,
+      size: 'default',
+    },
+    usageGuide: {
+      summary:
+        'Unified with Drawer on @base-ui/react/drawer to give side sheets full gesture drag physics, velocity-based dismissal, and floating card mode without ad-hoc CSS tweaks.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/sheet',
+        registryUrl: 'https://karan-ui.dev/r/sheet.json',
+      },
+      features: [
+        {
+          title: 'Floating Mode by Default',
+          badge: 'Floating Islands',
+          description:
+            'floating={true} renders an elevated card detached from screen edges with rounded-2xl corners and soft borders. Set floating={false} for traditional edge-to-edge flush styling.',
+          code: `import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetBody,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
+
+export function SheetDemo() {
+  return (
+    <Sheet side="right" floating={true}>
+      <SheetTrigger render={<Button variant="outline">Open Navigation</Button>} />
+      <SheetContent side="right">
+        <SheetHeader>
+          <SheetTitle>Navigation Menu</SheetTitle>
+          <SheetDescription>Explore project directories and components.</SheetDescription>
+        </SheetHeader>
+        <SheetBody>
+          <p className="text-sm text-neutral-text-muted">Navigation items...</p>
+        </SheetBody>
+        <SheetFooter>
+          <SheetClose render={<Button variant="outline">Close</Button>} />
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  )
+}`,
+        },
+      ],
     },
   },
 
@@ -1596,21 +1778,64 @@ export function SelectSizeRowDemo() {
     id: 'drawer',
     name: 'Drawer',
     category: 'Overlays & Dialogs',
-    description: 'A swipeable drawer component built on Base UI with authentic drag handle and gesture physics.',
+    description:
+      'A touch-friendly sliding drawer with authentic gesture physics, drag-to-dismiss handle, and floating card mode built on Base UI.',
     baseUiPrimitive: '@base-ui/react/drawer',
     installCmd: 'npx shadcn@latest add @karan-ui/drawer',
     registryUrl: 'https://karan-ui.dev/r/drawer.json',
     props: [
       {
+        name: 'side',
+        type: "'bottom' | 'top' | 'left' | 'right' | 'start' | 'end'",
+        defaultValue: "'bottom'",
+        description: 'Edge of the screen where the drawer anchors',
+        options: ['bottom', 'top', 'left', 'right', 'start', 'end'],
+        controlType: 'select',
+      },
+      {
+        name: 'floating',
+        type: 'boolean',
+        defaultValue: 'true',
+        description: 'Renders the drawer panel as a floating island with perimeter margin',
+        controlType: 'boolean',
+      },
+      {
         name: 'showSwipeHandle',
         type: 'boolean',
         defaultValue: 'true',
-        description: 'Whether to show the grab bar handle',
+        description: 'Whether to render the tactile pill grab handle at the drawer edge',
         controlType: 'boolean',
+      },
+      {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg' | 'xl' | 'full'",
+        defaultValue: "'default'",
+        description: 'Height or width dimension tier',
+        options: ['sm', 'default', 'lg', 'xl', 'full'],
+        controlType: 'select',
       },
     ],
     defaultProps: {
+      side: 'bottom',
+      floating: true,
       showSwipeHandle: true,
+      size: 'default',
+    },
+    usageGuide: {
+      summary:
+        'Native Base UI drawer primitive delivering iOS-quality spring motion, touch and mouse swipe dismissal, and full LTR/RTL support without third-party heavy dependencies.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/drawer',
+        registryUrl: 'https://karan-ui.dev/r/drawer.json',
+      },
+      features: [
+        {
+          title: 'Tactile Gesture Drag Dismissal',
+          badge: 'Touch Native',
+          description:
+            'Users can swipe down (or in the reverse direction of the anchor) to flick-dismiss the drawer with velocity sensing.',
+        },
+      ],
     },
   },
 
@@ -1618,22 +1843,65 @@ export function SelectSizeRowDemo() {
     id: 'popover',
     name: 'Popover',
     category: 'Overlays & Dialogs',
-    description: 'Displays rich content in a portal, triggered by a button with collision detection.',
+    description:
+      'An anchored floating content card with collision detection, arrow pointer, and default vs inverted surface contrast.',
     baseUiPrimitive: '@base-ui/react/popover',
     installCmd: 'npx shadcn@latest add @karan-ui/popover',
     registryUrl: 'https://karan-ui.dev/r/popover.json',
     props: [
       {
+        name: 'appearance',
+        type: "'default' | 'inverted'",
+        defaultValue: "'default'",
+        description: 'Surface contrast style (soft neutral vs high-contrast dark)',
+        options: ['default', 'inverted'],
+        controlType: 'select',
+      },
+      {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg'",
+        defaultValue: "'default'",
+        description: 'Width and padding dimension scale',
+        options: ['sm', 'default', 'lg'],
+        controlType: 'select',
+      },
+      {
+        name: 'withArrow',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'Whether to render an aligned arrow pointer to the trigger element',
+        controlType: 'boolean',
+      },
+      {
         name: 'side',
         type: "'top' | 'right' | 'bottom' | 'left'",
         defaultValue: "'bottom'",
-        description: 'Preferred placement side',
+        description: 'Preferred placement edge relative to trigger',
         options: ['top', 'right', 'bottom', 'left'],
         controlType: 'select',
       },
     ],
     defaultProps: {
+      appearance: 'default',
+      size: 'default',
+      withArrow: false,
       side: 'bottom',
+    },
+    usageGuide: {
+      summary:
+        'Floating card built on @base-ui/react/popover with smart anchor positioning, collision avoidance, and balanced OKLCH contrast.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/popover',
+        registryUrl: 'https://karan-ui.dev/r/popover.json',
+      },
+      features: [
+        {
+          title: 'Dual Contrast Appearances',
+          badge: 'Contrast Tuning',
+          description:
+            'Use appearance="default" for in-page contextual forms and settings, or appearance="inverted" for prominent dark callouts.',
+        },
+      ],
     },
   },
 
@@ -1641,7 +1909,8 @@ export function SelectSizeRowDemo() {
     id: 'tooltip',
     name: 'Tooltip',
     category: 'Overlays & Dialogs',
-    description: 'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
+    description:
+      'Fast hover and keyboard focus micro-popup rendered in an inverted high-contrast pill with arrow support.',
     baseUiPrimitive: '@base-ui/react/tooltip',
     installCmd: 'npx shadcn@latest add @karan-ui/tooltip',
     registryUrl: 'https://karan-ui.dev/r/tooltip.json',
@@ -1654,9 +1923,41 @@ export function SelectSizeRowDemo() {
         options: ['top', 'right', 'bottom', 'left'],
         controlType: 'select',
       },
+      {
+        name: 'withArrow',
+        type: 'boolean',
+        defaultValue: 'true',
+        description: 'Whether to render the pointer arrow toward the trigger',
+        controlType: 'boolean',
+      },
+      {
+        name: 'sideOffset',
+        type: 'number',
+        defaultValue: '6',
+        description: 'Pixel offset between trigger and tooltip popup',
+        controlType: 'number',
+      },
     ],
     defaultProps: {
       side: 'top',
+      withArrow: true,
+      sideOffset: 6,
+    },
+    usageGuide: {
+      summary:
+        'Always rendered in inverted high-contrast (bg-neutral-text text-neutral-surface) with a 150ms cubic-bezier transition, Base UI TooltipProvider delay coordination, and arrow support.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/tooltip',
+        registryUrl: 'https://karan-ui.dev/r/tooltip.json',
+      },
+      features: [
+        {
+          title: 'Accessible Hover & Keyboard Focus',
+          badge: 'WCAG AAA',
+          description:
+            'Guarantees accessible tooltip behavior across both mouse pointer hover and keyboard tab navigation.',
+        },
+      ],
     },
   },
 
@@ -2660,12 +2961,88 @@ export function SelectSizeRowDemo() {
     id: 'hover-card',
     name: 'Hover Card',
     category: 'Overlays & Dialogs',
-    description: 'For sighted users to preview content available behind a link on hover.',
+    description:
+      'For sighted users to preview rich content available behind an anchor link or button trigger on hover.',
     baseUiPrimitive: '@base-ui/react/preview-card',
     installCmd: 'npx shadcn@latest add @karan-ui/hover-card',
     registryUrl: 'https://karan-ui.dev/r/hover-card.json',
-    props: [],
-    defaultProps: {},
+    props: [
+      {
+        name: 'appearance',
+        type: "'default' | 'inverted'",
+        defaultValue: "'default'",
+        description: 'Surface contrast appearance mode (default vs inverted)',
+        options: ['default', 'inverted'],
+        controlType: 'select',
+      },
+      {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg'",
+        defaultValue: "'default'",
+        description: 'Card width and internal padding scale',
+        options: ['sm', 'default', 'lg'],
+        controlType: 'select',
+      },
+      {
+        name: 'withArrow',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'Whether to render an aligned arrow pointing to the anchor trigger',
+        controlType: 'boolean',
+      },
+      {
+        name: 'side',
+        type: "'top' | 'right' | 'bottom' | 'left'",
+        defaultValue: "'bottom'",
+        description: 'Preferred placement edge relative to trigger',
+        options: ['top', 'right', 'bottom', 'left'],
+        controlType: 'select',
+      },
+    ],
+    defaultProps: {
+      appearance: 'default',
+      size: 'default',
+      withArrow: false,
+      side: 'bottom',
+    },
+    usageGuide: {
+      summary:
+        'Built on @base-ui/react/preview-card with built-in sighted hover delay, accessible focus coordination, dual surface appearances, and arrow support.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/hover-card',
+        registryUrl: 'https://karan-ui.dev/r/hover-card.json',
+      },
+      features: [
+        {
+          title: 'Rich Link & Profile Previews',
+          badge: 'PreviewCard',
+          description:
+            'Display author avatars, bio summaries, statistics, or status indicators without navigating away from the page.',
+          code: `import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card"
+import { Button } from "@/components/ui/button"
+
+export function HoverCardDemo() {
+  return (
+    <HoverCard>
+      <HoverCardTrigger render={<Button variant="link">@karancraft</Button>} />
+      <HoverCardContent withArrow>
+        <div className="space-y-1">
+          <h4 className="text-sm font-semibold">Karan Craft</h4>
+          <p className="text-xs text-neutral-text-muted">
+            Next-generation accessible design system built on Base UI.
+          </p>
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+  )
+}`,
+        },
+      ],
+    },
   },
 
   calendar: {

@@ -67,6 +67,31 @@ export const WithError: Story = {
   ),
 };
 
+export const WithSuccess: Story = {
+  render: () => (
+    <div className="w-[360px]">
+      <Field>
+        <FieldLabel htmlFor="project-name">Project Handle</FieldLabel>
+        <FieldDescription>Unique URL path identifier for your team space.</FieldDescription>
+        <Input id="project-name" defaultValue="karan-craft" />
+        <FieldCaption intent="success">Handle is available for registration.</FieldCaption>
+      </Field>
+    </div>
+  ),
+};
+
+export const WithWarning: Story = {
+  render: () => (
+    <div className="w-[360px]">
+      <Field>
+        <FieldLabel htmlFor="storage-limit">Quota Allocation</FieldLabel>
+        <Input id="storage-limit" defaultValue="950 GB" />
+        <FieldCaption intent="warning">You have reached 95% of your included storage tier.</FieldCaption>
+      </Field>
+    </div>
+  ),
+};
+
 export const CaptionIntents: Story = {
   render: () => (
     <div className="flex w-[360px] flex-col gap-6">
