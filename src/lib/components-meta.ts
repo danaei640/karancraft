@@ -1626,17 +1626,18 @@ export function DialogDemo() {
     name: 'Alert Dialog',
     category: 'Overlays & Dialogs',
     description:
-      'An interruptive confirmation modal that requires explicit user confirmation, featuring accessible alertdialog roles and focus trapping.',
+      'A borderless interruptive confirmation modal with start-aligned header layout, shadcn animations, and Dialog-matching padding density.',
     baseUiPrimitive: '@base-ui/react/alert-dialog',
     installCmd: 'npx shadcn@latest add @karan-ui/alert-dialog',
     registryUrl: 'https://karan-ui.dev/r/alert-dialog.json',
     props: [
       {
         name: 'size',
-        type: "'sm' | 'default' | 'lg'",
+        type: "'sm' | 'default' | 'lg' | 'xl' | 'full'",
         defaultValue: "'default'",
-        description: 'Proportional width scale of the confirmation dialog',
-        options: ['sm', 'default', 'lg'],
+        description:
+          'Proportional scale controlling modal width, internal padding, density, and typography',
+        options: ['sm', 'default', 'lg', 'xl', 'full'],
         controlType: 'select',
       },
     ],
@@ -1645,7 +1646,7 @@ export function DialogDemo() {
     },
     usageGuide: {
       summary:
-        'Built on @base-ui/react/alert-dialog for destructive operations and system warnings. Traps focus, suppresses background pointer events, and requires explicit choice via AlertDialogAction and AlertDialogCancel.',
+        'Built on @base-ui/react/alert-dialog with clean borderless elevated surface, strict start-aligned layout, size-driven padding matching Dialog, 200ms shadcn animations, and accessible focus trap guarantees.',
       install: {
         cli: 'npx shadcn@latest add @karan-ui/alert-dialog',
         registryUrl: 'https://karan-ui.dev/r/alert-dialog.json',

@@ -165,3 +165,13 @@ Total Remaining in Repository: **32 components**
   3. The close button is never automatically injected; consumers explicitly place `<DialogClose />` inside `<DialogHeader>` to dock it at `top-0 end-0`.
   4. The `size` prop (`sm`, `default`, `lg`, `xl`, `full`) drives proportional container padding (`p-4` to `p-10`), gap density (`gap-3` to `gap-6`), and title typography scale.
 - **Impact**: Low-visual-load modal cards, explicit DX composability, and balanced optical density across all viewport tiers.
+
+### [DEC-013] Borderless AlertDialog with Strict Start-Alignment & Proportional Density
+- **Context**: `.cn-alert-dialog-header` previously had `place-items-center text-center`, causing the Title to render centered while the Description rendered start-aligned. The content container also had an unwanted 1px border.
+- **Decision**:
+  1. Strictly enforce start-alignment across all header elements (`AlertDialogHeader`, `AlertDialogTitle`, `AlertDialogDescription` all `text-start items-start`).
+  2. Remove borders entirely from `AlertDialogContent`, elevating via `shadow-2xl` and dark backdrop.
+  3. Adopt the identical proportional size scale (`sm` to `full`) for container padding (`p-4` to `p-10`), internal gap density, and title typography as `Dialog`.
+  4. Synchronize entry/exit transitions to shadcn's 200ms `zoom-in-95` / `zoom-out-95` and `fade-in-0` / `fade-out-0`.
+- **Impact**: Eliminates visual misalignment, ensures clean borderless presentation, and maintains complete token and padding parity with Dialog.
+

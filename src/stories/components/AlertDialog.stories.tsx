@@ -31,8 +31,8 @@ const meta: Meta<any> = {
   argTypes: {
     size: {
       control: 'select',
-      options: ['sm', 'default', 'lg'],
-      description: 'Modal width scale',
+      options: ['sm', 'default', 'lg', 'xl'],
+      description: 'Modal width, padding density, and typography scale',
     },
     title: {
       control: 'text',
@@ -53,7 +53,7 @@ const meta: Meta<any> = {
     },
   },
   args: {
-    size: 'sm',
+    size: 'default',
     title: 'Are you absolutely sure?',
     description: 'This action cannot be undone. This will permanently delete your project and remove all associated data.',
     actionText: 'Delete Project',
@@ -100,13 +100,13 @@ export const DestructiveWithMedia: Story = {
           </Button>
         }
       />
-      <AlertDialogContent size="sm">
+      <AlertDialogContent size="default">
         <AlertDialogMedia>
-          <div className="flex size-12 items-center justify-center rounded-full bg-danger-surface text-danger-text">
-            <ShieldAlert className="size-6" />
+          <div className="flex size-11 items-center justify-center rounded-xl bg-danger-surface text-danger-text border border-danger-interactive/40">
+            <ShieldAlert className="size-5" />
           </div>
         </AlertDialogMedia>
-        <AlertDialogHeader className="text-center sm:text-start">
+        <AlertDialogHeader>
           <AlertDialogTitle>Revoke Production Credentials</AlertDialogTitle>
           <AlertDialogDescription>
             All running microservices using this key will immediately lose database access and fail health checks.
@@ -133,9 +133,9 @@ export const Sizes: Story = {
           />
           <AlertDialogContent size={size}>
             <AlertDialogHeader>
-              <AlertDialogTitle>Confirmation Tier ({size})</AlertDialogTitle>
+              <AlertDialogTitle>Confirmation Tier ({size.toUpperCase()})</AlertDialogTitle>
               <AlertDialogDescription>
-                Proportional layout with focus trap guarantees and accessible role attributes.
+                Proportional layout with focus trap guarantees and size-driven padding ({size === 'sm' ? 'p-4 gap-3' : size === 'lg' ? 'p-8 gap-5' : 'p-6 gap-4'}).
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
