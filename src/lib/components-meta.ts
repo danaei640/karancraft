@@ -1529,7 +1529,7 @@ export function SelectSizeRowDemo() {
     name: 'Dialog',
     category: 'Overlays & Dialogs',
     description:
-      'A modal window overlaid on the primary viewport with animated soft backdrop blur, smooth scale transition, and built-in header close button.',
+      'A borderless modal window overlaid on the primary viewport with shadcn animations, size-driven density and paddings, and header-docked DialogClose.',
     baseUiPrimitive: '@base-ui/react/dialog',
     installCmd: 'npx shadcn@latest add @karan-ui/dialog',
     registryUrl: 'https://karan-ui.dev/r/dialog.json',
@@ -1538,35 +1538,36 @@ export function SelectSizeRowDemo() {
         name: 'size',
         type: "'sm' | 'default' | 'lg' | 'xl' | 'full'",
         defaultValue: "'default'",
-        description: 'Proportional max-width scale of the dialog content container',
+        description:
+          'Proportional scale controlling modal width, internal padding, density, and typography',
         options: ['sm', 'default', 'lg', 'xl', 'full'],
         controlType: 'select',
       },
       {
         name: 'showCloseButton',
         type: 'boolean',
-        defaultValue: 'true',
-        description: 'Whether to show the close action button in the dialog header',
+        defaultValue: 'false',
+        description: 'Optional manual close button override rendered in content',
         controlType: 'boolean',
       },
     ],
     defaultProps: {
       size: 'default',
-      showCloseButton: true,
+      showCloseButton: false,
     },
     usageGuide: {
       summary:
-        'Built directly on @base-ui/react/dialog with an animated backdrop blur filter, smooth spring-like entrance cubic-bezier(0.22, 1, 0.36, 1), built-in header close button located at the end edge, and full RTL/LTR awareness using CSS logical properties.',
+        'Built directly on @base-ui/react/dialog featuring a clean borderless elevated surface with soft shadow, duration-200 shadcn-matching zoom/fade animations, explicit <DialogClose /> placement inside <DialogHeader>, and size-responsive padding and density scaling.',
       install: {
         cli: 'npx shadcn@latest add @karan-ui/dialog',
         registryUrl: 'https://karan-ui.dev/r/dialog.json',
       },
       features: [
         {
-          title: 'Structured Slot Architecture',
+          title: 'Structured Slot Architecture with Explicit Close Button',
           badge: 'Semantic Layout',
           description:
-            'Organize modal content using DialogHeader, DialogTitle, DialogDescription, DialogBody (with built-in overflow scrolling), and DialogFooter for responsive action button ordering.',
+            'Organize modal content using DialogHeader (with <DialogClose />), DialogTitle, DialogDescription, DialogBody (with built-in overflow scrolling), and DialogFooter.',
           code: `import {
   Dialog,
   DialogTrigger,
@@ -1590,6 +1591,7 @@ export function DialogDemo() {
           <DialogDescription>
             Update your account details and display preferences.
           </DialogDescription>
+          <DialogClose />
         </DialogHeader>
         <DialogBody>
           <p className="text-sm text-neutral-text-muted">Form fields go here...</p>
@@ -1602,6 +1604,12 @@ export function DialogDemo() {
     </Dialog>
   )
 }`,
+        },
+        {
+          title: 'Size-Driven Padding & Density Scaling',
+          badge: 'Proportional Density',
+          description:
+            'The size prop (sm, default, lg, xl, full) automatically harmonizes container width, internal padding (p-4 to p-10), gap density, and title typography scale.',
         },
         {
           title: 'Responsive Desktop Dialog / Mobile Drawer Pattern',

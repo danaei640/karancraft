@@ -42,7 +42,7 @@ const meta: Meta<any> = {
     size: {
       control: 'select',
       options: ['sm', 'default', 'lg', 'xl', 'full'],
-      description: 'Modal width and max-height scale',
+      description: 'Modal width, padding density, and typography scale',
     },
     title: {
       control: 'text',
@@ -71,16 +71,17 @@ export const Default: Story = {
         <DialogHeader>
           <DialogTitle>{args.title}</DialogTitle>
           <DialogDescription>{args.description}</DialogDescription>
+          <DialogClose />
         </DialogHeader>
-        <div className="grid gap-4 py-2">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="dialog-name" className="text-end">
+        <div className="grid gap-3 py-1">
+          <div className="grid grid-cols-4 items-center gap-3">
+            <Label htmlFor="dialog-name" className="text-end text-xs">
               Name
             </Label>
             <Input id="dialog-name" defaultValue="Karan Arora" className="col-span-3" />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="dialog-username" className="text-end">
+          <div className="grid grid-cols-4 items-center gap-3">
+            <Label htmlFor="dialog-username" className="text-end text-xs">
               Username
             </Label>
             <Input id="dialog-username" defaultValue="@karan" className="col-span-3" />
@@ -112,11 +113,14 @@ export const Sizes: Story = {
               <DialogHeader>
                 <DialogTitle>Dialog Tier: {size.toUpperCase()}</DialogTitle>
                 <DialogDescription>
-                  This dialog demonstrates the proportional size tier `{size}`.
+                  Padding, gap density, and title typography scale automatically with `{size}`.
                 </DialogDescription>
+                <DialogClose />
               </DialogHeader>
-              <div className="py-4 text-sm text-neutral-text-secondary">
-                Content neatly adapts within the container with balanced OKLCH surface contrast.
+              <div className="rounded-lg bg-neutral-surface/50 p-3 text-xs text-neutral-text-muted space-y-1">
+                <p><strong>Size Tier:</strong> {size}</p>
+                <p><strong>Border:</strong> Clean borderless surface with elevation shadow.</p>
+                <p><strong>Density:</strong> Proportional spacing ({size === 'sm' ? 'p-4 gap-3' : size === 'lg' || size === 'xl' ? 'p-8 gap-5' : 'p-6 gap-4'}).</p>
               </div>
               <DialogFooter>
                 <DialogClose render={<Button variant="outline">Close</Button>} />
@@ -133,15 +137,16 @@ export const Sizes: Story = {
 export const WithScrollableBody: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline">Terms & Privacy</Button>} />
+      <DialogTrigger render={<Button variant="outline">Terms &amp; Privacy</Button>} />
       <DialogContent size="lg">
         <DialogHeader>
-          <DialogTitle>Terms of Service & Data Policies</DialogTitle>
+          <DialogTitle>Terms of Service &amp; Data Policies</DialogTitle>
           <DialogDescription>
             Please review our latest usage guidelines before continuing.
           </DialogDescription>
+          <DialogClose />
         </DialogHeader>
-        <DialogBody className="max-h-64 space-y-3 text-sm text-neutral-text-secondary pe-2">
+        <DialogBody className="max-h-64 space-y-3 text-sm text-neutral-text-muted pe-2">
           <p>
             Welcome to Karan UI. By using this software, you agree to comply with our design guidelines,
             accessible contrast policies, and component lifecycle specifications.
@@ -155,13 +160,13 @@ export const WithScrollableBody: Story = {
             as start, end, ps, pe, ms, and me.
           </p>
           <p>
-            Our unified drawer and sheet architecture guarantees identical developer experience across
-            desktop slide-out panels and mobile touch gestures.
+            Our dialog surface is clean and borderless, utilizing soft elevation shadows and responsive
+            touch drawer pairing for mobile viewports.
           </p>
         </DialogBody>
         <DialogFooter>
           <DialogClose render={<Button variant="outline">Decline</Button>} />
-          <Button>Accept & Proceed</Button>
+          <Button>Accept &amp; Proceed</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -208,6 +213,7 @@ export const ResponsiveDialogDrawer: Story = {
             <DialogDescription>
               Automatically rendered as a centered modal Dialog on desktop viewports.
             </DialogDescription>
+            <DialogClose />
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
