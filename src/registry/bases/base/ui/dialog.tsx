@@ -6,6 +6,8 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "icons"
 import { cn } from "cn"
 
+import { Button } from "@/registry/bases/base/ui/button"
+
 export type DialogSize = "sm" | "default" | "lg" | "xl" | "full"
 
 const DialogContext = React.createContext<{ size: DialogSize }>({
@@ -42,28 +44,8 @@ function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
 }
 
-export interface DialogCloseProps extends DialogPrimitive.Close.Props {
-  className?: string
-}
-
-function DialogClose({ className, children, ...props }: DialogCloseProps) {
-  return (
-    <DialogPrimitive.Close
-      data-slot="dialog-close"
-      className={cn(
-        "cn-dialog-close absolute top-0 end-0 rounded-md p-1.5 text-neutral-text-muted hover:text-neutral-text hover:bg-neutral-interactive/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-interactive-focus disabled:pointer-events-none transition-colors",
-        className
-      )}
-      {...props}
-    >
-      {children ?? (
-        <>
-          <X className="size-4" aria-hidden="true" />
-          <span className="sr-only">Close</span>
-        </>
-      )}
-    </DialogPrimitive.Close>
-  )
+function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
+  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
 function DialogOverlay({
@@ -92,7 +74,8 @@ export interface DialogContentProps
    */
   size?: DialogSize
   /**
-   * Optional manual close button override rendered at top end.
+   * Whether to show the top-right icon close button.
+   * @default true
    */
   showCloseButton?: boolean
 }
@@ -101,7 +84,7 @@ function DialogContent({
   className,
   children,
   size = "default",
-  showCloseButton,
+  showCloseButton = true,
   ...props
 }: DialogContentProps) {
   return (
@@ -116,7 +99,20 @@ function DialogContent({
         >
           {children}
           {showCloseButton && (
-            <DialogClose className="top-4 end-4 sm:top-6 sm:end-6" />
+            <DialogPrimitive.Close
+              data-slot="dialog-close"
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="Close"
+                  className="cn-dialog-close absolute top-3 end-3 sm:top-4 sm:end-4 text-neutral-text-muted hover:text-neutral-text hover:bg-neutral-interactive/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-interactive-focus disabled:pointer-events-none transition-colors"
+                />
+              }
+            >
+              <X className="size-4" aria-hidden="true" />
+              <span className="sr-only">Close</span>
+            </DialogPrimitive.Close>
           )}
         </DialogPrimitive.Popup>
       </DialogPortal>
@@ -133,7 +129,7 @@ function DialogHeader({ className, ...props }: DialogHeaderProps) {
       data-slot="dialog-header"
       className={cn(
         "cn-dialog-header relative flex flex-col text-start pe-8",
-        size === "sm" && "gap-1 pb-1 pe-7",
+        size === "sm" && "gap-1 pb-1 pe-6",
         size === "default" && "gap-1.5 pb-2 pe-8",
         (size === "lg" || size === "xl" || size === "full") && "gap-2 pb-3 pe-9",
         className

@@ -71,7 +71,6 @@ export const Default: Story = {
         <DialogHeader>
           <DialogTitle>{args.title}</DialogTitle>
           <DialogDescription>{args.description}</DialogDescription>
-          <DialogClose />
         </DialogHeader>
         <div className="grid gap-3 py-1">
           <div className="grid grid-cols-4 items-center gap-3">
@@ -115,7 +114,6 @@ export const Sizes: Story = {
                 <DialogDescription>
                   Padding, gap density, and title typography scale automatically with `{size}`.
                 </DialogDescription>
-                <DialogClose />
               </DialogHeader>
               <div className="rounded-lg bg-neutral-surface/50 p-3 text-xs text-neutral-text-muted space-y-1">
                 <p><strong>Size Tier:</strong> {size}</p>
@@ -144,7 +142,6 @@ export const WithScrollableBody: Story = {
           <DialogDescription>
             Please review our latest usage guidelines before continuing.
           </DialogDescription>
-          <DialogClose />
         </DialogHeader>
         <DialogBody className="max-h-64 space-y-3 text-sm text-neutral-text-muted pe-2">
           <p>
@@ -213,7 +210,6 @@ export const ResponsiveDialogDrawer: Story = {
             <DialogDescription>
               Automatically rendered as a centered modal Dialog on desktop viewports.
             </DialogDescription>
-            <DialogClose />
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">

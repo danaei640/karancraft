@@ -157,14 +157,15 @@ Total Remaining in Repository: **32 components**
 - **Decision**: Ban all physical direction classes in favor of CSS logical properties (`start-*`, `end-*`, `ps-*`, `pe-*`, `ms-*`, `me-*`, `text-start`, `text-end`). Standardize the close button directly inside the header slot (`*Header`) positioned at `end-0`.
 - **Impact**: Seamless bidirectional support for RTL and LTR languages with consistent header action layouts and streamlined prop APIs.
 
-### [DEC-012] Borderless Dialog with Proportional Density & Explicit Header Close
-- **Context**: Default dialog containers often enforced heavy 1px borders increasing visual clutter over dark backdrops. Automatic close button injection also removed consumer control over whether a close button was desired in custom modal layouts.
+### [DEC-012] Borderless Dialog with Proportional Density & Single Icon Close
+- **Context**: Enforcing borders increased visual clutter over modal backdrops. Furthermore, hardcoding absolute positioning on `DialogClose` caused footer actions to overlap with top-corner close buttons.
 - **Decision**:
   1. Dialog content is borderless, elevated exclusively via `shadow-2xl` and backdrop contrast.
-  2. Animations and transitions synchronize to shadcn's 200ms `zoom-in-95` / `zoom-out-95` and `fade-in-0` / `fade-out-0`.
-  3. The close button is never automatically injected; consumers explicitly place `<DialogClose />` inside `<DialogHeader>` to dock it at `top-0 end-0`.
-  4. The `size` prop (`sm`, `default`, `lg`, `xl`, `full`) drives proportional container padding (`p-4` to `p-10`), gap density (`gap-3` to `gap-6`), and title typography scale.
-- **Impact**: Low-visual-load modal cards, explicit DX composability, and balanced optical density across all viewport tiers.
+  2. Single built-in icon close button (`✕`) rendered at `top-3 end-3` / `sm:top-4 sm:end-4` (`showCloseButton={true}` by default). No text "Close" button at top.
+  3. `DialogClose` remains an unstyled Base UI primitive wrapper so it can be used naturally in footers (e.g. Cancel button) without breaking document flow.
+  4. Animations and transitions synchronize to shadcn's 200ms `zoom-in-95` / `zoom-out-95` and `fade-in-0` / `fade-out-0`.
+  5. The `size` prop (`sm`, `default`, `lg`, `xl`, `full`) drives proportional container padding (`p-4` to `p-10`), gap density (`gap-3` to `gap-6`), and title typography scale.
+- **Impact**: Zero overlapping close buttons, clean borderless aesthetics, and robust composition.
 
 ### [DEC-013] Borderless AlertDialog with Strict Start-Alignment & Proportional Density
 - **Context**: `.cn-alert-dialog-header` previously had `place-items-center text-center`, causing the Title to render centered while the Description rendered start-aligned. The content container also had an unwanted 1px border.

@@ -1546,28 +1546,28 @@ export function SelectSizeRowDemo() {
       {
         name: 'showCloseButton',
         type: 'boolean',
-        defaultValue: 'false',
-        description: 'Optional manual close button override rendered in content',
+        defaultValue: 'true',
+        description: 'Whether to show the top-right icon close button',
         controlType: 'boolean',
       },
     ],
     defaultProps: {
       size: 'default',
-      showCloseButton: false,
+      showCloseButton: true,
     },
     usageGuide: {
       summary:
-        'Built directly on @base-ui/react/dialog featuring a clean borderless elevated surface with soft shadow, duration-200 shadcn-matching zoom/fade animations, explicit <DialogClose /> placement inside <DialogHeader>, and size-responsive padding and density scaling.',
+        'Built directly on @base-ui/react/dialog featuring a clean borderless elevated surface with soft shadow, duration-200 shadcn-matching zoom/fade animations, built-in top-right icon close button, and size-responsive padding and density scaling.',
       install: {
         cli: 'npx shadcn@latest add @karan-ui/dialog',
         registryUrl: 'https://karan-ui.dev/r/dialog.json',
       },
       features: [
         {
-          title: 'Structured Slot Architecture with Explicit Close Button',
+          title: 'Structured Slot Architecture',
           badge: 'Semantic Layout',
           description:
-            'Organize modal content using DialogHeader (with <DialogClose />), DialogTitle, DialogDescription, DialogBody (with built-in overflow scrolling), and DialogFooter.',
+            'Organize modal content using DialogHeader, DialogTitle, DialogDescription, DialogBody (with built-in overflow scrolling), and DialogFooter.',
           code: `import {
   Dialog,
   DialogTrigger,
@@ -1591,7 +1591,6 @@ export function DialogDemo() {
           <DialogDescription>
             Update your account details and display preferences.
           </DialogDescription>
-          <DialogClose />
         </DialogHeader>
         <DialogBody>
           <p className="text-sm text-neutral-text-muted">Form fields go here...</p>
