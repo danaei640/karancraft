@@ -122,15 +122,96 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="field-description"
       className={cn(
-        "cn-field-description leading-normal font-normal group-has-data-horizontal/field:text-balance",
-        "last:mt-0 nth-last-2:-mt-1",
-        "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
+        "cn-field-description text-xs text-neutral-text-muted leading-snug font-normal [[data-slot=field-label]+&]:-mt-1 group-has-data-horizontal/field:mt-0 group-has-data-horizontal/field:text-balance",
+        "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary-text",
         className
       )}
       {...props}
     />
   )
 }
+
+const fieldCaptionVariants = cva(
+  "cn-field-caption text-xs leading-snug font-normal [&>a]:underline [&>a]:underline-offset-4",
+  {
+    variants: {
+      intent: {
+        neutral: "text-neutral-text-muted [&>a:hover]:text-neutral-text",
+        danger: "text-danger-text [&>a:hover]:text-danger-text/80",
+        success: "text-success-text [&>a:hover]:text-success-text/80",
+        warning: "text-warning-text [&>a:hover]:text-warning-text/80",
+        info: "text-info-text [&>a:hover]:text-info-text/80",
+        primary: "text-primary-text [&>a:hover]:text-primary-text/80",
+      },
+    },
+    defaultVariants: {
+      intent: "neutral",
+    },
+  }
+)
+
+function FieldCaption({
+  className,
+  intent,
+  children,
+  errors,
+  role,
+  ...props
+}: React.ComponentProps<"div"> &
+  VariantProps<typeof fieldCaptionVariants> & {
+    errors?: Array<{ message?: string } | undefined>
+  }) {
+  const content = useMemo(() => {
+    if (children) {
+      return children
+    }
+
+    if (!errors?.length) {
+      return null
+    }
+
+    const uniqueErrors = [
+      ...new Map(errors.map((error) => [error?.message, error])).values(),
+    ]
+
+    if (uniqueErrors.length === 1) {
+      return uniqueErrors[0]?.message
+    }
+
+    return (
+      <ul className="ml-4 flex list-disc flex-col gap-1">
+        {uniqueErrors.map(
+          (error, index) =>
+            error?.message && <li key={index}>{error.message}</li>
+        )}
+      </ul>
+    )
+  }, [children, errors])
+
+  if (!content) {
+    return null
+  }
+
+  const effectiveIntent = intent ?? (errors?.length ? "danger" : "neutral")
+  const isAlert = effectiveIntent === "danger"
+
+  return (
+    <div
+      role={role ?? (isAlert ? "alert" : undefined)}
+      data-slot="field-caption"
+      data-intent={effectiveIntent}
+      className={cn(
+        fieldCaptionVariants({ intent: effectiveIntent }),
+        className
+      )}
+      {...props}
+    >
+      {content}
+    </div>
+  )
+}
+
+const FormCaption = FieldCaption
 
 function FieldSeparator({
   children,
@@ -159,62 +240,13 @@ function FieldSeparator({
   )
 }
 
-function FieldError({
-  className,
-  children,
-  errors,
-  ...props
-}: React.ComponentProps<"div"> & {
-  errors?: Array<{ message?: string } | undefined>
-}) {
-  const content = useMemo(() => {
-    if (children) {
-      return children
-    }
-
-    if (!errors?.length) {
-      return null
-    }
-
-    const uniqueErrors = [
-      ...new Map(errors.map((error) => [error?.message, error])).values(),
-    ]
-
-    if (uniqueErrors?.length == 1) {
-      return uniqueErrors[0]?.message
-    }
-
-    return (
-      <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map(
-          (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>
-        )}
-      </ul>
-    )
-  }, [children, errors])
-
-  if (!content) {
-    return null
-  }
-
-  return (
-    <div
-      role="alert"
-      data-slot="field-error"
-      className={cn("cn-field-error font-normal", className)}
-      {...props}
-    >
-      {content}
-    </div>
-  )
-}
-
 export {
   Field,
   FieldLabel,
   FieldDescription,
-  FieldError,
+  FieldCaption,
+  FormCaption,
+  fieldCaptionVariants,
   FieldGroup,
   FieldLegend,
   FieldSeparator,

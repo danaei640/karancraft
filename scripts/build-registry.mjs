@@ -54,6 +54,7 @@ const COMPONENT_METADATA = {
   "theme-provider": { title: "Theme Provider", description: "A comprehensive theme and component provider wrapping @wrksz/themes, toast, tooltip, typeset measurements, and color theme." },
   toggle: { title: "Toggle", description: "A two-state button that can be either on or off." },
   "toggle-group": { title: "Toggle Group", description: "A set of two-state buttons that can be toggled on or off." },
+  field: { title: "Field", description: "Form control wrapper with label, subtitle description, input, and multi-intent bottom caption." },
 }
 
 function transformContentForRegistry(content) {

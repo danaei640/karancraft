@@ -2001,7 +2001,8 @@ export function SelectSizeRowDemo() {
     id: 'field',
     name: 'Field',
     category: 'Actions & Inputs',
-    description: 'Field wrapper combining label, description, control, and validation errors.',
+    description:
+      'Form control wrapper orchestrating label, optional subtitle description, interactive input, and bottom caption with multi-intent feedback and optical vertical symmetry.',
     baseUiPrimitive: 'React.ComponentProps<"div">',
     installCmd: 'npx shadcn@latest add @karan-ui/field',
     registryUrl: 'https://karan-ui.dev/r/field.json',
@@ -2010,13 +2011,115 @@ export function SelectSizeRowDemo() {
         name: 'orientation',
         type: "'vertical' | 'horizontal' | 'responsive'",
         defaultValue: "'vertical'",
-        description: 'Layout direction of label and input',
+        description: 'Layout direction of label, control, and supporting text',
         options: ['vertical', 'horizontal', 'responsive'],
         controlType: 'select',
       },
     ],
     defaultProps: {
       orientation: 'vertical',
+    },
+    usageGuide: {
+      summary:
+        'Structured form field system adhering to strict vertical optical rhythm. Positions optional FieldDescription directly beneath FieldLabel with 1 step reduced visual load (text-xs text-neutral-text-muted), positions FieldCaption directly beneath the input control, and enforces symmetric 8px spacing both above and below the control.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/field',
+        registryUrl: 'https://karan-ui.dev/r/field.json',
+      },
+      features: [
+        {
+          title: '1. Structured Label & Subtitle Description Hierarchy',
+          badge: '1-Step Less Visual Load',
+          description:
+            '<FieldDescription> sits directly beneath <FieldLabel> above the input with 1 step reduced visual weight (12px text-xs, normal font weight, and muted contrast), providing contextual guidance without competing with the primary label.',
+          code: `<Field>
+  <FieldLabel htmlFor="workspace-email">Work Email</FieldLabel>
+  <FieldDescription>Used for corporate SSO and billing invoices.</FieldDescription>
+  <Input id="workspace-email" type="email" placeholder="alex@company.com" />
+  <FieldCaption>Must be an active corporate domain.</FieldCaption>
+</Field>`,
+        },
+        {
+          title: '2. Symmetric Optical Spacing Above and Below Input',
+          badge: '8px Uniform Rhythm',
+          description:
+            'Harmonizes vertical spacing so the gap between the header (label/description) and input exactly equals the gap between input and footer (caption). Eliminates awkward bottom gap inflation.',
+          code: `<Field>
+  <FieldLabel htmlFor="project-slug">Project Slug</FieldLabel>
+  <Input id="project-slug" defaultValue="karan-craft" />
+  <FieldCaption>Only lowercase letters, numbers, and dashes.</FieldCaption>
+</Field>`,
+        },
+        {
+          title: '3. Unified FieldCaption with Intent Feedback',
+          badge: 'Multi-Intent & Validation',
+          description:
+            'Single unified footer element under the input supporting intents ("neutral", "danger", "success", "warning", "info", "primary"). Eliminates duplicate stacked elements and automatically handles role="alert" when intent="danger" or validation errors are present.',
+          code: `<FieldSet>
+  <FieldLegend>Security Credentials</FieldLegend>
+  <FieldGroup className="gap-4">
+    <Field>
+      <FieldLabel htmlFor="user-pass">Password</FieldLabel>
+      <FieldDescription>Minimum 8 characters with at least one symbol.</FieldDescription>
+      <Input id="user-pass" type="password" aria-invalid="true" />
+      <FieldCaption intent="danger">Password must include at least one special character.</FieldCaption>
+    </Field>
+  </FieldGroup>
+</FieldSet>`,
+        },
+      ],
+      apiReference: [
+        {
+          name: 'Field',
+          type: 'React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>',
+          description:
+            'Root container managing field role="group", orientation ("vertical" | "horizontal" | "responsive"), and vertical 8px spacing rhythm.',
+        },
+        {
+          name: 'FieldLabel',
+          type: 'React.ComponentProps<typeof Label>',
+          description:
+            'Primary label styled with 14px text-sm, medium weight, and neutral primary text contrast.',
+        },
+        {
+          name: 'FieldDescription',
+          type: 'React.ComponentProps<"p">',
+          description:
+            'Supporting subtitle positioned under FieldLabel and above the input with 1 step less visual load (12px text-xs, muted color).',
+        },
+        {
+          name: 'FieldCaption',
+          type: 'React.ComponentProps<"div"> & VariantProps<typeof fieldCaptionVariants> & { errors?: Array<{ message?: string }> }',
+          description:
+            'Unified bottom feedback element positioned directly under the input control. Supports intent ("neutral" | "danger" | "success" | "warning" | "info" | "primary") and array-based error lists with automatic role="alert" accessibility.',
+        },
+        {
+          name: 'FormCaption',
+          type: 'typeof FieldCaption',
+          description: 'Convenience alias for FieldCaption.',
+        },
+        {
+          name: 'FieldContent',
+          type: 'React.ComponentProps<"div">',
+          description:
+            'Flex container grouping controls and captions in horizontal or responsive field layouts.',
+        },
+        {
+          name: 'FieldSet',
+          type: 'React.ComponentProps<"fieldset">',
+          description: 'Semantic <fieldset> wrapper for related fields.',
+        },
+        {
+          name: 'FieldLegend',
+          type: 'React.ComponentProps<"legend"> & { variant?: "legend" | "label" }',
+          description: 'Legend heading for a FieldSet group.',
+        },
+        {
+          name: 'FieldGroup',
+          type: 'React.ComponentProps<"div">',
+          description: 'Container for grouping multiple Fields with consistent form rhythm.',
+        },
+      ],
     },
   },
 
@@ -2226,31 +2329,101 @@ export function SelectSizeRowDemo() {
     id: 'toggle',
     name: 'Toggle',
     category: 'Actions & Inputs',
-    description: 'A two-state button that can be either on or off.',
+    description:
+      'A two-state button that can be either on or off, supporting default, outline, and tint variants, size-to-radius scaling identical to Button, and square icon-* dimensions.',
     baseUiPrimitive: '@base-ui/react/toggle',
     installCmd: 'npx shadcn@latest add @karan-ui/toggle',
     registryUrl: 'https://karan-ui.dev/r/toggle.json',
     props: [
       {
         name: 'variant',
-        type: "'default' | 'outline'",
+        type: "'default' | 'outline' | 'tint'",
         defaultValue: "'default'",
-        description: 'Toggle appearance',
-        options: ['default', 'outline'],
+        description:
+          'Visual style variant: default (subtle neutral), outline (1px bordered), or tint (vibrant primary accent when selected, transparent when unselected)',
+        options: ['default', 'outline', 'tint'],
         controlType: 'select',
       },
       {
         name: 'size',
-        type: "'default' | 'sm' | 'lg'",
+        type: "'xs' | 'sm' | 'default' | 'lg' | 'icon-xs' | 'icon-sm' | 'icon' | 'icon-lg'",
         defaultValue: "'default'",
-        description: 'Toggle button size',
-        options: ['default', 'sm', 'lg'],
+        description:
+          'Sizing scale matching Button, where any icon-* option enforces perfectly square dimensions',
+        options: ['xs', 'sm', 'default', 'lg', 'icon-xs', 'icon-sm', 'icon', 'icon-lg'],
         controlType: 'select',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'Whether user interaction is disabled',
+        controlType: 'boolean',
+      },
+      {
+        name: 'defaultPressed',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'Initial pressed state for uncontrolled toggle',
+        controlType: 'boolean',
       },
     ],
     defaultProps: {
       variant: 'default',
       size: 'default',
+      disabled: false,
+      defaultPressed: false,
+    },
+    usageGuide: {
+      summary:
+        'Toggle provides an accessible two-state press button built on @base-ui/react/toggle. It shares the exact size scale and radius proportions of Button (including square icon-* sizes) and introduces a specialized tint variant that illuminates with the primary brand color when selected while remaining clean and transparent when unselected.',
+      install: {
+        cli: 'npx shadcn@latest add https://karan-ui.dev/r/toggle.json',
+        registryUrl: 'https://karan-ui.dev/r/toggle.json',
+      },
+      features: [
+        {
+          title: 'Button-Matching Sizing & Square Icon Tiers',
+          badge: 'Sizing',
+          description:
+            'Toggle shares the exact 4 height tiers (xs, sm, default, lg) and 4 square icon sizes (icon-xs, icon-sm, icon, icon-lg) as Button. Passing any icon-* tier renders a perfect 1:1 aspect ratio button.',
+          code: `<Toggle size="icon" aria-label="Toggle pin">
+  <Pin />
+</Toggle>`,
+        },
+        {
+          title: 'Specialized Tint Variant',
+          badge: 'Tint Variant',
+          description:
+            'Use variant="tint" for accent-driven selection: when unselected, the button remains transparent with neutral hover; when pressed, it lights up with the primary interactive color and high-contrast text.',
+          code: `<Toggle variant="tint" aria-label="Bookmark article">
+  <Bookmark />
+  Bookmark
+</Toggle>`,
+        },
+        {
+          title: 'Full Base UI & A11y Support',
+          badge: 'Accessibility',
+          description:
+            'Built on @base-ui/react/toggle, with automatic aria-pressed, data-pressed, and data-disabled attributes, keyboard Enter/Space activation, and focus rings.',
+          code: `<Toggle pressed={isPinned} onPressedChange={setIsPinned} aria-label="Pin message">
+  <Pin />
+</Toggle>`,
+        },
+      ],
+      apiReference: [
+        {
+          name: 'Toggle',
+          type: 'ToggleProps',
+          description:
+            'The two-state button component supporting variant (default, outline, tint), size (xs, sm, default, lg, icon-xs, icon-sm, icon, icon-lg), pressed, defaultPressed, and onPressedChange.',
+        },
+      ],
+      tips: [
+        'Use size="icon" (or icon-xs, icon-sm, icon-lg) whenever rendering icon-only toggle buttons to ensure exact square geometry.',
+        'Use variant="tint" when the active state signifies an important enabled feature or brand action.',
+        'Always provide an aria-label when the toggle contains only an icon without visible text.',
+      ],
     },
   },
 
@@ -2258,22 +2431,147 @@ export function SelectSizeRowDemo() {
     id: 'toggle-group',
     name: 'Toggle Group',
     category: 'Actions & Inputs',
-    description: 'A set of two-state buttons that can be toggled on or off.',
+    description:
+      'A set of two-state buttons coordinating selection state, attached or spaced layout, variant and size inheritance, and horizontal/vertical orientation.',
     baseUiPrimitive: '@base-ui/react/toggle-group',
     installCmd: 'npx shadcn@latest add @karan-ui/toggle-group',
     registryUrl: 'https://karan-ui.dev/r/toggle-group.json',
     props: [
       {
+        name: 'attached',
+        type: 'boolean',
+        defaultValue: 'true',
+        description:
+          'When true, toggles are joined into a contiguous segmented bar with collapsed inner corners. When false, renders as a spaced toolbar cluster.',
+        controlType: 'boolean',
+      },
+      {
         name: 'variant',
-        type: "'default' | 'outline'",
+        type: "'default' | 'outline' | 'tint'",
         defaultValue: "'default'",
-        description: 'Style variant',
-        options: ['default', 'outline'],
+        description:
+          'Shared visual style variant inherited by child toggles unless overridden on the child',
+        options: ['default', 'outline', 'tint'],
         controlType: 'select',
+      },
+      {
+        name: 'size',
+        type: "'xs' | 'sm' | 'default' | 'lg' | 'icon-xs' | 'icon-sm' | 'icon' | 'icon-lg'",
+        defaultValue: "'default'",
+        description:
+          'Shared size scale inherited by child toggles matching button sizing (icon-* produces square dimensions)',
+        options: ['xs', 'sm', 'default', 'lg', 'icon-xs', 'icon-sm', 'icon', 'icon-lg'],
+        controlType: 'select',
+      },
+      {
+        name: 'orientation',
+        type: "'horizontal' | 'vertical'",
+        defaultValue: "'horizontal'",
+        description: 'Layout direction of the toggle group',
+        options: ['horizontal', 'vertical'],
+        controlType: 'select',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'Disables all toggles in the group when true',
+        controlType: 'boolean',
+      },
+      {
+        name: 'multiple',
+        type: 'boolean',
+        defaultValue: 'false',
+        description:
+          'Allows multiple items in the group to be active simultaneously',
+        controlType: 'boolean',
       },
     ],
     defaultProps: {
+      attached: true,
       variant: 'default',
+      size: 'default',
+      orientation: 'horizontal',
+      disabled: false,
+      multiple: false,
+    },
+    usageGuide: {
+      summary:
+        'ToggleGroup mirrors ButtonGroup architecture while coordinating single or multiple selection states across children. It provides ToggleGroupContext so props (attached, variant, size, orientation, disabled) only need to be declared once on the parent container, and uses logical properties for flawless LTR and RTL support.',
+      install: {
+        cli: 'npx shadcn@latest add https://karan-ui.dev/r/toggle-group.json',
+        registryUrl: 'https://karan-ui.dev/r/toggle-group.json',
+      },
+      features: [
+        {
+          title: 'ButtonGroup-Identical Architecture & Context',
+          badge: 'Context & Sizing',
+          description:
+            'Pass attached, variant, size, orientation, or disabled on <ToggleGroup>. All child <ToggleGroupItem> and <Toggle> components inherit these settings automatically.',
+          code: `<ToggleGroup variant="outline" size="sm" attached>
+  <ToggleGroupItem value="bold"><Bold /></ToggleGroupItem>
+  <ToggleGroupItem value="italic"><Italic /></ToggleGroupItem>
+  <ToggleGroupItem value="underline"><Underline /></ToggleGroupItem>
+</ToggleGroup>`,
+        },
+        {
+          title: 'Attached vs. Spaced Layouts',
+          badge: 'Layout',
+          description:
+            'Set attached (default: true) for a contiguous segmented control with collapsed inner corners, or attached={false} for a spaced toolbar cluster with size-proportional gap.',
+          code: `<ToggleGroup attached={false} variant="outline" size="default">
+  <ToggleGroupItem value="left"><AlignLeft /></ToggleGroupItem>
+  <ToggleGroupItem value="center"><AlignCenter /></ToggleGroupItem>
+  <ToggleGroupItem value="right"><AlignRight /></ToggleGroupItem>
+</ToggleGroup>`,
+        },
+        {
+          title: 'Single & Multi Selection Modes',
+          badge: 'Selection',
+          description:
+            'Supports single radio-style toggle behavior (multiple={false}) for mutually exclusive choices, or multi-select toolbar toggling (multiple={true}).',
+          code: `<ToggleGroup multiple defaultValue={["bold", "italic"]}>
+  <ToggleGroupItem value="bold"><Bold /></ToggleGroupItem>
+  <ToggleGroupItem value="italic"><Italic /></ToggleGroupItem>
+</ToggleGroup>`,
+        },
+        {
+          title: 'Toolbar Separators',
+          badge: 'Addons',
+          description:
+            'Includes ToggleGroupSeparator to cleanly divide tool groups within rich text editors or command surfaces.',
+          code: `<ToggleGroup attached variant="default">
+  <ToggleGroupItem value="bold"><Bold /></ToggleGroupItem>
+  <ToggleGroupSeparator />
+  <ToggleGroupItem value="left"><AlignLeft /></ToggleGroupItem>
+</ToggleGroup>`,
+        },
+      ],
+      apiReference: [
+        {
+          name: 'ToggleGroup',
+          type: 'ToggleGroupProps',
+          description:
+            'Root toggle group container managing roving keyboard navigation, attached/spaced layout, and propagating ToggleGroupContext.',
+        },
+        {
+          name: 'ToggleGroupItem',
+          type: 'ToggleGroupItemProps',
+          description:
+            'Two-state button item that inherits variant, size, and disabled props from the parent ToggleGroup.',
+        },
+        {
+          name: 'ToggleGroupSeparator',
+          type: 'React.ComponentProps<typeof Separator>',
+          description:
+            'Visual divider oriented perpendicular to the group layout direction.',
+        },
+      ],
+      tips: [
+        'Set attached={false} when building a floating toolbar cluster where each icon button needs individual rounding.',
+        'Use variant="tint" in editor toolbars to give prominent color feedback on active formatting styles.',
+        'When using multiple={false}, value is a single string within an array (e.g. defaultValue={["center"]}).',
+      ],
     },
   },
 

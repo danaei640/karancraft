@@ -315,7 +315,7 @@ function SelectContent({
           data-size={resolvedSize}
           data-align-trigger={resolvedAlignWithItem}
           className={cn(
-            "cn-select-content cn-select-content-logical cn-menu-target cn-menu-translucent group/select-content relative isolate z-50 max-h-(--available-height) min-w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none data-[align-trigger=true]:animate-none",
+            "cn-select-content cn-select-content-logical group/select-content relative isolate z-50 max-h-(--available-height) min-w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none data-[align-trigger=true]:animate-none",
             resolvedSize === "xs" || resolvedSize === "sm"
               ? "rounded-lg"
               : "rounded-xl",
@@ -376,7 +376,7 @@ function SelectItem({
       data-slot="select-item"
       data-size={resolvedSize}
       className={cn(
-        "cn-select-item relative flex w-full cursor-default items-center outline-hidden select-none transition-colors duration-100 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "cn-select-item relative flex w-full cursor-default items-center outline-hidden select-none transition-colors duration-100 focus:bg-neutral-interactive hover:bg-neutral-interactive data-highlighted:bg-neutral-interactive active:bg-neutral-interactive-hover data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         resolvedSize === "xs" || resolvedSize === "sm"
           ? "gap-1.5 rounded-sm py-1 pe-6 ps-2 text-xs [&_svg:not([class*='size-'])]:size-3.5"
           : "gap-2 rounded-lg py-1.5 pe-7 ps-2.5 text-sm [&_svg:not([class*='size-'])]:size-4",
