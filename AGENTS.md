@@ -17,11 +17,36 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Actively verify current package versions, official documentation, or upstream repository releases before recommending or installing dependencies.
 
 ## 2. Prefer the Most Modern Solutions
-- Always evaluate and select the modern, next-generation industry standards rather than superseded or legacy choices.
+- Always evaluate and select modern, next-generation industry standards rather than superseded or legacy choices.
 - **Example**: While Radix UI was previously the standard headless foundation, modern ecosystems (such as Shadcn v4) have adopted Base UI (`@base-ui/react`) as the newer, more performant, and superior foundation.
 - Never scaffold deprecated versions, legacy patterns (e.g., outdated Tailwind configs or older primitive libraries), or superseded tooling unless explicitly demanded by the user.
 
 ---
+
+# Base UI Syntax & Shadcn UI Synergy (Mandatory Documentation Rule)
+
+## 1. Outdated Knowledge Warning & Zero-Radix Mandate
+- **Internal Knowledge Is Outdated**: AI training weights predominantly default to Radix UI and older shadcn patterns. **Do NOT rely on internal training knowledge for UI primitives, component anatomy, prop names, or state attributes.**
+- **Strictly No Radix UI**: This project does NOT use Radix UI (`@radix-ui/*` is NOT installed and must never be imported or referenced).
+- **Sole Headless Foundation**: All UI primitives MUST be built on **Base UI (`@base-ui/react`)**.
+
+## 2. Mandatory Online Documentation Verification (Every Component)
+Before writing or modifying ANY component code, the AI agent **MUST actively check both online documentations**:
+1. **Base UI Online Docs (`https://base-ui.com/react/components/<component>`)**:
+   - Check current subcomponents, imports, and namespaces (e.g. `import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"`).
+   - Check exact prop names, controlled/uncontrolled state handlers (`open`, `onOpenChange`, `defaultOpen`).
+   - Check polymorphism: Base UI uses the `render` prop (e.g. `render={<button ... />}`), **never** Radix's `asChild`.
+   - Check state & animation data attributes: `data-open`, `data-closed`, `data-starting-style`, `data-ending-style`, `data-side`, `data-align`, `data-pressed`.
+   - Check anatomy specifics: Base UI primitives use `Popup`, `Backdrop`, `Positioner`, `Arrow` (distinct from Radix `Content` / `Overlay`).
+2. **Shadcn UI Online Docs (`https://ui.shadcn.com/docs/components/<component>`)**:
+   - Check visual styling, typography, padding, border radius, shadows, borders, and interaction states.
+   - Check component ergonomics and slot architecture (`Header`, `Title`, `Description`, `Content`/`Body`, `Footer`, `Action`, `Cancel`, `Close`).
+   - Retain `data-slot="<component-slot>"` attributes on all exported components for uniform styling and ecosystem consistency.
+
+## 3. Dual Architecture: Syntax of Base UI + UI of Shadcn
+- **Syntax & Mechanics**: Pure Base UI (`@base-ui/react`). Wrap Base UI primitives, follow Base UI prop types, use `render` prop, and target Base UI `data-*` attributes for animations.
+- **UI & Aesthetics**: Faithful to Shadcn UI. Preserve Shadcn's clean modern design, ergonomic slot structure, and CVA variant recipes mapped to project OKLCH tokens (`--neutral-*`, `--primary-*`, `--*-surface`, `--*-text`).
+
 
 # Autonomous AI Execution Loop & Long Turns Protocol
 
@@ -39,8 +64,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## 3. 4-Phase Component Lifecycle Loop
 For every component targeted in the queue, execute all 4 phases autonomously within the turn before marking it done:
-1. **Phase A — Base UI API & Prop Architecture**:
+1. **Phase A — Online Docs Check & Base UI Prop Architecture**:
+   - **MANDATORY**: Actively verify both **Base UI** online documentation (`https://base-ui.com/react/components/<slug>`) and **Shadcn UI** online documentation (`https://ui.shadcn.com/docs/components/<slug>`) via search or URL reading before writing code.
    - Inspect existing implementation and align with modern Base UI (`@base-ui/react`) primitives.
+   - Strictly prohibit Radix UI (`@radix-ui/*`) packages and patterns (use `render` prop, never `asChild`).
    - Implement universal semantic intents (`neutral`, `primary`, `success`, `warning`, `danger`, `info`).
    - Implement proportional sizing (`xs`, `sm`, `default`, `lg`, and square `icon-*` tiers).
    - Support ergonomic affix slots (`leading`, `trailing`, `loading`) and alignment modes (`wide`, `align`).
@@ -82,10 +109,13 @@ For every component targeted in the queue, execute all 4 phases autonomously wit
    - Keep it curated, high-signal, and concise (ID, title, context, decision, rationale).
    - **Do not overload** the list with minor bug fixes or trivial routine CSS tweaks; log only structural, design-token, or systemic UX decisions.
 3. **Quality Gate Checklist**:
-   - [ ] Base UI primitive used without legacy wrappers.
+   - [ ] Online Base UI and Shadcn documentation checked before coding.
+   - [ ] Base UI primitive used without legacy/Radix wrappers (`render` prop, `data-open`/`data-closed`, zero `@radix-ui/*`).
+   - [ ] Shadcn UI visual aesthetic and ergonomic slot architecture preserved.
    - [ ] Semantic intents resolved properly across variants.
    - [ ] Sizing and radius multiplier tokens honored.
    - [ ] `Default` story has live interactive canvas controls.
    - [ ] Code toggle in workbench works with real story source.
    - [ ] `pnpm exec tsc --noEmit` clean.
    - [ ] `node scripts/build-registry.mjs` builds all registry items.
+

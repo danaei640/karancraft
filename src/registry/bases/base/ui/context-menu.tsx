@@ -131,13 +131,17 @@ function ContextMenuContent({
   )
 }
 
+const ContextMenuGroupContext = React.createContext<boolean>(false)
+
 function ContextMenuGroup({ ...props }: ContextMenuPrimitive.Group.Props) {
   return (
-    <ContextMenuPrimitive.Group data-slot="context-menu-group" {...props} />
+    <ContextMenuGroupContext.Provider value={true}>
+      <ContextMenuPrimitive.Group data-slot="context-menu-group" {...props} />
+    </ContextMenuGroupContext.Provider>
   )
 }
 
-export interface ContextMenuLabelProps extends ContextMenuPrimitive.GroupLabel.Props {
+export interface ContextMenuLabelProps extends React.ComponentProps<"div"> {
   inset?: boolean
 }
 
@@ -147,8 +151,23 @@ function ContextMenuLabel({
   ...props
 }: ContextMenuLabelProps) {
   const { hasIcons } = React.useContext(ContextMenuDensityContext)
+  const isInsideGroup = React.useContext(ContextMenuGroupContext)
+
+  if (isInsideGroup) {
+    return (
+      <ContextMenuPrimitive.GroupLabel
+        data-slot="context-menu-label"
+        data-inset={inset || hasIcons}
+        className={cn("cn-context-menu-label", className)}
+        {...props}
+      />
+    )
+  }
+
   return (
-    <ContextMenuPrimitive.GroupLabel
+    <div
+      role="heading"
+      aria-level={3}
       data-slot="context-menu-label"
       data-inset={inset || hasIcons}
       className={cn("cn-context-menu-label", className)}
@@ -426,10 +445,12 @@ function ContextMenuCheckboxItem({
 
 function ContextMenuRadioGroup({ ...props }: ContextMenuPrimitive.RadioGroup.Props) {
   return (
-    <ContextMenuPrimitive.RadioGroup
-      data-slot="context-menu-radio-group"
-      {...props}
-    />
+    <ContextMenuGroupContext.Provider value={true}>
+      <ContextMenuPrimitive.RadioGroup
+        data-slot="context-menu-radio-group"
+        {...props}
+      />
+    </ContextMenuGroupContext.Provider>
   )
 }
 
