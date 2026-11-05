@@ -196,17 +196,18 @@ function DrawerContent({
 
   const floatingClasses = isFloating
     ? [
-        "border border-neutral-interactive/80 dark:border-neutral-interactive/50 rounded-2xl shadow-2xl",
+        "rounded-2xl shadow-2xl",
         swipeDirection === "down" && "inset-x-3 bottom-3",
         swipeDirection === "up" && "inset-x-3 top-3",
         swipeDirection === "left" && "inset-y-3 start-3",
         swipeDirection === "right" && "inset-y-3 end-3",
       ].filter(Boolean).join(" ")
     : [
-        swipeDirection === "down" && "inset-x-0 bottom-0 rounded-t-2xl border-t border-neutral-interactive/80",
-        swipeDirection === "up" && "inset-x-0 top-0 rounded-b-2xl border-b border-neutral-interactive/80",
-        swipeDirection === "left" && "inset-y-0 start-0 rounded-e-2xl border-e border-neutral-interactive/80",
-        swipeDirection === "right" && "inset-y-0 end-0 rounded-s-2xl border-s border-neutral-interactive/80",
+        "shadow-2xl",
+        swipeDirection === "down" && "inset-x-0 bottom-0 rounded-t-2xl",
+        swipeDirection === "up" && "inset-x-0 top-0 rounded-b-2xl",
+        swipeDirection === "left" && "inset-y-0 start-0 rounded-e-2xl",
+        swipeDirection === "right" && "inset-y-0 end-0 rounded-s-2xl",
       ].filter(Boolean).join(" ")
 
   return (

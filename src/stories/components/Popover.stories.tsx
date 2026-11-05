@@ -99,7 +99,7 @@ export const Appearances: Story = {
           <PopoverHeader>
             <PopoverTitle>Default Surface</PopoverTitle>
             <PopoverDescription>
-              Soft neutral surface with balanced contrast and subtle border tiering.
+              Soft neutral surface with balanced contrast and rich elevation shadows.
             </PopoverDescription>
           </PopoverHeader>
         </PopoverContent>
@@ -154,7 +154,7 @@ export const Sizes: Story = {
               Expanded width suitable for rich preview cards, filter complexes, or tables.
             </PopoverDescription>
           </PopoverHeader>
-          <div className="mt-3 rounded-lg border border-neutral-interactive/50 bg-neutral-surface/50 p-3 text-xs text-neutral-text-muted">
+          <div className="mt-3 rounded-lg bg-neutral-interactive/25 p-3 text-xs text-neutral-text-muted">
             Provides generous layout width up to 384px (24rem).
           </div>
         </PopoverContent>

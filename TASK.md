@@ -176,3 +176,12 @@ Total Remaining in Repository: **32 components**
   4. Synchronize entry/exit transitions to shadcn's 200ms `zoom-in-95` / `zoom-out-95` and `fade-in-0` / `fade-out-0`.
 - **Impact**: Eliminates visual misalignment, ensures clean borderless presentation, and maintains complete token and padding parity with Dialog.
 
+### [DEC-014] Universal Borderless Portal Content Standard
+- **Context**: 1px borders and rings (`border`, `border-neutral-interactive`, `ring-1`, `ring-neutral-interactive`, SVG `stroke-*`) on floating overlays, popups, and drawer panels caused visual noise and competed with screen content.
+- **Decision**:
+  1. Portal and overlay content boxes (`Popover`, `HoverCard`, `Drawer`, `Sheet`, `Dialog`, `AlertDialog`, `DropdownMenu`, `ContextMenu`, `Select`, `Menubar`, `NavigationMenu`) must NEVER have a 1px border or ring for visual focus.
+  2. Visual focus, boundaries, and elevation hierarchy are provided exclusively by surface color (`bg-neutral-surface`, `bg-neutral-text` for inverted) and elevation shadows (`shadow-lg`, `shadow-xl`, `shadow-2xl`).
+  3. Arrow pointers (`PopoverArrow`, `HoverCardArrow`, `TooltipArrow`) are strictly stroke-less (`fill-neutral-surface` / `fill-neutral-text`), seamlessly merging with their parent popup surface without outline artifacts.
+- **Impact**: Maximum visual calm, low visual load, and sleek elevated modern surfaces across the entire design system.
+
+

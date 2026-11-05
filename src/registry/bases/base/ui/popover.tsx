@@ -13,10 +13,8 @@ const popoverContentVariants = cva(
   {
     variants: {
       appearance: {
-        default:
-          "bg-neutral-surface text-neutral-text border border-neutral-interactive/80 dark:border-neutral-interactive/50 shadow-xl",
-        inverted:
-          "bg-neutral-text text-neutral-surface border border-neutral-text/20 shadow-2xl",
+        default: "bg-neutral-surface text-neutral-text shadow-xl",
+        inverted: "bg-neutral-text text-neutral-surface shadow-2xl",
       },
       size: {
         sm: "w-64 p-3 rounded-lg text-xs",
@@ -106,7 +104,7 @@ function PopoverContent({
                 "cn-popover-arrow z-50",
                 appearance === "inverted"
                   ? "bg-neutral-text fill-neutral-text"
-                  : "bg-neutral-surface fill-neutral-surface stroke-neutral-interactive/80 dark:stroke-neutral-interactive/50"
+                  : "bg-neutral-surface fill-neutral-surface"
               )}
             />
           )}

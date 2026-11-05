@@ -96,7 +96,7 @@ export const Appearances: Story = {
           <div className="space-y-2">
             <h4 className="text-sm font-semibold">Standard Surface</h4>
             <p className="text-xs text-neutral-text-muted">
-              Balanced neutral surface with soft border contrast and subtle shadow elevation.
+              Balanced neutral surface with rich shadow elevation and borderless clarity.
             </p>
           </div>
         </HoverCardContent>
