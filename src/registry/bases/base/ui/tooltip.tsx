@@ -61,7 +61,7 @@ function TooltipContent({
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            "cn-tooltip-content z-50 w-fit max-w-xs origin-(--transform-origin) rounded-md bg-neutral-text px-2.5 py-1 text-xs font-medium text-neutral-surface shadow-md outline-none transition-[opacity,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
+            "cn-tooltip-content relative z-50 w-fit max-w-xs origin-(--transform-origin) rounded-md bg-neutral-text px-2.5 py-1 text-xs font-medium text-neutral-surface shadow-md outline-none transition-[opacity,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)] data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
             className
           )}
           {...props}
@@ -71,10 +71,12 @@ function TooltipContent({
             <TooltipPrimitive.Arrow
               className={cn(
                 "cn-tooltip-arrow z-50 size-2 rotate-45 bg-neutral-text pointer-events-none",
-                "data-[side=bottom]:top-[-4px]",
-                "data-[side=top]:bottom-[-4px]",
-                "data-[side=right]:left-[-4px]",
-                "data-[side=left]:right-[-4px]"
+                "data-[side=bottom]:-top-1",
+                "data-[side=top]:-bottom-1",
+                "data-[side=right]:-left-1",
+                "data-[side=left]:-right-1",
+                "data-[side=inline-start]:-end-1",
+                "data-[side=inline-end]:-start-1"
               )}
             />
           )}

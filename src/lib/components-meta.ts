@@ -1956,22 +1956,75 @@ export function SheetDemo() {
     id: 'dropdown-menu',
     name: 'Dropdown Menu',
     category: 'Navigation & Menus',
-    description: 'Displays a menu to the user—such as a set of actions or functions—triggered by a button.',
+    description: 'Hierarchical flyout menu with submenus, checkboxes, radio groups, and Fluent-inspired slot architecture.',
     baseUiPrimitive: '@base-ui/react/menu',
     installCmd: 'npx shadcn@latest add @karan-ui/dropdown-menu',
     registryUrl: 'https://karan-ui.dev/r/dropdown-menu.json',
     props: [
       {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg'",
+        defaultValue: "'default'",
+        description: 'Menu item padding density, typography, and icon size scale',
+        options: ['sm', 'default', 'lg'],
+        controlType: 'select',
+      },
+      {
+        name: 'hasIcons',
+        type: 'boolean',
+        defaultValue: 'true',
+        description: 'When true, aligns items with an icon gutter reservation',
+        controlType: 'boolean',
+      },
+      {
+        name: 'hasCheckmarks',
+        type: 'boolean',
+        defaultValue: 'false',
+        description: 'When true, reserves checkmark indicator space across all items',
+        controlType: 'boolean',
+      },
+      {
         name: 'align',
         type: "'start' | 'center' | 'end'",
         defaultValue: "'start'",
-        description: 'Menu alignment relative to trigger',
+        description: 'Floating alignment relative to the trigger anchor',
         options: ['start', 'center', 'end'],
         controlType: 'select',
       },
     ],
     defaultProps: {
+      size: 'default',
+      hasIcons: true,
+      hasCheckmarks: false,
       align: 'start',
+    },
+    usageGuide: {
+      summary:
+        'Built on native Base UI Menu primitives with Fluent UI-inspired multi-slot item architecture (icon, subText, secondaryContent, shortcut) and 3-tier density scale.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/dropdown-menu',
+        registryUrl: 'https://karan-ui.dev/r/dropdown-menu.json',
+      },
+      features: [
+        {
+          title: 'Fluent UI Slot Architecture',
+          badge: 'Ergonomic DX',
+          description:
+            'DropdownMenuItem accepts dedicated icon, subText, secondaryContent, and shortcut slots, preventing nested wrapper boilerplate.',
+        },
+        {
+          title: 'Gutter Synchronization',
+          badge: 'Consistent Alignment',
+          description:
+            'DropdownMenuDensityContext synchronizes hasIcons and hasCheckmarks across items to guarantee perfect text baseline alignment.',
+        },
+        {
+          title: 'Bidirectional RTL/LTR',
+          badge: '100% Logical',
+          description:
+            'All chevrons flip automatically with cn-rtl-flip and use logical padding (ps-*, pe-*, ms-auto) to support RTL languages natively.',
+        },
+      ],
     },
   },
 
@@ -1979,58 +2032,211 @@ export function SheetDemo() {
     id: 'context-menu',
     name: 'Context Menu',
     category: 'Navigation & Menus',
-    description: 'Displays a menu located at the pointer coordinates triggered by right-click.',
+    description: 'Right-click context menu with cursor anchor positioning, submenus, and multiline slot support.',
     baseUiPrimitive: '@base-ui/react/context-menu',
     installCmd: 'npx shadcn@latest add @karan-ui/context-menu',
     registryUrl: 'https://karan-ui.dev/r/context-menu.json',
-    props: [],
-    defaultProps: {},
+    props: [
+      {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg'",
+        defaultValue: "'default'",
+        description: 'Menu item height, padding density, and typography scale',
+        options: ['sm', 'default', 'lg'],
+        controlType: 'select',
+      },
+      {
+        name: 'hasIcons',
+        type: 'boolean',
+        defaultValue: 'true',
+        description: 'Whether to reserve a leading icon gutter for aligned items',
+        controlType: 'boolean',
+      },
+    ],
+    defaultProps: {
+      size: 'default',
+      hasIcons: true,
+    },
+    usageGuide: {
+      summary:
+        'Cursor-anchored context menu sharing identical item slot architecture, sizing scale, and token wiring with DropdownMenu.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/context-menu',
+        registryUrl: 'https://karan-ui.dev/r/context-menu.json',
+      },
+      features: [
+        {
+          title: 'Cursor Coordinates Placement',
+          badge: 'Accessible Pointer',
+          description:
+            'Opens directly at the right-click pointer position with smart screen edge collision detection and repositioning.',
+        },
+        {
+          title: 'Full Slot Parity',
+          badge: 'Dropdown Parity',
+          description:
+            'Supports leading icons, secondary content, keyboard shortcuts, and multiline subText descriptors.',
+        },
+      ],
+    },
   },
 
   menubar: {
     id: 'menubar',
     name: 'Menubar',
     category: 'Navigation & Menus',
-    description: 'A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.',
+    description: 'Desktop application horizontal command menubar with nested submenus and keyboard navigation.',
     baseUiPrimitive: '@base-ui/react/menubar',
     installCmd: 'npx shadcn@latest add @karan-ui/menubar',
     registryUrl: 'https://karan-ui.dev/r/menubar.json',
-    props: [],
-    defaultProps: {},
+    props: [
+      {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg'",
+        defaultValue: "'default'",
+        description: 'Menubar height, trigger padding, and flyout density scale',
+        options: ['sm', 'default', 'lg'],
+        controlType: 'select',
+      },
+    ],
+    defaultProps: {
+      size: 'default',
+    },
+    usageGuide: {
+      summary:
+        'Desktop command menubar coordinating top-level horizontal triggers with nested dropdown menus, checkbox items, and radio groups.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/menubar',
+        registryUrl: 'https://karan-ui.dev/r/menubar.json',
+      },
+      features: [
+        {
+          title: '3-Tier Height Scale',
+          badge: 'Proportional Sizing',
+          description:
+            'Menubar scales seamlessly between sm (h-8), default (h-9), and lg (h-10) to harmonize with surrounding toolbars.',
+        },
+        {
+          title: 'Arrow Key Navigation',
+          badge: 'WAI-ARIA Menubar',
+          description:
+            'Supports horizontal arrow keys across menu triggers and vertical arrow navigation into active submenus.',
+        },
+      ],
+    },
   },
 
   'navigation-menu': {
     id: 'navigation-menu',
     name: 'Navigation Menu',
     category: 'Navigation & Menus',
-    description: 'A collection of links for navigating websites with animated viewports and flyout content.',
+    description: 'Top-level website navigation header with animated viewports, rotating chevrons, and rich card flyouts.',
     baseUiPrimitive: '@base-ui/react/navigation-menu',
     installCmd: 'npx shadcn@latest add @karan-ui/navigation-menu',
     registryUrl: 'https://karan-ui.dev/r/navigation-menu.json',
-    props: [],
-    defaultProps: {},
+    props: [
+      {
+        name: 'align',
+        type: "'start' | 'center' | 'end'",
+        defaultValue: "'start'",
+        description: 'Flyout card alignment relative to the active trigger',
+        options: ['start', 'center', 'end'],
+        controlType: 'select',
+      },
+    ],
+    defaultProps: {
+      align: 'start',
+    },
+    usageGuide: {
+      summary:
+        'Site navigation header delivering smooth cubic-bezier viewport dimension morphing between tab flyouts.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/navigation-menu',
+        registryUrl: 'https://karan-ui.dev/r/navigation-menu.json',
+      },
+      features: [
+        {
+          title: 'Morphing Viewport Dimensions',
+          badge: 'Fluid Motion',
+          description:
+            'Smoothly animates width and height transitions when hovering between adjacent menu categories.',
+        },
+        {
+          title: 'Rotating Chevrons',
+          badge: 'Tactile Indicator',
+          description:
+            'Triggers feature an animated chevron with cn-rtl-flip and state-driven 180-degree rotation.',
+        },
+      ],
+    },
   },
 
   tabs: {
     id: 'tabs',
     name: 'Tabs',
     category: 'Navigation & Menus',
-    description: 'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
+    description: 'Layered content panels with pill, line underline, and enclosed card styles, plus vertical orientation.',
     baseUiPrimitive: '@base-ui/react/tabs',
     installCmd: 'npx shadcn@latest add @karan-ui/tabs',
     registryUrl: 'https://karan-ui.dev/r/tabs.json',
     props: [
       {
         name: 'variant',
-        type: "'default' | 'line'",
+        type: "'default' | 'line' | 'enclosed'",
         defaultValue: "'default'",
-        description: 'The tabs list styling appearance',
-        options: ['default', 'line'],
+        description: 'Visual appearance variant (pill, line underline, or enclosed card)',
+        options: ['default', 'line', 'enclosed'],
+        controlType: 'select',
+      },
+      {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg'",
+        defaultValue: "'default'",
+        description: 'Tablist height and typography scale',
+        options: ['sm', 'default', 'lg'],
+        controlType: 'select',
+      },
+      {
+        name: 'orientation',
+        type: "'horizontal' | 'vertical'",
+        defaultValue: "'horizontal'",
+        description: 'Layout axis orientation for tab triggers and indicators',
+        options: ['horizontal', 'vertical'],
         controlType: 'select',
       },
     ],
     defaultProps: {
       variant: 'default',
+      size: 'default',
+      orientation: 'horizontal',
+    },
+    usageGuide: {
+      summary:
+        'Feature-complete tab panel primitive with 3 distinct styling variants, vertical orientation support, leading icon slots, and proportional sizing.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/tabs',
+        registryUrl: 'https://karan-ui.dev/r/tabs.json',
+      },
+      features: [
+        {
+          title: '3 Stylistic Variants',
+          badge: 'Versatile Styling',
+          description:
+            'Choose between default (pill highlight), line (border-b active underline), and enclosed (segmented card container).',
+        },
+        {
+          title: 'Vertical Orientation',
+          badge: 'Sidebar Friendly',
+          description:
+            'Setting orientation="vertical" renders tab triggers in a column with border-e-2 active indicators and automatic padding.',
+        },
+        {
+          title: 'Leading Icon Slot',
+          badge: 'Affix Support',
+          description:
+            'TabsTrigger accepts an icon prop that scales proportionally with the active size tier.',
+        },
+      ],
     },
   },
 
@@ -2152,24 +2358,102 @@ export function SheetDemo() {
     id: 'breadcrumb',
     name: 'Breadcrumb',
     category: 'Navigation & Menus',
-    description: 'Displays the path to the current resource using a hierarchy of links.',
+    description: 'Accessible navigational trail supporting proportional sizing, icon affixes, and dropdown menus.',
     baseUiPrimitive: 'React.ComponentProps<"nav">',
     installCmd: 'npx shadcn@latest add @karan-ui/breadcrumb',
     registryUrl: 'https://karan-ui.dev/r/breadcrumb.json',
-    props: [],
-    defaultProps: {},
+    props: [
+      {
+        name: 'size',
+        type: "'sm' | 'default' | 'lg'",
+        defaultValue: "'default'",
+        description: 'Proportional scale for text, separator icons, and gaps',
+        options: ['sm', 'default', 'lg'],
+        controlType: 'select',
+      },
+    ],
+    defaultProps: {
+      size: 'default',
+    },
+    usageGuide: {
+      summary:
+        'Hierarchical navigation trail supporting proportional density, leading icon slots on links/pages, and dropdown menu integration.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/breadcrumb',
+        registryUrl: 'https://karan-ui.dev/r/breadcrumb.json',
+      },
+      features: [
+        {
+          title: 'Proportional Sizing Scale',
+          badge: 'Consistent Scale',
+          description:
+            'BreadcrumbContext synchronizes sizing across items, text, and separators across sm (text-xs), default (text-sm), and lg (text-base).',
+        },
+        {
+          title: 'Icon Affix Slots',
+          badge: 'Visual Anchor',
+          description:
+            'BreadcrumbLink and BreadcrumbPage accept an icon prop with automatic proportional sizing and alignment.',
+        },
+        {
+          title: 'RTL Mirrored Separators',
+          badge: 'cn-rtl-flip',
+          description:
+            'Default chevron separators automatically flip in RTL mode using cn-rtl-flip.',
+        },
+      ],
+    },
   },
 
   pagination: {
     id: 'pagination',
     name: 'Pagination',
     category: 'Navigation & Menus',
-    description: 'Pagination with page navigation buttons, ellipsis, and next/prev controls.',
+    description: 'Page navigation bar supporting proportional button sizing, responsive text labels, and RTL mirroring.',
     baseUiPrimitive: 'React.ComponentProps<"nav">',
     installCmd: 'npx shadcn@latest add @karan-ui/pagination',
     registryUrl: 'https://karan-ui.dev/r/pagination.json',
-    props: [],
-    defaultProps: {},
+    props: [
+      {
+        name: 'size',
+        type: "'xs' | 'sm' | 'default' | 'lg'",
+        defaultValue: "'default'",
+        description: 'Proportional size scale matching Button size tiers',
+        options: ['xs', 'sm', 'default', 'lg'],
+        controlType: 'select',
+      },
+    ],
+    defaultProps: {
+      size: 'default',
+    },
+    usageGuide: {
+      summary:
+        'Complete page navigation bar featuring proportional button scaling (xs to lg), responsive previous/next labels, and bidirectional RTL mirroring.',
+      install: {
+        cli: 'npx shadcn@latest add @karan-ui/pagination',
+        registryUrl: 'https://karan-ui.dev/r/pagination.json',
+      },
+      features: [
+        {
+          title: 'Button Size Alignment',
+          badge: 'System Token Parity',
+          description:
+            'PaginationLink automatically maps to icon-xs, icon-sm, icon, and icon-lg button sizes matching Karan UI Button scales.',
+        },
+        {
+          title: 'Responsive Next/Prev Buttons',
+          badge: 'Mobile Adaptive',
+          description:
+            'Text labels hide gracefully on mobile viewports while preserving icon navigation, and use logical ps-2! pe-3! padding.',
+        },
+        {
+          title: 'Bidirectional RTL Mirroring',
+          badge: '100% Logical',
+          description:
+            'Next and Previous arrow chevrons invert direction seamlessly in RTL reading layouts using cn-rtl-flip.',
+        },
+      ],
+    },
   },
 
   table: {

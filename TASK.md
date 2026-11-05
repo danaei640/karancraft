@@ -35,6 +35,13 @@ The following components have been **fully modernized**. Their prop architecture
 | **Popover** | Floating portal anchored to trigger with smart collision detection, Base UI pseudo-element arrow pointer (`withArrow`), shadcn animations, and crisp `border border-neutral-interactive/80`. | `[x] Modernized` |
 | **HoverCard** | Rich preview card with hover delay, Base UI pseudo-element arrow pointer (`withArrow`), shadcn animations, and crisp `border border-neutral-interactive/80` (single neutral surface mode). | `[x] Modernized` |
 | **Tooltip** | Fast hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), Base UI pseudo-element arrow pointer (`withArrow`), 150ms spring easing. | `[x] Modernized` |
+| **DropdownMenu** | Fluent UI v9 inspired multi-slot items (`icon`, `subText`, `secondaryContent`, `shortcut`), 3-tier density context (`sm`, `default`, `lg`), gutter synchronization, RTL mirrored chevrons. | `[x] Modernized` |
+| **ContextMenu** | Pointer-anchored context menu sharing identical item slot architecture, sizing scale, and token wiring with DropdownMenu. | `[x] Modernized` |
+| **Menubar** | Desktop command bar coordinating top-level horizontal triggers with nested dropdown menus, checkbox items, and radio groups across 3 height scales. | `[x] Modernized` |
+| **Tabs** | 3 styling variants (`default` pill, `line` underline, `enclosed` card), vertical orientation (`border-e-2` indicator), leading icon slots, and proportional sizing context. | `[x] Modernized` |
+| **Breadcrumb** | Navigational trail with proportional typography context (`sm`, `default`, `lg`), leading icon slots on links/pages, and dropdown ellipsis integration. | `[x] Modernized` |
+| **Pagination** | Page navigation bar supporting proportional button sizing (`icon-xs` to `icon-lg`), responsive previous/next text labels, and bidirectional RTL arrow flipping. | `[x] Modernized` |
+| **NavigationMenu** | Site navigation header with animated morphing viewport dimensions, rotating chevrons, and rich card flyouts. | `[x] Modernized` |
 
 ---
 
@@ -54,7 +61,7 @@ The following components have been **fully modernized**. Their prop architecture
 
 ## 📋 Remaining Baseline Components (Catalog for Review & Upgrade)
 
-Total Remaining in Repository: **32 components**
+Total Remaining in Repository: **25 components**
 
 ### Cluster 1: Overlays & Modals (7 Components) — [100% Complete]
 - [x] **Dialog** — Modal window with animated backdrop blur, entry/exit scale transition, and header/content/footer slots.
@@ -65,14 +72,14 @@ Total Remaining in Repository: **32 components**
 - [x] **Tooltip** — Fast hover/focus micro-popup with low visual load and accessible contrast.
 - [x] **HoverCard** — Rich link preview popup with sighted hover delay and accessible anchor positioning.
 
-### Cluster 2: Menus & Navigation (7 Components)
-- [ ] **DropdownMenu** — Hierarchical flyout menu with submenus, checkbox/radio items, and Kbd shortcut labels.
-- [ ] **ContextMenu** — Right-click context popup menu matching DropdownMenu visual tokens.
-- [ ] **Menubar** — Desktop application top horizontal bar with nested dropdown menus.
-- [ ] **NavigationMenu** — Top-level site navigation header with animated viewport indicator.
-- [ ] **Breadcrumb** — Nav trail with customizable separators, current page marker, and ellipsis menu.
-- [ ] **Pagination** — Page numbering with prev/next buttons matching Button sizing, compact responsive mode.
-- [ ] **Tabs** — Underline, pill, and enclosed card tab styles with smooth active highlight transition.
+### Cluster 2: Menus & Navigation (7 Components) — [100% Complete]
+- [x] **DropdownMenu** — Hierarchical flyout menu with submenus, checkbox/radio items, and Kbd shortcut labels.
+- [x] **ContextMenu** — Right-click context popup menu matching DropdownMenu visual tokens.
+- [x] **Menubar** — Desktop application top horizontal bar with nested dropdown menus.
+- [x] **NavigationMenu** — Top-level site navigation header with animated viewport indicator.
+- [x] **Breadcrumb** — Nav trail with customizable separators, current page marker, and ellipsis menu.
+- [x] **Pagination** — Page numbering with prev/next buttons matching Button sizing, compact responsive mode.
+- [x] **Tabs** — Underline, pill, and enclosed card tab styles with smooth active highlight transition.
 
 ### Cluster 3: Data Display & Layout (12 Components)
 - [ ] **Table** — Semantic table with sticky headers, hover highlights, zebra striping, and row selection.
@@ -184,8 +191,33 @@ Total Remaining in Repository: **32 components**
 - **Context**: Floating micro-overlays (`Popover`, `HoverCard`) without borders lacked edge definition on light surfaces. Base UI `<Arrow>` was also failing to render because Base UI provides an empty `<div>` with `data-side` rather than an SVG.
 - **Decision**:
   1. Restore shadcn styling on `Popover` and `HoverCard` with crisp `border border-neutral-interactive/80`, `shadow-md`, and standard neutral surface `bg-neutral-surface`. Removed unnecessary `appearance` variants from `HoverCard`.
-  2. Standardize Base UI CSS pseudo-element geometry across all arrow-capable primitives (`Tooltip`, `Popover`, `HoverCard`): container `relative block w-3 h-1.5 overflow-clip pointer-events-none z-50` with rotated square pseudo-element `[transform:translate(-50%,50%)_rotate(45deg)]` matching background and border.
+  2. Standardize Base UI CSS pseudo-element geometry across all arrow-capable primitives (`Tooltip`, `Popover`, `HoverCard`): popup container set to `relative`, rotated diamond arrow element positioned at `-top-1.25` / `-bottom-1.25` / `-left-1.25` / `-right-1.25` with directional border resets and `inline-start` / `inline-end` support.
   3. Dialog and AlertDialog remain strictly borderless, relying on deep `shadow-2xl` and backdrop contrast.
 - **Impact**: Pixel-perfect pointing arrows with matching border and background on tooltips, popovers, and hover cards, with clear edge definition matching shadcn.
+
+### [DEC-015] Fluent UI-Inspired Menu Slot Architecture & Density Synchronization
+- **Context**: Menu items (`DropdownMenu`, `ContextMenu`, `Menubar`) previously required verbose nested `<span>` tags for icons, shortcut badges, and descriptors. Items without icons also suffered from misaligned text baselines next to items with icons.
+- **Decision**:
+  1. Adopt Fluent UI v9 inspired multi-slot item architecture: first-class `icon`, `subText` (multiline subtitle), `secondaryContent`, and `shortcut` props on `DropdownMenuItem`, `ContextMenuItem`, and `MenubarItem`.
+  2. Implement `DropdownMenuDensityContext` providing 3-tier density scale (`sm`, `default`, `lg`), `hasIcons` gutter reservation, and `hasCheckmarks` alignment.
+  3. Strict RTL logical coordinates: logical padding (`ps-2` / `pe-2`, `ps-7` with icon gutter), `ms-auto` for secondary content / shortcuts, and `cn-rtl-flip` for submenu arrows.
+- **Impact**: Clean ergonomic DX, zero boilerplate layout wrappers, and consistent text baseline alignment across mixed menu items.
+
+### [DEC-016] Tabs Multi-Variant Matrix & Bidirectional Indicator Alignment
+- **Context**: Tabs only supported a single default pill style, lacked proportional density scaling, and could not be oriented vertically without custom CSS overrides.
+- **Decision**:
+  1. Provide 3 first-class stylistic variants: `default` (floating pill highlight), `line` (active underline), and `enclosed` (elevated card segmented container).
+  2. Standardize 3 proportional height tiers (`sm` 32px, `default` 36px, `lg` 40px) with typography scaling and icon slot synchronization on `TabsTrigger`.
+  3. Support `orientation="vertical"` with bidirectional inline indicator alignment (`border-e-2 data-[active]:border-primary-fill -me-px pe-3`).
+- **Impact**: Complete flexibility for dashboard side navigation, settings panels, and card-based code/preview switchers.
+
+### [DEC-017] Proportional Navigation Scaling & RTL Chevron Flipping
+- **Context**: `Breadcrumb` and `Pagination` had inconsistent sizing that did not align with `Button` sizes or `IconPlaceholder` systems, and chevron arrows failed to flip in RTL layouts.
+- **Decision**:
+  1. `Breadcrumb` provides `size` context (`sm`, `default`, `lg`) driving text, separator icons, and leading `icon` affixes on `BreadcrumbLink` and `BreadcrumbPage`.
+  2. `Pagination` supports 4 size tiers (`xs`, `sm`, `default`, `lg`) where `PaginationLink` automatically synchronizes to button icon sizes (`icon-xs` to `icon-lg`), and Previous/Next buttons use responsive logical padding (`ps-2! pe-3!`).
+  3. All navigational chevrons in `Breadcrumb`, `Pagination`, and `NavigationMenu` use `cn-rtl-flip` for native bidirectional layout flipping.
+- **Impact**: System-wide proportional sizing harmony between buttons and navigation controls with robust RTL support.
+
 
 

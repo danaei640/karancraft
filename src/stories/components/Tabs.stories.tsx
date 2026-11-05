@@ -10,6 +10,28 @@ const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',
   component: Tabs,
   tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['default', 'line', 'enclosed'],
+      description: 'Visual appearance variant of the tablist',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'default', 'lg'],
+      description: 'Proportional sizing scale controlling height and typography',
+    },
+    orientation: {
+      control: 'select',
+      options: ['horizontal', 'vertical'],
+      description: 'Layout axis orientation for tabs',
+    },
+  },
+  args: {
+    variant: 'default',
+    size: 'default',
+    orientation: 'horizontal',
+  },
 };
 
 export default meta;
@@ -18,7 +40,7 @@ type Story = StoryObj<typeof Tabs>;
 export const Default: Story = {
   render: (args) => (
     <Tabs defaultValue="account" className="w-full max-w-md" {...args}>
-      <TabsList className="grid w-full grid-cols-2">
+      <TabsList className={args.variant === 'line' ? 'w-full' : 'grid w-full grid-cols-2'}>
         <TabsTrigger value="account">Account</TabsTrigger>
         <TabsTrigger value="password">Password</TabsTrigger>
       </TabsList>
@@ -151,5 +173,92 @@ export const WithIcons: Story = {
         </div>
       </TabsContent>
     </Tabs>
+  ),
+};
+
+export const EnclosedVariant: Story = {
+  render: () => (
+    <Tabs defaultValue="preview" variant="enclosed" className="w-full max-w-md">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="preview">Interactive Preview</TabsTrigger>
+        <TabsTrigger value="code">Component Code</TabsTrigger>
+      </TabsList>
+      <TabsContent value="preview" className="pt-3">
+        <div className="p-5 rounded-2xl border border-neutral-interactive/60 bg-neutral-surface shadow-xs text-center space-y-2">
+          <span className="text-sm font-semibold text-neutral-text">Card Segmentation</span>
+          <p className="text-xs text-neutral-text-muted">
+            Enclosed variant uses dedicated card elevation and solid neutral-surface border tokens.
+          </p>
+        </div>
+      </TabsContent>
+      <TabsContent value="code" className="pt-3">
+        <div className="p-4 rounded-xl bg-neutral-surface-alt font-mono text-xs text-neutral-text border border-neutral-interactive/40">
+          <code>&lt;Tabs variant=&quot;enclosed&quot; /&gt;</code>
+        </div>
+      </TabsContent>
+    </Tabs>
+  ),
+};
+
+export const VerticalOrientation: Story = {
+  render: () => (
+    <Tabs defaultValue="general" orientation="vertical" variant="line" className="w-full max-w-lg">
+      <TabsList>
+        <TabsTrigger value="general" icon={<Settings className="size-4" />}>
+          General
+        </TabsTrigger>
+        <TabsTrigger value="security" icon={<Lock className="size-4" />}>
+          Security
+        </TabsTrigger>
+        <TabsTrigger value="notifications" icon={<Bell className="size-4" />}>
+          Notifications
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="general" className="ps-4">
+        <div className="p-4 rounded-2xl border border-neutral-interactive/50 bg-neutral-surface space-y-2">
+          <h4 className="text-sm font-semibold text-neutral-text">General Preferences</h4>
+          <p className="text-xs text-neutral-text-muted">
+            Configure system language, timezone, and telemetry sharing preferences.
+          </p>
+        </div>
+      </TabsContent>
+      <TabsContent value="security" className="ps-4">
+        <div className="p-4 rounded-2xl border border-neutral-interactive/50 bg-neutral-surface space-y-2">
+          <h4 className="text-sm font-semibold text-neutral-text">Two-Factor Authentication</h4>
+          <p className="text-xs text-neutral-text-muted">
+            Manage your hardware keys, authenticator apps, and recovery codes.
+          </p>
+        </div>
+      </TabsContent>
+      <TabsContent value="notifications" className="ps-4">
+        <div className="p-4 rounded-2xl border border-neutral-interactive/50 bg-neutral-surface space-y-2">
+          <h4 className="text-sm font-semibold text-neutral-text">Push Notifications</h4>
+          <p className="text-xs text-neutral-text-muted">
+            Choose what alerts arrive in your email and desktop notification stream.
+          </p>
+        </div>
+      </TabsContent>
+    </Tabs>
+  ),
+};
+
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex flex-col gap-6 w-full max-w-md">
+      {(['sm', 'default', 'lg'] as const).map((size) => (
+        <div key={size} className="space-y-1.5">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-text-muted font-mono">
+            Size: {size}
+          </span>
+          <Tabs defaultValue="tab1" size={size} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="tab1">First</TabsTrigger>
+              <TabsTrigger value="tab2">Second</TabsTrigger>
+              <TabsTrigger value="tab3">Third</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      ))}
+    </div>
   ),
 };

@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Menu as MenuPrimitive } from "@base-ui/react/menu"
 import { Menubar as MenubarPrimitive } from "@base-ui/react/menubar"
+import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
 import {
@@ -10,25 +10,66 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuLabel,
   DropdownMenuPortal,
-  DropdownMenuRadioGroup,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  type DropdownMenuSize,
 } from "@/registry/bases/base/ui/dropdown-menu"
-import { IconPlaceholder } from "@/app/(create)/components/icon-placeholder"
 
-function Menubar({ className, ...props }: MenubarPrimitive.Props) {
+export type MenubarSize = DropdownMenuSize
+
+interface MenubarContextProps {
+  size: MenubarSize
+}
+
+const MenubarContext = React.createContext<MenubarContextProps>({
+  size: "default",
+})
+
+const menubarVariants = cva(
+  "cn-menubar flex items-center gap-1 border border-neutral-interactive/80 bg-neutral-surface-alt/60 p-1 shadow-2xs",
+  {
+    variants: {
+      size: {
+        sm: "h-8 rounded-lg text-xs",
+        default: "h-9 rounded-xl text-sm",
+        lg: "h-10 rounded-xl text-base",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  }
+)
+
+export interface MenubarProps
+  extends MenubarPrimitive.Props,
+    VariantProps<typeof menubarVariants> {
+  size?: MenubarSize
+}
+
+function Menubar({
+  className,
+  size = "default",
+  ...props
+}: MenubarProps) {
   return (
-    <MenubarPrimitive
-      data-slot="menubar"
-      className={cn("cn-menubar flex items-center", className)}
-      {...props}
-    />
+    <MenubarContext.Provider value={{ size }}>
+      <MenubarPrimitive
+        data-slot="menubar"
+        data-size={size}
+        className={cn(menubarVariants({ size }), className)}
+        {...props}
+      />
+    </MenubarContext.Provider>
   )
 }
 
@@ -52,11 +93,17 @@ function MenubarTrigger({
   className,
   ...props
 }: React.ComponentProps<typeof DropdownMenuTrigger>) {
+  const { size } = React.useContext(MenubarContext)
+
   return (
     <DropdownMenuTrigger
       data-slot="menubar-trigger"
+      data-size={size}
       className={cn(
-        "cn-menubar-trigger flex items-center outline-hidden select-none",
+        "cn-menubar-trigger flex items-center outline-hidden select-none cursor-default font-medium text-neutral-text hover:bg-neutral-interactive aria-expanded:bg-neutral-interactive",
+        size === "sm" && "px-2 py-0.5 text-xs rounded-md",
+        size === "default" && "px-2.5 py-1 text-sm rounded-lg",
+        size === "lg" && "px-3 py-1.5 text-base rounded-lg",
         className
       )}
       {...props}
@@ -69,14 +116,19 @@ function MenubarContent({
   align = "start",
   alignOffset = -4,
   sideOffset = 8,
+  size: customSize,
   ...props
 }: React.ComponentProps<typeof DropdownMenuContent>) {
+  const { size } = React.useContext(MenubarContext)
+  const resolvedSize = customSize ?? size
+
   return (
     <DropdownMenuContent
       data-slot="menubar-content"
       align={align}
       alignOffset={alignOffset}
       sideOffset={sideOffset}
+      size={resolvedSize}
       className={cn(
         "cn-menubar-content cn-menubar-content-logical cn-menu-target cn-menu-translucent",
         className
@@ -88,15 +140,11 @@ function MenubarContent({
 
 function MenubarItem({
   className,
-  inset,
-  variant = "default",
   ...props
 }: React.ComponentProps<typeof DropdownMenuItem>) {
   return (
     <DropdownMenuItem
       data-slot="menubar-item"
-      data-inset={inset}
-      data-variant={variant}
       className={cn("cn-menubar-item group/menubar-item", className)}
       {...props}
     />
@@ -105,37 +153,14 @@ function MenubarItem({
 
 function MenubarCheckboxItem({
   className,
-  children,
-  checked,
-  inset,
   ...props
-}: MenuPrimitive.CheckboxItem.Props & {
-  inset?: boolean
-}) {
+}: React.ComponentProps<typeof DropdownMenuCheckboxItem>) {
   return (
-    <MenuPrimitive.CheckboxItem
+    <DropdownMenuCheckboxItem
       data-slot="menubar-checkbox-item"
-      data-inset={inset}
-      className={cn(
-        "cn-menubar-checkbox-item relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        className
-      )}
-      checked={checked}
+      className={cn("cn-menubar-checkbox-item", className)}
       {...props}
-    >
-      <span className="cn-menubar-checkbox-item-indicator pointer-events-none absolute flex items-center justify-center">
-        <MenuPrimitive.CheckboxItemIndicator>
-          <IconPlaceholder
-            lucide="CheckIcon"
-            tabler="IconCheck"
-            hugeicons="Tick02Icon"
-            phosphor="CheckIcon"
-            remixicon="RiCheckLine"
-          />
-        </MenuPrimitive.CheckboxItemIndicator>
-      </span>
-      {children}
-    </MenuPrimitive.CheckboxItem>
+    />
   )
 }
 
@@ -147,49 +172,24 @@ function MenubarRadioGroup({
 
 function MenubarRadioItem({
   className,
-  children,
-  inset,
   ...props
-}: MenuPrimitive.RadioItem.Props & {
-  inset?: boolean
-}) {
+}: React.ComponentProps<typeof DropdownMenuRadioItem>) {
   return (
-    <MenuPrimitive.RadioItem
+    <DropdownMenuRadioItem
       data-slot="menubar-radio-item"
-      data-inset={inset}
-      className={cn(
-        "cn-menubar-radio-item relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        className
-      )}
+      className={cn("cn-menubar-radio-item", className)}
       {...props}
-    >
-      <span className="cn-menubar-radio-item-indicator pointer-events-none absolute flex items-center justify-center">
-        <MenuPrimitive.RadioItemIndicator>
-          <IconPlaceholder
-            lucide="CheckIcon"
-            tabler="IconCheck"
-            hugeicons="Tick02Icon"
-            phosphor="CheckIcon"
-            remixicon="RiCheckLine"
-          />
-        </MenuPrimitive.RadioItemIndicator>
-      </span>
-      {children}
-    </MenuPrimitive.RadioItem>
+    />
   )
 }
 
 function MenubarLabel({
   className,
-  inset,
   ...props
-}: React.ComponentProps<typeof DropdownMenuLabel> & {
-  inset?: boolean
-}) {
+}: React.ComponentProps<typeof DropdownMenuLabel>) {
   return (
     <DropdownMenuLabel
       data-slot="menubar-label"
-      data-inset={inset}
       className={cn("cn-menubar-label", className)}
       {...props}
     />
@@ -203,7 +203,7 @@ function MenubarSeparator({
   return (
     <DropdownMenuSeparator
       data-slot="menubar-separator"
-      className={cn("cn-menubar-separator -mx-1 my-1 h-px", className)}
+      className={cn("cn-menubar-separator", className)}
       {...props}
     />
   )
@@ -216,7 +216,7 @@ function MenubarShortcut({
   return (
     <DropdownMenuShortcut
       data-slot="menubar-shortcut"
-      className={cn("cn-menubar-shortcut ml-auto", className)}
+      className={cn("cn-menubar-shortcut ms-auto", className)}
       {...props}
     />
   )
@@ -230,15 +230,11 @@ function MenubarSub({
 
 function MenubarSubTrigger({
   className,
-  inset,
   ...props
-}: React.ComponentProps<typeof DropdownMenuSubTrigger> & {
-  inset?: boolean
-}) {
+}: React.ComponentProps<typeof DropdownMenuSubTrigger>) {
   return (
     <DropdownMenuSubTrigger
       data-slot="menubar-sub-trigger"
-      data-inset={inset}
       className={cn("cn-menubar-sub-trigger", className)}
       {...props}
     />
@@ -278,4 +274,5 @@ export {
   MenubarSub,
   MenubarSubTrigger,
   MenubarSubContent,
+  menubarVariants,
 }

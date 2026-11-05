@@ -8,7 +8,7 @@ import { cn } from "cn"
 export type HoverCardSize = "sm" | "default" | "lg"
 
 const hoverCardContentVariants = cva(
-  "cn-hover-card-content z-50 origin-(--transform-origin) rounded-xl border border-neutral-interactive/80 bg-neutral-surface text-neutral-text shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
+  "cn-hover-card-content relative z-50 origin-(--transform-origin) rounded-xl border border-neutral-interactive/80 bg-neutral-surface text-neutral-text shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
   {
     variants: {
       size: {
@@ -87,10 +87,12 @@ function HoverCardContent({
             <PreviewCardPrimitive.Arrow
               className={cn(
                 "cn-hover-card-arrow z-50 size-2.5 rotate-45 bg-neutral-surface border border-neutral-interactive/80 pointer-events-none",
-                "data-[side=bottom]:top-[-5px] data-[side=bottom]:border-r-0 data-[side=bottom]:border-b-0",
-                "data-[side=top]:bottom-[-5px] data-[side=top]:border-l-0 data-[side=top]:border-t-0",
-                "data-[side=right]:left-[-5px] data-[side=right]:border-t-0 data-[side=right]:border-r-0",
-                "data-[side=left]:right-[-5px] data-[side=left]:border-b-0 data-[side=left]:border-l-0"
+                "data-[side=bottom]:-top-1.25 data-[side=bottom]:border-r-0 data-[side=bottom]:border-b-0",
+                "data-[side=top]:-bottom-1.25 data-[side=top]:border-l-0 data-[side=top]:border-t-0",
+                "data-[side=right]:-left-1.25 data-[side=right]:border-t-0 data-[side=right]:border-r-0",
+                "data-[side=left]:-right-1.25 data-[side=left]:border-b-0 data-[side=left]:border-l-0",
+                "data-[side=inline-start]:-right-1.25 data-[side=inline-start]:border-b-0 data-[side=inline-start]:border-l-0",
+                "data-[side=inline-end]:-left-1.25 data-[side=inline-end]:border-t-0 data-[side=inline-end]:border-r-0"
               )}
             />
           )}
