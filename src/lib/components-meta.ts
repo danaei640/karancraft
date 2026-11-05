@@ -1698,7 +1698,7 @@ export function AlertDialogDemo() {
     name: 'Sheet',
     category: 'Overlays & Dialogs',
     description:
-      'A side-sliding panel on any viewport edge with gesture touch physics and default floating card mode.',
+      'A side-sliding docked panel on any viewport edge with exact shadcn transitions, unified under Drawer.',
     baseUiPrimitive: '@base-ui/react/drawer',
     installCmd: 'npx shadcn@latest add @karan-ui/sheet',
     registryUrl: 'https://karan-ui.dev/r/sheet.json',
@@ -1714,8 +1714,8 @@ export function AlertDialogDemo() {
       {
         name: 'floating',
         type: 'boolean',
-        defaultValue: 'true',
-        description: 'Renders as a detached floating card with perimeter margins and rounded corners',
+        defaultValue: 'false',
+        description: 'When false (default), renders docked flush against the viewport edge with exact shadcn sheet styles. When true, renders as a floating drawer card.',
         controlType: 'boolean',
       },
       {
@@ -1729,22 +1729,22 @@ export function AlertDialogDemo() {
     ],
     defaultProps: {
       side: 'right',
-      floating: true,
+      floating: false,
       size: 'default',
     },
     usageGuide: {
       summary:
-        'Unified with Drawer on @base-ui/react/drawer to give side sheets full gesture drag physics, velocity-based dismissal, and floating card mode without ad-hoc CSS tweaks.',
+        'Unified with Drawer on @base-ui/react/drawer with exact shadcn sheet slide transitions and docked border styles.',
       install: {
         cli: 'npx shadcn@latest add @karan-ui/sheet',
         registryUrl: 'https://karan-ui.dev/r/sheet.json',
       },
       features: [
         {
-          title: 'Floating Mode by Default',
-          badge: 'Floating Islands',
+          title: 'Docked Edge Sheet Mode',
+          badge: 'Shadcn Standard',
           description:
-            'floating={true} renders an elevated card detached from screen edges with rounded-2xl corners and soft borders. Set floating={false} for traditional edge-to-edge flush styling.',
+            'floating={false} renders an edge-docked panel with exact shadcn transitions and borders. Set floating={true} for floating drawer cards.',
           code: `import {
   Sheet,
   SheetTrigger,
@@ -1804,7 +1804,7 @@ export function SheetDemo() {
         name: 'floating',
         type: 'boolean',
         defaultValue: 'true',
-        description: 'Renders the drawer panel as a floating island with perimeter margin',
+        description: 'When true (default), renders with shadcn drawer styles and swipe handle. When false, converts to shadcn sheet styles.',
         controlType: 'boolean',
       },
       {
@@ -1929,18 +1929,10 @@ export function SheetDemo() {
         description: 'Whether to render the pointer arrow toward the trigger',
         controlType: 'boolean',
       },
-      {
-        name: 'sideOffset',
-        type: 'number',
-        defaultValue: '6',
-        description: 'Pixel offset between trigger and tooltip popup',
-        controlType: 'number',
-      },
     ],
     defaultProps: {
       side: 'top',
       withArrow: true,
-      sideOffset: 6,
     },
     usageGuide: {
       summary:
@@ -2967,14 +2959,6 @@ export function SheetDemo() {
     registryUrl: 'https://karan-ui.dev/r/hover-card.json',
     props: [
       {
-        name: 'appearance',
-        type: "'default' | 'inverted'",
-        defaultValue: "'default'",
-        description: 'Surface contrast appearance mode (default vs inverted)',
-        options: ['default', 'inverted'],
-        controlType: 'select',
-      },
-      {
         name: 'size',
         type: "'sm' | 'default' | 'lg'",
         defaultValue: "'default'",
@@ -2999,14 +2983,13 @@ export function SheetDemo() {
       },
     ],
     defaultProps: {
-      appearance: 'default',
       size: 'default',
       withArrow: false,
       side: 'bottom',
     },
     usageGuide: {
       summary:
-        'Built on @base-ui/react/preview-card with built-in sighted hover delay, accessible focus coordination, dual surface appearances, and arrow support.',
+        'Built on @base-ui/react/preview-card with built-in sighted hover delay, accessible focus coordination, and arrow pointer support.',
       install: {
         cli: 'npx shadcn@latest add @karan-ui/hover-card',
         registryUrl: 'https://karan-ui.dev/r/hover-card.json',

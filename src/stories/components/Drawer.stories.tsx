@@ -165,3 +165,32 @@ export const Sides: Story = {
     </div>
   ),
 };
+
+export const WithSnapPoints: Story = {
+  render: () => (
+    <Drawer floating={true} snapPoints={['180px', '380px', 1]}>
+      <DrawerTrigger render={<Button variant="outline">Drawer with 3 Snap Points (Swipe Props)</Button>} />
+      <DrawerContent>
+        <div className="mx-auto w-full max-w-sm">
+          <DrawerHeader>
+            <DrawerTitle>Multi-tier Snap Points</DrawerTitle>
+            <DrawerDescription>
+              Drag up or down across 180px, 380px, and full screen snap tiers.
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerBody className="p-4 space-y-3">
+            <p className="text-xs text-neutral-text-muted">
+              Swipe gestures and physics are enabled by default in floating drawer mode.
+            </p>
+            <div className="h-32 rounded-lg bg-neutral-interactive/20 flex items-center justify-center text-xs text-neutral-text-muted">
+              Scrollable / Swipeable content area
+            </div>
+          </DrawerBody>
+          <DrawerFooter>
+            <DrawerClose render={<Button variant="outline">Close</Button>} />
+          </DrawerFooter>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  ),
+};

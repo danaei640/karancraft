@@ -22,10 +22,6 @@ const meta: Meta<any> = {
       control: 'boolean',
       description: 'Whether to render the pointing arrow indicator.',
     },
-    sideOffset: {
-      control: 'number',
-      description: 'Distance in pixels between trigger and tooltip popup.',
-    },
   },
 };
 
@@ -36,7 +32,6 @@ export const Default: Story = {
   args: {
     side: 'top',
     withArrow: true,
-    sideOffset: 6,
   },
   render: (args: any) => (
     <TooltipProvider>

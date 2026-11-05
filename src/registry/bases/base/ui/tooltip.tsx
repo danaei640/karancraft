@@ -42,7 +42,7 @@ export interface TooltipContentProps
 function TooltipContent({
   className,
   side = "top",
-  sideOffset = 6,
+  sideOffset = 8,
   align = "center",
   alignOffset = 0,
   withArrow = true,
@@ -69,7 +69,11 @@ function TooltipContent({
           {children}
           {withArrow && (
             <TooltipPrimitive.Arrow
-              className="cn-tooltip-arrow z-50 bg-neutral-text fill-neutral-text"
+              className={cn(
+                "cn-tooltip-arrow relative block w-3 h-1.5 overflow-clip pointer-events-none z-50",
+                "data-[side=bottom]:top-[-6px] data-[side=left]:right-[-9px] data-[side=left]:rotate-90 data-[side=right]:left-[-9px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-6px] data-[side=top]:rotate-180",
+                "before:content-[''] before:absolute before:bottom-0 before:left-1/2 before:w-[calc(6px*sqrt(2))] before:h-[calc(6px*sqrt(2))] before:bg-neutral-text before:[transform:translate(-50%,50%)_rotate(45deg)]"
+              )}
             />
           )}
         </TooltipPrimitive.Popup>

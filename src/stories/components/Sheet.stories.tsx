@@ -43,7 +43,7 @@ type Story = StoryObj<any>;
 export const Default: Story = {
   args: {
     side: 'right',
-    floating: true,
+    floating: false,
     size: 'default',
   },
   render: (args: any) => (
@@ -53,7 +53,7 @@ export const Default: Story = {
         <SheetHeader>
           <SheetTitle>Sheet Preview</SheetTitle>
           <SheetDescription>
-            Side drawer panel with gesture dismiss and floating card styling.
+            Side drawer panel with docked edge styling and exact shadcn slide transitions.
           </SheetDescription>
         </SheetHeader>
         <SheetBody>

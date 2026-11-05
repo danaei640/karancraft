@@ -30,11 +30,11 @@ The following components have been **fully modernized**. Their prop architecture
 | **Theme Provider** | Dynamic OKLCH color engine, multi-accent selection, radius & spacing multipliers, typeset specs. | `[x] Modernized` |
 | **Dialog** | Base UI dialog primitive sync, animated soft backdrop blur (`backdrop-blur-sm`), header/title/description/body/footer slot architecture, close button in header slot at `end-0`, and smooth scale-in transition (`ease-[cubic-bezier(0.22,1,0.36,1)]`). | `[x] Modernized` |
 | **AlertDialog** | Destructive & urgent confirmation modal, accessible `alertdialog` role, prominent cancel/action button pairing with danger intent support, focus trap guarantees. | `[x] Modernized` |
-| **Drawer** | Native Base UI touch/gesture drawer with swipe-to-dismiss handle, `floating: boolean = true` default mode, 6-way side positioning (`start`, `end`, `top`, `bottom`, `left`, `right`). | `[x] Modernized` |
-| **Sheet** | Unified on Base UI drawer, `floating: boolean = true` default, smooth side sliding drawer panel on any edge, responsive viewport sizing. | `[x] Modernized` |
-| **Popover** | Floating portal anchored to trigger with collision detection, arrow pointer, soft shadow tiering, low-visual-load padding, and borderless neutral surface. | `[x] Modernized` |
-| **HoverCard** | Rich preview card with sighted user hover delay, accessible anchor positioning, smooth fade-in, and `appearance="default" \| "inverted"`. | `[x] Modernized` |
-| **Tooltip** | Fast hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), arrow pointer, 150ms spring easing. | `[x] Modernized` |
+| **Drawer** | Native Base UI touch/gesture drawer with swipe handle and physics (`floating={true}` default), converts to shadcn sheet when `floating={false}`. Complete slot composition (`DrawerHeader`, `DrawerContent`, `DrawerBody`, `DrawerFooter`, `DrawerTitle`, `DrawerDescription`, `DrawerClose`). | `[x] Modernized` |
+| **Sheet** | Built on unified Drawer, defaulting to `floating={false}` and `side="right"`, exact shadcn sheet transitions (300ms/500ms slide), flush docked edges with border along docked edge, and full slot composition. | `[x] Modernized` |
+| **Popover** | Floating portal anchored to trigger with smart collision detection, Base UI pseudo-element arrow pointer (`withArrow`), shadcn animations, and crisp `border border-neutral-interactive/80`. | `[x] Modernized` |
+| **HoverCard** | Rich preview card with hover delay, Base UI pseudo-element arrow pointer (`withArrow`), shadcn animations, and crisp `border border-neutral-interactive/80` (single neutral surface mode). | `[x] Modernized` |
+| **Tooltip** | Fast hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), Base UI pseudo-element arrow pointer (`withArrow`), 150ms spring easing. | `[x] Modernized` |
 
 ---
 
@@ -44,11 +44,11 @@ The following components have been **fully modernized**. Their prop architecture
 | :--- | :--- | :--- | :--- |
 | **P0** | **Dialog** | Base UI dialog primitive sync, animated soft backdrop blur (`backdrop-blur-sm`), header/title/description/body/footer slot architecture, close button with accessible contrast, and smooth scale-in transition (`ease-[cubic-bezier(0.22,1,0.36,1)]`). | `[x] Completed` |
 | **P0** | **AlertDialog** | Destructive & urgent confirmation modal, accessible `alertdialog` role, prominent cancel/action button pairing with danger intent support, and focus trap guarantees. | `[x] Completed` |
-| **P1** | **Sheet** | Side sliding drawer panel (left, right, top, bottom, start, end), smooth slide-in motion, responsive viewport sizing (`w-full sm:max-w-md`), unified drawer architecture, and `floating: boolean = true` default. | `[x] Completed` |
-| **P1** | **Drawer** | Native Base UI touch/gesture drawer with swipe-to-dismiss handle, vaul-like bottom sheet behavior, responsive desktop modal fallback, and `floating: boolean = true` default. | `[x] Completed` |
-| **P1** | **Popover** | Floating portal anchored to trigger with smart collision detection, arrow pointer, soft shadow tiering, low-visual-load padding, and borderless neutral surface. | `[x] Completed` |
-| **P2** | **Tooltip** | Instant hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), collision avoidance, and optional arrow tip. | `[x] Completed` |
-| **P2** | **HoverCard** | Rich preview card with sighted user hover delay, accessible anchor positioning, smooth fade-in, and `appearance="default" \| "inverted"`. | `[x] Completed` |
+| **P1** | **Sheet** | Side sliding drawer panel (left, right, top, bottom, start, end), smooth 300ms/500ms slide motion, responsive viewport sizing (`w-full sm:max-w-md`), unified drawer architecture, and `floating: boolean = false` docked default with border. | `[x] Completed` |
+| **P1** | **Drawer** | Native Base UI touch/gesture drawer with swipe-to-dismiss handle, gesture physics, responsive desktop modal fallback, and `floating: boolean = true` default converting to sheet when `false`. | `[x] Completed` |
+| **P1** | **Popover** | Floating portal anchored to trigger with smart collision detection, working Base UI pseudo-element arrow pointer (`withArrow`), soft shadow tiering, low-visual-load padding, and restored shadcn border. | `[x] Completed` |
+| **P2** | **Tooltip** | Instant hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), collision avoidance, and working Base UI pseudo-element arrow tip (`withArrow`). | `[x] Completed` |
+| **P2** | **HoverCard** | Rich preview card with sighted user hover delay, accessible anchor positioning, smooth fade-in, working Base UI pseudo-element arrow tip (`withArrow`), and restored shadcn border. | `[x] Completed` |
 
 ---
 
@@ -147,10 +147,14 @@ Total Remaining in Repository: **32 components**
 - **Decision**: Maintain strict WCAG contrast for text and interactive indicators against surfaces, while keeping background surfaces, borders, and secondary states softly tiered using OKLCH chroma balance. Semantic intents use contextual subtle tinting in resting states and reserve full saturation for active/focused moments.
 - **Impact**: Clean, modern, calm UI with low visual load, crystal-clear readability, and zero contrast issues in both dark and light modes.
 
-### [DEC-010] Unified Drawer & Sheet Architecture with Floating Mode Default
-- **Context**: Separate Sheet and Drawer primitives created duplicate code and required custom `className` overrides to prevent sheet content from sticking directly to screen edges.
-- **Decision**: Unify `Sheet` on `@base-ui/react/drawer`. Add `floating: boolean = true` as default across Drawer and Sheet, rendering detached cards with margin and rounded corners while allowing `floating={false}` for edge-to-edge flush styling.
-- **Impact**: Single unified codebase for sliding panels, native gesture drag-to-dismiss physics everywhere, and clean DX without repetitive CSS overrides.
+### [DEC-010] Unified Drawer & Sheet Architecture with Floating vs Docked Modes
+- **Context**: Separate Sheet and Drawer implementations led to duplication and confusion over swipe physics vs edge docking.
+- **Decision**: Unify `Sheet` and `Drawer` into a single, cohesive drawer primitive:
+  1. `Drawer` defaults to `floating={true}` (shadcn drawer style with touch swipe handle, rounded card margins, swipe physics, and bottom positioning by default).
+  2. Setting `floating={false}` immediately converts the component to shadcn sheet style (flush docked against screen edges with border along docked edge, no swipe handle, and exact 300ms/500ms slide transitions).
+  3. `Sheet` is re-exported as `Drawer` with `floating={false}` and `side="right"` default.
+  4. Both share complete slot composition: `DrawerHeader` (with close button positioned at `top-4 end-4`), `DrawerContent`, `DrawerBody`, `DrawerFooter`, `DrawerTitle`, `DrawerDescription`, and `DrawerClose`.
+- **Impact**: Single unified codebase for sliding and drawer panels, seamless DX when switching between docked sheet and floating gesture drawer, and exact shadcn animations.
 
 ### [DEC-011] Strict RTL/LTR Logical Coordinates & Header Close Button Standard
 - **Context**: Hardcoded physical utilities (`left-2`, `right-2`, `pl-*`, `pr-*`) break layout when flipped to RTL. Additionally, having `noCloseButton` / `showCloseButton` spread across multiple layers cluttered overlay APIs.
@@ -176,12 +180,12 @@ Total Remaining in Repository: **32 components**
   4. Synchronize entry/exit transitions to shadcn's 200ms `zoom-in-95` / `zoom-out-95` and `fade-in-0` / `fade-out-0`.
 - **Impact**: Eliminates visual misalignment, ensures clean borderless presentation, and maintains complete token and padding parity with Dialog.
 
-### [DEC-014] Universal Borderless Portal Content Standard
-- **Context**: 1px borders and rings (`border`, `border-neutral-interactive`, `ring-1`, `ring-neutral-interactive`, SVG `stroke-*`) on floating overlays, popups, and drawer panels caused visual noise and competed with screen content.
+### [DEC-014] Popover/HoverCard Shadcn Borders & Base UI CSS Arrow Standard
+- **Context**: Floating micro-overlays (`Popover`, `HoverCard`) without borders lacked edge definition on light surfaces. Base UI `<Arrow>` was also failing to render because Base UI provides an empty `<div>` with `data-side` rather than an SVG.
 - **Decision**:
-  1. Portal and overlay content boxes (`Popover`, `HoverCard`, `Drawer`, `Sheet`, `Dialog`, `AlertDialog`, `DropdownMenu`, `ContextMenu`, `Select`, `Menubar`, `NavigationMenu`) must NEVER have a 1px border or ring for visual focus.
-  2. Visual focus, boundaries, and elevation hierarchy are provided exclusively by surface color (`bg-neutral-surface`, `bg-neutral-text` for inverted) and elevation shadows (`shadow-lg`, `shadow-xl`, `shadow-2xl`).
-  3. Arrow pointers (`PopoverArrow`, `HoverCardArrow`, `TooltipArrow`) are strictly stroke-less (`fill-neutral-surface` / `fill-neutral-text`), seamlessly merging with their parent popup surface without outline artifacts.
-- **Impact**: Maximum visual calm, low visual load, and sleek elevated modern surfaces across the entire design system.
+  1. Restore shadcn styling on `Popover` and `HoverCard` with crisp `border border-neutral-interactive/80`, `shadow-md`, and standard neutral surface `bg-neutral-surface`. Removed unnecessary `appearance` variants from `HoverCard`.
+  2. Standardize Base UI CSS pseudo-element geometry across all arrow-capable primitives (`Tooltip`, `Popover`, `HoverCard`): container `relative block w-3 h-1.5 overflow-clip pointer-events-none z-50` with rotated square pseudo-element `[transform:translate(-50%,50%)_rotate(45deg)]` matching background and border.
+  3. Dialog and AlertDialog remain strictly borderless, relying on deep `shadow-2xl` and backdrop contrast.
+- **Impact**: Pixel-perfect pointing arrows with matching border and background on tooltips, popovers, and hover cards, with clear edge definition matching shadcn.
 
 

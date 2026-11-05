@@ -5,25 +5,19 @@ import { PreviewCard as PreviewCardPrimitive } from "@base-ui/react/preview-card
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
-export type HoverCardAppearance = "default" | "inverted"
 export type HoverCardSize = "sm" | "default" | "lg"
 
 const hoverCardContentVariants = cva(
-  "cn-hover-card-content z-50 origin-(--transform-origin) outline-none transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
+  "cn-hover-card-content z-50 origin-(--transform-origin) rounded-xl border border-neutral-interactive/80 bg-neutral-surface text-neutral-text shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
   {
     variants: {
-      appearance: {
-        default: "bg-neutral-surface text-neutral-text shadow-xl",
-        inverted: "bg-neutral-text text-neutral-surface shadow-2xl",
-      },
       size: {
-        sm: "w-64 p-3 rounded-lg text-xs",
-        default: "w-80 p-4 rounded-xl text-sm",
-        lg: "w-96 p-5 rounded-2xl text-sm",
+        sm: "w-64 p-3 text-xs",
+        default: "w-80 p-4 text-sm",
+        lg: "w-96 p-5 text-sm",
       },
     },
     defaultVariants: {
-      appearance: "default",
       size: "default",
     },
   }
@@ -48,11 +42,6 @@ export interface HoverCardContentProps
     VariantProps<typeof hoverCardContentVariants> {
   className?: string
   /**
-   * Surface appearance (`default` | `inverted`).
-   * @default "default"
-   */
-  appearance?: HoverCardAppearance
-  /**
    * Size scale for card width and padding (`sm` | `default` | `lg`).
    * @default "default"
    */
@@ -67,10 +56,9 @@ export interface HoverCardContentProps
 function HoverCardContent({
   className,
   side = "bottom",
-  sideOffset = 6,
+  sideOffset = 8,
   align = "center",
   alignOffset = 0,
-  appearance = "default",
   size = "default",
   withArrow = false,
   children,
@@ -87,10 +75,9 @@ function HoverCardContent({
       >
         <PreviewCardPrimitive.Popup
           data-slot="hover-card-content"
-          data-appearance={appearance}
           data-size={size}
           className={cn(
-            hoverCardContentVariants({ appearance, size }),
+            hoverCardContentVariants({ size }),
             className
           )}
           {...props}
@@ -99,10 +86,9 @@ function HoverCardContent({
           {withArrow && (
             <PreviewCardPrimitive.Arrow
               className={cn(
-                "cn-hover-card-arrow z-50",
-                appearance === "inverted"
-                  ? "bg-neutral-text fill-neutral-text"
-                  : "bg-neutral-surface fill-neutral-surface"
+                "cn-hover-card-arrow relative block w-3 h-1.5 overflow-clip pointer-events-none z-50",
+                "data-[side=bottom]:top-[-6px] data-[side=left]:right-[-9px] data-[side=left]:rotate-90 data-[side=right]:left-[-9px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-6px] data-[side=top]:rotate-180",
+                "before:content-[''] before:absolute before:bottom-0 before:left-1/2 before:w-[calc(6px*sqrt(2))] before:h-[calc(6px*sqrt(2))] before:bg-neutral-surface before:border before:border-neutral-interactive/80 before:[transform:translate(-50%,50%)_rotate(45deg)]"
               )}
             />
           )}

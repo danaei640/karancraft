@@ -14,11 +14,6 @@ const meta: Meta<any> = {
   component: HoverCard,
   tags: ['autodocs'],
   argTypes: {
-    appearance: {
-      control: 'radio',
-      options: ['default', 'inverted'],
-      description: 'Surface contrast appearance mode.',
-    },
     size: {
       control: 'select',
       options: ['sm', 'default', 'lg'],
@@ -41,7 +36,6 @@ type Story = StoryObj<any>;
 
 export const Default: Story = {
   args: {
-    appearance: 'default',
     size: 'default',
     withArrow: true,
     side: 'bottom',
@@ -51,7 +45,6 @@ export const Default: Story = {
       <HoverCard>
         <HoverCardTrigger render={<Button variant="link" className="p-0 text-base font-semibold">@karancraft</Button>} />
         <HoverCardContent
-          appearance={args.appearance}
           size={args.size}
           withArrow={args.withArrow}
           side={args.side}
@@ -87,32 +80,22 @@ export const Default: Story = {
   ),
 };
 
-export const Appearances: Story = {
+export const Placements: Story = {
   render: () => (
-    <div className="flex items-center gap-8 p-6">
-      <HoverCard>
-        <HoverCardTrigger render={<Button variant="outline">Default Hover Card</Button>} />
-        <HoverCardContent appearance="default" withArrow>
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold">Standard Surface</h4>
-            <p className="text-xs text-neutral-text-muted">
-              Balanced neutral surface with rich shadow elevation and borderless clarity.
-            </p>
-          </div>
-        </HoverCardContent>
-      </HoverCard>
-
-      <HoverCard>
-        <HoverCardTrigger render={<Button variant="secondary">Inverted Hover Card</Button>} />
-        <HoverCardContent appearance="inverted" withArrow>
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-neutral-surface">Inverted Surface</h4>
-            <p className="text-xs text-neutral-surface/70">
-              High-contrast card for prominent author insights and system tooltips.
-            </p>
-          </div>
-        </HoverCardContent>
-      </HoverCard>
+    <div className="flex items-center justify-center gap-6 p-8">
+      {(['top', 'bottom', 'left', 'right'] as const).map((side) => (
+        <HoverCard key={side}>
+          <HoverCardTrigger render={<Button variant="outline" size="sm" className="capitalize">{side}</Button>} />
+          <HoverCardContent side={side} withArrow size="sm">
+            <div className="space-y-1">
+              <h4 className="text-xs font-semibold capitalize">{side} Preview</h4>
+              <p className="text-[11px] text-neutral-text-muted">
+                Anchored to {side} with directional arrow.
+              </p>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
+      ))}
     </div>
   ),
 };

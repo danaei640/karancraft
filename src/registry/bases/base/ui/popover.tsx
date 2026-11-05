@@ -8,13 +8,13 @@ import { cn } from "cn"
 export type PopoverSize = "sm" | "default" | "lg"
 
 const popoverContentVariants = cva(
-  "cn-popover-content z-50 origin-(--transform-origin) bg-neutral-surface text-neutral-text shadow-xl outline-none transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
+  "cn-popover-content z-50 origin-(--transform-origin) rounded-xl border border-neutral-interactive/80 bg-neutral-surface text-neutral-text shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
   {
     variants: {
       size: {
-        sm: "w-64 p-3 rounded-lg text-xs",
-        default: "w-72 sm:w-80 p-4 rounded-xl text-sm",
-        lg: "w-80 sm:w-96 p-5 rounded-2xl text-sm",
+        sm: "w-64 p-3 text-xs",
+        default: "w-72 sm:w-80 p-4 text-sm",
+        lg: "w-80 sm:w-96 p-5 text-sm",
       },
     },
     defaultVariants: {
@@ -60,7 +60,7 @@ function PopoverContent({
   align = "center",
   alignOffset = 0,
   side = "bottom",
-  sideOffset = 6,
+  sideOffset = 8,
   size = "default",
   withArrow = false,
   children,
@@ -87,7 +87,11 @@ function PopoverContent({
           {children}
           {withArrow && (
             <PopoverPrimitive.Arrow
-              className="cn-popover-arrow z-50 bg-neutral-surface fill-neutral-surface"
+              className={cn(
+                "cn-popover-arrow relative block w-3 h-1.5 overflow-clip pointer-events-none z-50",
+                "data-[side=bottom]:top-[-6px] data-[side=left]:right-[-9px] data-[side=left]:rotate-90 data-[side=right]:left-[-9px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-6px] data-[side=top]:rotate-180",
+                "before:content-[''] before:absolute before:bottom-0 before:left-1/2 before:w-[calc(6px*sqrt(2))] before:h-[calc(6px*sqrt(2))] before:bg-neutral-surface before:border before:border-neutral-interactive/80 before:[transform:translate(-50%,50%)_rotate(45deg)]"
+              )}
             />
           )}
         </PopoverPrimitive.Popup>

@@ -23,15 +23,21 @@ import {
 export type SheetSide = DrawerSide
 export type SheetSize = DrawerSize
 
-export interface SheetProps extends DrawerProps {
+export interface SheetProps extends Omit<DrawerProps, "floating"> {
   /**
-   * The edge from which the sheet slides in (`top` | `bottom` | `left` | `right` | `start` | `end`).
+   * When false (default for Sheet), renders docked flush against the viewport edge with exact shadcn sheet styles.
+   * When true, renders as a floating drawer card.
+   * @default false
+   */
+  floating?: boolean
+  /**
+   * The edge of the screen from which the sheet slides in (`top` | `bottom` | `left` | `right` | `start` | `end`).
    * @default "right"
    */
   side?: SheetSide
 }
 
-function Sheet({ side = "right", floating = true, ...props }: SheetProps) {
+function Sheet({ side = "right", floating = false, ...props }: SheetProps) {
   return <Drawer side={side} floating={floating} {...props} />
 }
 
@@ -39,10 +45,10 @@ export interface SheetContentProps extends DrawerContentProps {}
 
 function SheetContent({
   side,
-  floating,
+  floating = false,
   ...props
 }: SheetContentProps & { side?: SheetSide }) {
-  return <DrawerContent floating={floating} {...props} />
+  return <DrawerContent side={side} floating={floating} {...props} />
 }
 
 const SheetTrigger = DrawerTrigger
