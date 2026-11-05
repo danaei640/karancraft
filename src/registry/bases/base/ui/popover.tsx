@@ -88,9 +88,11 @@ function PopoverContent({
           {withArrow && (
             <PopoverPrimitive.Arrow
               className={cn(
-                "cn-popover-arrow relative block w-3 h-1.5 overflow-clip pointer-events-none z-50",
-                "data-[side=bottom]:top-[-6px] data-[side=left]:right-[-9px] data-[side=left]:rotate-90 data-[side=right]:left-[-9px] data-[side=right]:-rotate-90 data-[side=top]:bottom-[-6px] data-[side=top]:rotate-180",
-                "before:content-[''] before:absolute before:bottom-0 before:left-1/2 before:w-[calc(6px*sqrt(2))] before:h-[calc(6px*sqrt(2))] before:bg-neutral-surface before:border before:border-neutral-interactive/80 before:[transform:translate(-50%,50%)_rotate(45deg)]"
+                "cn-popover-arrow z-50 size-2.5 rotate-45 bg-neutral-surface border border-neutral-interactive/80 pointer-events-none",
+                "data-[side=bottom]:top-[-5px] data-[side=bottom]:border-r-0 data-[side=bottom]:border-b-0",
+                "data-[side=top]:bottom-[-5px] data-[side=top]:border-l-0 data-[side=top]:border-t-0",
+                "data-[side=right]:left-[-5px] data-[side=right]:border-t-0 data-[side=right]:border-r-0",
+                "data-[side=left]:right-[-5px] data-[side=left]:border-b-0 data-[side=left]:border-l-0"
               )}
             />
           )}

@@ -15,7 +15,7 @@ const DialogContext = React.createContext<{ size: DialogSize }>({
 })
 
 const dialogContentVariants = cva(
-  "cn-dialog-content fixed top-1/2 start-1/2 z-50 grid w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 bg-neutral-surface text-neutral-text shadow-2xl outline-none duration-200 data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
+  "cn-dialog-content fixed top-1/2 left-1/2 z-50 grid w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 bg-neutral-surface text-neutral-text shadow-2xl outline-none duration-200 data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
   {
     variants: {
       size: {
@@ -74,8 +74,8 @@ export interface DialogContentProps
    */
   size?: DialogSize
   /**
-   * Whether to show the top-right icon close button.
-   * @default true
+   * Optional close button rendered inside the content box when no DialogHeader is present.
+   * @default false
    */
   showCloseButton?: boolean
 }
@@ -84,7 +84,7 @@ function DialogContent({
   className,
   children,
   size = "default",
-  showCloseButton = true,
+  showCloseButton = false,
   ...props
 }: DialogContentProps) {
   return (
@@ -120,9 +120,20 @@ function DialogContent({
   )
 }
 
-export interface DialogHeaderProps extends React.ComponentProps<"div"> {}
+export interface DialogHeaderProps extends React.ComponentProps<"div"> {
+  /**
+   * When true (default), renders a close button inside the header slot.
+   * @default true
+   */
+  showCloseButton?: boolean
+}
 
-function DialogHeader({ className, ...props }: DialogHeaderProps) {
+function DialogHeader({
+  className,
+  children,
+  showCloseButton = true,
+  ...props
+}: DialogHeaderProps) {
   const { size } = React.useContext(DialogContext)
   return (
     <div
@@ -135,7 +146,25 @@ function DialogHeader({ className, ...props }: DialogHeaderProps) {
         className
       )}
       {...props}
-    />
+    >
+      {children}
+      {showCloseButton && (
+        <DialogPrimitive.Close
+          data-slot="dialog-close"
+          render={
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Close"
+              className="cn-dialog-close absolute top-0 end-0 text-neutral-text-muted hover:text-neutral-text hover:bg-neutral-interactive/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-interactive-focus disabled:pointer-events-none transition-colors"
+            />
+          }
+        >
+          <X className="size-4" aria-hidden="true" />
+          <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+      )}
+    </div>
   )
 }
 

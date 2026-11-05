@@ -191,10 +191,14 @@ function DrawerContent({
           "inset-x-0 bottom-0 rounded-t-[16px] max-h-[85dvh] data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom data-ending-style:translate-y-full data-starting-style:translate-y-full sm:inset-x-4 sm:bottom-4 sm:mx-auto sm:max-w-lg sm:rounded-2xl",
         side === "top" &&
           "inset-x-0 top-0 rounded-b-[16px] max-h-[85dvh] data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top data-ending-style:-translate-y-full data-starting-style:-translate-y-full sm:inset-x-4 sm:top-4 sm:mx-auto sm:max-w-lg sm:rounded-2xl",
-        (side === "left" || side === "start") &&
-          "inset-y-2 start-2 w-3/4 sm:max-w-sm rounded-2xl data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left data-ending-style:-translate-x-full data-starting-style:-translate-x-full",
-        (side === "right" || side === "end") &&
-          "inset-y-2 end-2 w-3/4 sm:max-w-sm rounded-2xl data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right data-ending-style:translate-x-full data-starting-style:translate-x-full",
+        side === "left" &&
+          "inset-y-2 left-2 w-3/4 sm:max-w-sm rounded-2xl data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left data-ending-style:-translate-x-full data-starting-style:-translate-x-full",
+        side === "right" &&
+          "inset-y-2 right-2 w-3/4 sm:max-w-sm rounded-2xl data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right data-ending-style:translate-x-full data-starting-style:translate-x-full",
+        side === "start" &&
+          "inset-y-2 start-2 w-3/4 sm:max-w-sm rounded-2xl ltr:data-[state=closed]:slide-out-to-left rtl:data-[state=closed]:slide-out-to-right ltr:data-[state=open]:slide-in-from-left rtl:data-[state=open]:slide-in-from-right ltr:data-ending-style:-translate-x-full rtl:data-ending-style:translate-x-full ltr:data-starting-style:-translate-x-full rtl:data-starting-style:translate-x-full",
+        side === "end" &&
+          "inset-y-2 end-2 w-3/4 sm:max-w-sm rounded-2xl ltr:data-[state=closed]:slide-out-to-right rtl:data-[state=closed]:slide-out-to-left ltr:data-[state=open]:slide-in-from-right rtl:data-[state=open]:slide-in-from-left ltr:data-ending-style:translate-x-full rtl:data-ending-style:-translate-x-full ltr:data-starting-style:translate-x-full rtl:data-starting-style:-translate-x-full",
         className
       )
     : cn(
@@ -203,10 +207,14 @@ function DrawerContent({
           "inset-x-0 top-0 border-b border-neutral-interactive/80 data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top data-ending-style:-translate-y-full data-starting-style:-translate-y-full",
         side === "bottom" &&
           "inset-x-0 bottom-0 border-t border-neutral-interactive/80 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom data-ending-style:translate-y-full data-starting-style:translate-y-full",
-        (side === "left" || side === "start") &&
-          "inset-y-0 start-0 h-full w-3/4 border-e border-neutral-interactive/80 sm:max-w-sm data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left data-ending-style:-translate-x-full data-starting-style:-translate-x-full",
-        (side === "right" || side === "end") &&
-          "inset-y-0 end-0 h-full w-3/4 border-s border-neutral-interactive/80 sm:max-w-sm data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right data-ending-style:translate-x-full data-starting-style:translate-x-full",
+        side === "left" &&
+          "inset-y-0 left-0 h-full w-3/4 border-r border-neutral-interactive/80 sm:max-w-sm data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left data-ending-style:-translate-x-full data-starting-style:-translate-x-full",
+        side === "right" &&
+          "inset-y-0 right-0 h-full w-3/4 border-l border-neutral-interactive/80 sm:max-w-sm data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right data-ending-style:translate-x-full data-starting-style:translate-x-full",
+        side === "start" &&
+          "inset-y-0 start-0 h-full w-3/4 border-e border-neutral-interactive/80 sm:max-w-sm ltr:data-[state=closed]:slide-out-to-left rtl:data-[state=closed]:slide-out-to-right ltr:data-[state=open]:slide-in-from-left rtl:data-[state=open]:slide-in-from-right ltr:data-ending-style:-translate-x-full rtl:data-ending-style:translate-x-full ltr:data-starting-style:-translate-x-full rtl:data-starting-style:translate-x-full",
+        side === "end" &&
+          "inset-y-0 end-0 h-full w-3/4 border-s border-neutral-interactive/80 sm:max-w-sm ltr:data-[state=closed]:slide-out-to-right rtl:data-[state=closed]:slide-out-to-left ltr:data-[state=open]:slide-in-from-right rtl:data-[state=open]:slide-in-from-left ltr:data-ending-style:translate-x-full rtl:data-ending-style:-translate-x-full ltr:data-starting-style:translate-x-full rtl:data-starting-style:-translate-x-full",
         className
       )
 
@@ -337,11 +345,16 @@ function DrawerDescription({
   )
 }
 
+function DrawerSwipeArea({ ...props }: DrawerPrimitive.SwipeArea.Props) {
+  return <DrawerPrimitive.SwipeArea data-slot="drawer-swipe-area" {...props} />
+}
+
 export {
   Drawer,
   DrawerPortal,
   DrawerOverlay,
   DrawerSwipeHandle,
+  DrawerSwipeArea,
   DrawerTrigger,
   DrawerClose,
   DrawerContent,

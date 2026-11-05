@@ -13,6 +13,7 @@ import {
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
+  DrawerSwipeArea,
   type DrawerProps,
   type DrawerContentProps,
   type DrawerHeaderProps,
@@ -60,6 +61,7 @@ const SheetBody = DrawerBody
 const SheetFooter = DrawerFooter
 const SheetTitle = DrawerTitle
 const SheetDescription = DrawerDescription
+const SheetSwipeArea = DrawerSwipeArea
 
 export {
   Sheet,
@@ -73,5 +75,6 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
+  SheetSwipeArea,
 }
 export type { DrawerHeaderProps as SheetHeaderProps }
