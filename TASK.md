@@ -32,7 +32,7 @@ The following components have been **fully modernized**. Their prop architecture
 | **AlertDialog** | Destructive & urgent confirmation modal, accessible `alertdialog` role, prominent cancel/action button pairing with danger intent support, focus trap guarantees. | `[x] Modernized` |
 | **Drawer** | Native Base UI touch/gesture drawer with swipe-to-dismiss handle, `floating: boolean = true` default mode, 6-way side positioning (`start`, `end`, `top`, `bottom`, `left`, `right`). | `[x] Modernized` |
 | **Sheet** | Unified on Base UI drawer, `floating: boolean = true` default, smooth side sliding drawer panel on any edge, responsive viewport sizing. | `[x] Modernized` |
-| **Popover** | Floating portal anchored to trigger with collision detection, arrow pointer, soft shadow tiering, low-visual-load padding, `appearance="default" \| "inverted"`. | `[x] Modernized` |
+| **Popover** | Floating portal anchored to trigger with collision detection, arrow pointer, soft shadow tiering, low-visual-load padding, and borderless neutral surface. | `[x] Modernized` |
 | **HoverCard** | Rich preview card with sighted user hover delay, accessible anchor positioning, smooth fade-in, and `appearance="default" \| "inverted"`. | `[x] Modernized` |
 | **Tooltip** | Fast hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), arrow pointer, 150ms spring easing. | `[x] Modernized` |
 
@@ -46,7 +46,7 @@ The following components have been **fully modernized**. Their prop architecture
 | **P0** | **AlertDialog** | Destructive & urgent confirmation modal, accessible `alertdialog` role, prominent cancel/action button pairing with danger intent support, and focus trap guarantees. | `[x] Completed` |
 | **P1** | **Sheet** | Side sliding drawer panel (left, right, top, bottom, start, end), smooth slide-in motion, responsive viewport sizing (`w-full sm:max-w-md`), unified drawer architecture, and `floating: boolean = true` default. | `[x] Completed` |
 | **P1** | **Drawer** | Native Base UI touch/gesture drawer with swipe-to-dismiss handle, vaul-like bottom sheet behavior, responsive desktop modal fallback, and `floating: boolean = true` default. | `[x] Completed` |
-| **P1** | **Popover** | Floating portal anchored to trigger with smart collision detection, arrow pointer, soft shadow tiering, low-visual-load padding, and `appearance="default" \| "inverted"`. | `[x] Completed` |
+| **P1** | **Popover** | Floating portal anchored to trigger with smart collision detection, arrow pointer, soft shadow tiering, low-visual-load padding, and borderless neutral surface. | `[x] Completed` |
 | **P2** | **Tooltip** | Instant hover & keyboard focus micro-popup, always-inverted high contrast (`bg-neutral-text text-neutral-surface`), collision avoidance, and optional arrow tip. | `[x] Completed` |
 | **P2** | **HoverCard** | Rich preview card with sighted user hover delay, accessible anchor positioning, smooth fade-in, and `appearance="default" \| "inverted"`. | `[x] Completed` |
 

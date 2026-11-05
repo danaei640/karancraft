@@ -1852,19 +1852,11 @@ export function SheetDemo() {
     name: 'Popover',
     category: 'Overlays & Dialogs',
     description:
-      'An anchored floating content card with collision detection, arrow pointer, and default vs inverted surface contrast.',
+      'An anchored floating content card with collision detection, arrow pointer, and soft elevation shadow.',
     baseUiPrimitive: '@base-ui/react/popover',
     installCmd: 'npx shadcn@latest add @karan-ui/popover',
     registryUrl: 'https://karan-ui.dev/r/popover.json',
     props: [
-      {
-        name: 'appearance',
-        type: "'default' | 'inverted'",
-        defaultValue: "'default'",
-        description: 'Surface contrast style (soft neutral vs high-contrast dark)',
-        options: ['default', 'inverted'],
-        controlType: 'select',
-      },
       {
         name: 'size',
         type: "'sm' | 'default' | 'lg'",
@@ -1890,7 +1882,6 @@ export function SheetDemo() {
       },
     ],
     defaultProps: {
-      appearance: 'default',
       size: 'default',
       withArrow: false,
       side: 'bottom',
@@ -1904,10 +1895,10 @@ export function SheetDemo() {
       },
       features: [
         {
-          title: 'Dual Contrast Appearances',
-          badge: 'Contrast Tuning',
+          title: 'Elevation-First Surface',
+          badge: 'Visual Clarity',
           description:
-            'Use appearance="default" for in-page contextual forms and settings, or appearance="inverted" for prominent dark callouts.',
+            'Clean borderless popup surface elevated purely by shadow-xl against the page backdrop for low visual fatigue.',
         },
       ],
     },

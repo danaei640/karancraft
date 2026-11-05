@@ -18,11 +18,6 @@ const meta: Meta<any> = {
   component: Popover,
   tags: ['autodocs'],
   argTypes: {
-    appearance: {
-      control: 'radio',
-      options: ['default', 'inverted'],
-      description: 'Surface contrast appearance mode.',
-    },
     size: {
       control: 'select',
       options: ['sm', 'default', 'lg'],
@@ -45,7 +40,6 @@ type Story = StoryObj<any>;
 
 export const Default: Story = {
   args: {
-    appearance: 'default',
     size: 'default',
     withArrow: true,
     side: 'bottom',
@@ -61,7 +55,6 @@ export const Default: Story = {
         }
       />
       <PopoverContent
-        appearance={args.appearance}
         size={args.size}
         withArrow={args.withArrow}
         side={args.side}
@@ -90,32 +83,28 @@ export const Default: Story = {
   ),
 };
 
-export const Appearances: Story = {
+export const Placements: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
-      <Popover>
-        <PopoverTrigger render={<Button variant="outline">Default Appearance</Button>} />
-        <PopoverContent appearance="default" withArrow>
-          <PopoverHeader>
-            <PopoverTitle>Default Surface</PopoverTitle>
-            <PopoverDescription>
-              Soft neutral surface with balanced contrast and rich elevation shadows.
-            </PopoverDescription>
-          </PopoverHeader>
-        </PopoverContent>
-      </Popover>
-
-      <Popover>
-        <PopoverTrigger render={<Button variant="secondary">Inverted Appearance</Button>} />
-        <PopoverContent appearance="inverted" withArrow>
-          <PopoverHeader>
-            <PopoverTitle className="text-neutral-surface">Inverted Surface</PopoverTitle>
-            <PopoverDescription className="text-neutral-surface/70">
-              High-contrast inverted dark surface for prominent contextual callouts.
-            </PopoverDescription>
-          </PopoverHeader>
-        </PopoverContent>
-      </Popover>
+      {(['top', 'bottom', 'left', 'right'] as const).map((side) => (
+        <Popover key={side}>
+          <PopoverTrigger
+            render={
+              <Button variant="outline" size="sm" className="capitalize">
+                {side}
+              </Button>
+            }
+          />
+          <PopoverContent side={side} withArrow size="sm">
+            <PopoverHeader>
+              <PopoverTitle className="capitalize text-xs">{side} Popover</PopoverTitle>
+              <PopoverDescription>
+                Anchored to {side} with collision detection.
+              </PopoverDescription>
+            </PopoverHeader>
+          </PopoverContent>
+        </Popover>
+      ))}
     </div>
   ),
 };
